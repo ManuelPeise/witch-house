@@ -3,12 +3,13 @@ using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
 using Logic.Family;
 using Logic.Shared.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Shared;
 
 namespace Service.Api.ApiControllers.Account
 {
-
+    [Authorize]
     public class ProfileServiceController : ApiControllerBase
     {
         private readonly DatabaseContext _databaseContext;
