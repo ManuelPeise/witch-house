@@ -46,11 +46,12 @@ namespace Data.Shared.Models.Account
                 FamilyGuid = familyGuid,
                 FirstName = FirstName,
                 LastName = LastName,
-                UserName = $"{FirstName}.{LastName}@{city}",
+                UserName = UserName,
                 DateOfBirth = DateOfBirth,
                 Salt = salt,
                 Role = role ?? UserRoleEnum.User,
                 Secret = encodedSecret,
+                Culture = "en",
                 CreatedAt = DateTime.UtcNow.ToString("yyyy-MM-dd"),
                 CreatedBy = "System"
             };

@@ -34,7 +34,7 @@ namespace Logic.Shared
             {
                 if (disposing)
                 {
-                    _databaseContext.Dispose();
+                   // _databaseContext.Dispose();
                 }
                 disposedValue = true;
             }

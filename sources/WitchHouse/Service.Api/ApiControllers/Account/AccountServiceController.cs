@@ -1,5 +1,6 @@
 ﻿using Data.Database;
 using Data.Shared.Models.Account;
+using Data.Shared.Models.Export;
 using Logic.Family;
 using Logic.Shared.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -18,6 +19,15 @@ namespace Service.Api.ApiControllers.Account
             _databaseContext = databaseContext;
             _logRepository = logRepository;
         }
+
+        [HttpGet(Name = "CheckUserName")]
+        public async Task<bool> CheckUserName([FromQuery] string userName)
+        {
+            var service = new FamilyAccountService(_databaseContext, _logRepository);
+
+            return await service.CheckUserName(userName);
+        }
+
 
         [HttpPost(Name = "RegisterFamily")]
         public async Task<bool> RegisterFamily([FromBody] AccountImportModel importModel)

@@ -8,8 +8,11 @@ using System.Text;
 
 namespace Web.Api.Config
 {
+    
     public static class WebApp
     {
+        private static string CorsPolicy = "Policy";
+
         public static void ConfigureDatabase(WebApplicationBuilder builder)
         {
             builder.Services.AddDbContext<DatabaseContext>(opt =>
@@ -58,6 +61,17 @@ namespace Web.Api.Config
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddCors(opt =>
+            {
+                opt.AddPolicy(CorsPolicy, opt =>
+                {
+                    opt.AllowAnyHeader();
+                    opt.AllowAnyMethod();
+                    opt.AllowAnyOrigin();
+                    // opt.AllowCredentials();
+                });
+            });
+
         }
 
         public static void ConfigureApp(WebApplication app)
@@ -74,6 +88,8 @@ namespace Web.Api.Config
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseCors(CorsPolicy);
         }
 
         private static (string? jwtIssuer, string? jwtKey) GetJwtDataFromConfig(WebApplicationBuilder builder)
