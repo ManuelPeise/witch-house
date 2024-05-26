@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240524203040_InitializeDatabase")]
+    [Migration("20240526194947_InitializeDatabase")]
     partial class InitializeDatabase
     {
         /// <inheritdoc />
@@ -33,6 +33,10 @@ namespace Data.Database.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Culture")
                         .IsRequired()
                         .HasColumnType("longtext");
 

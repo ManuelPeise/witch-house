@@ -25,6 +25,7 @@ namespace Data.Database.Migrations
                     LastName = table.Column<string>(type: "longtext", nullable: true),
                     UserName = table.Column<string>(type: "longtext", nullable: false),
                     DateOfBirth = table.Column<string>(type: "longtext", nullable: true),
+                    Culture = table.Column<string>(type: "longtext", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
                     Salt = table.Column<string>(type: "longtext", nullable: false),
                     Secret = table.Column<string>(type: "longtext", nullable: false),

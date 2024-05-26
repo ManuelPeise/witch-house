@@ -11,5 +11,6 @@ WebApp.ConfigureServices(builder);
 var app = builder.Build();
 
 WebApp.ConfigureApp(app);
+DatabaseMigrator.ExecuteDatabaseMigrations(app);
 
 app.Run();

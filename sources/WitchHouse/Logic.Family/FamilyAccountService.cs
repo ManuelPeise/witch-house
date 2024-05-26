@@ -238,6 +238,8 @@ namespace Logic.Family
 
                         return selectedUserName == null;
                     }
+
+                    return true;
                 }
 
                 return false;

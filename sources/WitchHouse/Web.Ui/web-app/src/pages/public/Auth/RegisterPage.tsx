@@ -56,10 +56,11 @@ const RegisterPage: React.FC = () => {
       model.userAccount.firstName?.length < 3 ||
       model.userAccount.lastName?.length < 3 ||
       model.userAccount.userName?.length < 5 ||
-      model.userAccount.secret?.length < 8
+      model.userAccount.secret?.length <= 7
     );
   }, [model, isValidUserName]);
 
+  console.log(registerDisabled, model);
   const handleFamilyChanged = React.useCallback(
     (key: string, value: string) => {
       setModel({ ...model, family: { ...model.family, [key]: value } });
