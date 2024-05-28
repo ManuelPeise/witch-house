@@ -10,5 +10,6 @@ namespace Data.Shared.Entities
         public string Stacktrace { get; set; } = string.Empty;
         public string TimeStamp { get; set; } = string.Empty;
         public string Trigger { get; set; } = string.Empty;
+        public Guid? FamilyGuid { get; set; }
     }
 }

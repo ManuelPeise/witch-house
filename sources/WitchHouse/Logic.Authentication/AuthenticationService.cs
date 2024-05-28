@@ -97,6 +97,7 @@ namespace Logic.Authentication
                     new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
                     new Claim(ClaimTypes.Name, account.UserName),
                     new Claim(ClaimTypes.Role, Enum.GetName(account.Role)),
+                    new Claim("FamilyGuid", account.FamilyGuid.ToString()),
                     // new Claim(ClaimTypes.UserData, JsonConvert.SerializeObject(account)),
             };
         }
