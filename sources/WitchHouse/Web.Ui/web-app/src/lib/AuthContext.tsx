@@ -2,6 +2,7 @@ import React, { PropsWithChildren, createContext, useContext } from 'react';
 import axiosClient from './api/axiosClient';
 import { endpoints } from './api/apiConfiguration';
 import { useI18n } from '../hooks/useI18n';
+import { UserRoleEnum } from './enums/UserRoleEnum';
 
 type LoginData = {
   userName: string;
@@ -15,6 +16,7 @@ export type LoginResult = {
   language: 'en' | 'de';
   jwt: string;
   refreshToken: string;
+  userRole: UserRoleEnum;
 };
 
 export type AuthResult = {

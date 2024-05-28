@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Data.Database\Data.Database.csproj" />
+    <ProjectReference Include="..\Logic.Administration\Logic.Administration.csproj" />
     <ProjectReference Include="..\Logic.Authentication\Logic.Authentication.csproj" />
     <ProjectReference Include="..\Logic.Family\Logic.Family.csproj" />
     <ProjectReference Include="..\Logic.Shared\Logic.Shared.csproj" />

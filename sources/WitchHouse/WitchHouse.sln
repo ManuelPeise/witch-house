@@ -11,23 +11,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03 Logic", "03 Logic", "{D9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04 Data", "04 Data", "{CD3D20D2-D8ED-46F5-8F8F-440FA68D78BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Api", "Web.Api\Web.Api.csproj", "{71A4C691-E314-459F-953A-E1A6769F9B1C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Api", "Web.Api\Web.Api.csproj", "{71A4C691-E314-459F-953A-E1A6769F9B1C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05 Shared", "05 Shared", "{9BD57A68-EC80-4D13-9156-47B9D30A37B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Database", "Data.Database\Data.Database.csproj", "{848828D8-9111-47CE-9CAD-8D205B7D098D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Database", "Data.Database\Data.Database.csproj", "{848828D8-9111-47CE-9CAD-8D205B7D098D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Shared", "Data.Shared\Data.Shared.csproj", "{BCEDBC35-39F6-48C6-952F-9F4BD1304082}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Shared", "Data.Shared\Data.Shared.csproj", "{BCEDBC35-39F6-48C6-952F-9F4BD1304082}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic.Shared", "Logic.Shared\Logic.Shared.csproj", "{B7A1A9AF-569A-44B3-BC96-2B73BB7F2B79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logic.Shared", "Logic.Shared\Logic.Shared.csproj", "{B7A1A9AF-569A-44B3-BC96-2B73BB7F2B79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic.Family", "Logic.Family\Logic.Family.csproj", "{F01A877C-4ACD-4F3E-AA03-274C18BD8F98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logic.Family", "Logic.Family\Logic.Family.csproj", "{F01A877C-4ACD-4F3E-AA03-274C18BD8F98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.Shared", "Service.Shared\Service.Shared.csproj", "{0BE9D62E-AC77-4039-AE04-C2358FC7B19F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service.Shared", "Service.Shared\Service.Shared.csproj", "{0BE9D62E-AC77-4039-AE04-C2358FC7B19F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.Api", "Service.Api\Service.Api.csproj", "{C557A83C-130D-4E2B-A8D2-264A2BB8A000}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service.Api", "Service.Api\Service.Api.csproj", "{C557A83C-130D-4E2B-A8D2-264A2BB8A000}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic.Authentication", "Logic.Authentication\Logic.Authentication.csproj", "{E6235385-4C23-403C-9B38-CE1249991636}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logic.Authentication", "Logic.Authentication\Logic.Authentication.csproj", "{E6235385-4C23-403C-9B38-CE1249991636}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic.Administration", "Logic.Administration\Logic.Administration.csproj", "{62457FA1-CFB9-4857-B7BF-5A6157AB514D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +69,10 @@ Global
 		{E6235385-4C23-403C-9B38-CE1249991636}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6235385-4C23-403C-9B38-CE1249991636}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6235385-4C23-403C-9B38-CE1249991636}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62457FA1-CFB9-4857-B7BF-5A6157AB514D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62457FA1-CFB9-4857-B7BF-5A6157AB514D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62457FA1-CFB9-4857-B7BF-5A6157AB514D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62457FA1-CFB9-4857-B7BF-5A6157AB514D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +86,7 @@ Global
 		{0BE9D62E-AC77-4039-AE04-C2358FC7B19F} = {37B69BAC-E1CA-4BC5-BF19-999E9AF72380}
 		{C557A83C-130D-4E2B-A8D2-264A2BB8A000} = {37B69BAC-E1CA-4BC5-BF19-999E9AF72380}
 		{E6235385-4C23-403C-9B38-CE1249991636} = {D9023A4B-1C8E-489B-B526-4B9BF02584E7}
+		{62457FA1-CFB9-4857-B7BF-5A6157AB514D} = {D9023A4B-1C8E-489B-B526-4B9BF02584E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C3F0FE7-B68D-467D-837F-20A92A8104AE}

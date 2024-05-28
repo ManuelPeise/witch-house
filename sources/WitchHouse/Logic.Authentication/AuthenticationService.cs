@@ -60,6 +60,7 @@ namespace Logic.Authentication
                                 Language = accountEntity.Culture,
                                 Jwt = jwt,
                                 RefreshToken = refreshToken,
+                                UserRole = accountEntity.Role,
                             };
                         }
                     }

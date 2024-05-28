@@ -8,4 +8,7 @@ export const endpoints = {
     passwordCheck: 'ProfileService/CheckPassword',
     updatePassword: 'ProfileService/UpdatePassword',
   },
+  menu: {
+    sideMenu: 'SideMenuService/GetSideMenu',
+  },
 };
