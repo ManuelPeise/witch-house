@@ -2,7 +2,7 @@
 
 namespace Data.Shared.Entities
 {
-    public class LogMessageEntity
+    public class LogMessageEntity: AEntityBase
     {
         [Key]
         public int Id { get; set; }

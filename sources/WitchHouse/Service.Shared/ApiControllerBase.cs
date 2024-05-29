@@ -7,11 +7,11 @@ namespace Service.Shared
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public abstract class ApiControllerBase: ControllerBase
+    public abstract class ApiControllerBase : ControllerBase
     {
         protected ApiControllerBase()
         {
-            
+
         }
 
         protected CurrentUser GetCurrentUser()
@@ -26,7 +26,7 @@ namespace Service.Shared
             return new CurrentUser
             {
                 UserGuid = !string.IsNullOrWhiteSpace(userGuid) ? new Guid(userGuid) : null,
-                FamilyGuid = !string.IsNullOrWhiteSpace(userGuid) ? new Guid(familyGuid) : null,
+                FamilyGuid = !string.IsNullOrWhiteSpace(familyGuid) ? new Guid(familyGuid) : null,
                 UserName = userName,
                 UserRole = !string.IsNullOrWhiteSpace(userRole) ? (UserRoleEnum)Enum.Parse(typeof(UserRoleEnum), userRole) : null
             };

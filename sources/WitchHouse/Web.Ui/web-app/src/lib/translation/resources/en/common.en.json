@@ -7,7 +7,9 @@
   "labelCulture": "Culture",
   "labelCurrentPassword": "Current password",
   "labelDateOfBirth": "Date of birth",
+  "labelDelete": "Delete",
   "labelEnglish": "English",
+  "labelErrorMessage": "Error Message",
   "labelFamily": "Family",
   "labelFamilyId": "Family Id",
   "labelFirstName": "First name",
@@ -24,6 +26,8 @@
   "labelProfileData": "Profile data",
   "labelRegister": "Register",
   "labelSave": "Save",
+  "labelStacktrace": "Stacktrace",
+  "labelTimeStamp": "Timestamp",
   "labelUserId": "User Id",
   "labelUserName": "Username"
 }

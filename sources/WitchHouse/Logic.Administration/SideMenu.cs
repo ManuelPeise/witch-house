@@ -26,15 +26,15 @@ namespace Logic.Administration
                             new SubMenuNode
                             {
                                 ResourceKey = "menuItemFamilyUserAdministration",
-                                UserRoles = LocalAdminRole,
+                                UserRoles = AdminRoles,
                                 TargetPath = "administration/familyusers"
                             },
-                            new SubMenuNode
-                            {
-                                ResourceKey = "menuItemUserAdministration",
-                                UserRoles = AdminRole,
-                                TargetPath = "administration/users"
-                            },
+                            //new SubMenuNode
+                            //{
+                            //    ResourceKey = "menuItemUserAdministration",
+                            //    UserRoles = AdminRole,
+                            //    TargetPath = "administration/users"
+                            //},
                             new SubMenuNode
                             {
                                 ResourceKey = "menuItemLog",

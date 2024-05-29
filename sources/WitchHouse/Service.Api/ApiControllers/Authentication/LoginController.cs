@@ -25,7 +25,8 @@ namespace Service.Api.ApiControllers.Authentication
         [HttpPost(Name = "AccountLogin")]
         public async Task<LoginResult> AccountLogin([FromBody] AccountLoginModel model)
         {
-            var service = new AuthenticationService(_databaseContext, _logRepository);
+            var currentUser = GetCurrentUser();
+            var service = new AuthenticationService(_databaseContext, _logRepository, currentUser);
 
             return await service.LogIn(_config, model);
         }

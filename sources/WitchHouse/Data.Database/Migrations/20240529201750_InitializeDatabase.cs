@@ -20,7 +20,7 @@ namespace Data.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    FamilyGuid = table.Column<Guid>(type: "char(36)", nullable: false),
+                    FamilyGuid = table.Column<Guid>(type: "char(36)", nullable: true),
                     FirstName = table.Column<string>(type: "longtext", nullable: true),
                     LastName = table.Column<string>(type: "longtext", nullable: true),
                     UserName = table.Column<string>(type: "longtext", nullable: false),
@@ -32,7 +32,9 @@ namespace Data.Database.Migrations
                     Token = table.Column<string>(type: "longtext", nullable: true),
                     RefreshToken = table.Column<string>(type: "longtext", nullable: true),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: false),
-                    CreatedAt = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedAt = table.Column<string>(type: "longtext", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: false),
+                    UpdatedAt = table.Column<string>(type: "longtext", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -48,7 +50,9 @@ namespace Data.Database.Migrations
                     FamilyName = table.Column<string>(type: "longtext", nullable: false),
                     City = table.Column<string>(type: "longtext", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: false),
-                    CreatedAt = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedAt = table.Column<string>(type: "longtext", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: false),
+                    UpdatedAt = table.Column<string>(type: "longtext", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,7 +69,12 @@ namespace Data.Database.Migrations
                     Message = table.Column<string>(type: "longtext", nullable: false),
                     Stacktrace = table.Column<string>(type: "longtext", nullable: false),
                     TimeStamp = table.Column<string>(type: "longtext", nullable: false),
-                    Trigger = table.Column<string>(type: "longtext", nullable: false)
+                    Trigger = table.Column<string>(type: "longtext", nullable: false),
+                    FamilyGuid = table.Column<Guid>(type: "char(36)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: false),
+                    CreatedAt = table.Column<string>(type: "longtext", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: false),
+                    UpdatedAt = table.Column<string>(type: "longtext", nullable: false)
                 },
                 constraints: table =>
                 {

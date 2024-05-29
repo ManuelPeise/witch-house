@@ -9,12 +9,12 @@ using System.Security.Claims;
 
 namespace Logic.Authentication
 {
-    public class AuthenticationService
+    public class AuthenticationService: LogicBase
     {
         private readonly DatabaseContext _databaseContext;
         private readonly ILogRepository _logRepository;
 
-        public AuthenticationService(DatabaseContext databaseContext, ILogRepository logRepository)
+        public AuthenticationService(DatabaseContext databaseContext, ILogRepository logRepository, CurrentUser currentUser):base(databaseContext, currentUser)
         {
             _databaseContext = databaseContext;
             _logRepository = logRepository;
@@ -50,7 +50,7 @@ namespace Logic.Authentication
 
                             await unitOfWork.AccountRepository.Update(accountEntity);
 
-                            await unitOfWork.SaveChanges();
+                            await SaveChanges();
 
                             return new LoginResult
                             {
@@ -81,7 +81,7 @@ namespace Logic.Authentication
                     Trigger = nameof(AuthenticationService)
                 });
 
-                await _logRepository.SaveChanges();
+                await SaveChanges();
 
                 return new LoginResult
                 {

@@ -22,11 +22,6 @@ namespace Logic.Shared
         public IGenericRepository<FamilyEntity> FamilyRepository => _familyRepository ?? new GenericRepository<FamilyEntity>(_databaseContext);
         public IGenericRepository<AccountEntity> AccountRepository => _accountRepository ?? new GenericRepository<AccountEntity>(_databaseContext);
 
-        public async Task SaveChanges()
-        {
-            await _databaseContext.SaveChangesAsync();
-        }
-
         #region dispose
         protected virtual void Dispose(bool disposing)
         {

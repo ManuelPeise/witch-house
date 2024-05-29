@@ -40,7 +40,7 @@ namespace Data.Database.Migrations
                     b.Property<string>("DateOfBirth")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("FamilyGuid")
+                    b.Property<Guid?>("FamilyGuid")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("FirstName")
@@ -66,6 +66,14 @@ namespace Data.Database.Migrations
                     b.Property<string>("Token")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -73,6 +81,23 @@ namespace Data.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AccountTable");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("703125b9-86ca-4049-83cf-94a460e016e8"),
+                            CreatedAt = "2024-05-29 22:18",
+                            CreatedBy = "System",
+                            Culture = "en",
+                            FirstName = "",
+                            LastName = "",
+                            Role = 1,
+                            Salt = "5e2efb22-abcc-483d-8e14-2a30250f8c35",
+                            Secret = "UEBzc3dvcmQ1ZTJlZmIyMi1hYmNjLTQ4M2QtOGUxNC0yYTMwMjUwZjhjMzU=",
+                            UpdatedAt = "",
+                            UpdatedBy = "",
+                            UserName = "System.Admin"
+                        });
                 });
 
             modelBuilder.Entity("Data.Shared.Entities.FamilyEntity", b =>
@@ -97,6 +122,14 @@ namespace Data.Database.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.ToTable("FamilyTable");
@@ -107,6 +140,14 @@ namespace Data.Database.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<string>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<Guid?>("FamilyGuid")
                         .HasColumnType("char(36)");
@@ -124,6 +165,14 @@ namespace Data.Database.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Trigger")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasColumnType("longtext");
 

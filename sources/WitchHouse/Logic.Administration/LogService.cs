@@ -1,23 +1,17 @@
-﻿using Data.Shared.Entities;
+﻿using Data.Database;
+using Data.Shared.Entities;
 using Data.Shared.Models.Account;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Logic.Administration
 {
-    public class LogService
+    public class LogService : LogicBase
     {
         private readonly ILogRepository _logRepository;
-        private readonly CurrentUser _currentUser;
-        public LogService(ILogRepository logRepository, CurrentUser currentUser)
+        public LogService(DatabaseContext context, ILogRepository logRepository, CurrentUser currentUser) : base(context, currentUser)
         {
             _logRepository = logRepository;
-            _currentUser = currentUser;
         }
 
         public async Task<List<LogMessageEntity>> LoadLogMessages()
@@ -33,14 +27,14 @@ namespace Logic.Administration
 
                 await _logRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = _currentUser.FamilyGuid,
+                    FamilyGuid = base.CurrentUser.FamilyGuid,
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     Trigger = nameof(LogService),
                     TimeStamp = DateTime.Now.ToString(Constants.LogMessageDateFormat),
                 });
 
-                await _logRepository.SaveChanges();
+                await SaveChanges();
 
                 return new List<LogMessageEntity>();
 
@@ -53,21 +47,21 @@ namespace Logic.Administration
             {
                 await _logRepository.DeleteMessages(ids);
 
-                await _logRepository.SaveChanges();
+                await SaveChanges();
 
             }
             catch (Exception exception)
             {
                 await _logRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = _currentUser.FamilyGuid,
+                    FamilyGuid = CurrentUser.FamilyGuid,
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     Trigger = nameof(LogService),
                     TimeStamp = DateTime.Now.ToString(Constants.LogMessageDateFormat),
                 });
 
-                await _logRepository.SaveChanges();
+                await SaveChanges();
             }
         }
     }

@@ -22,7 +22,6 @@ const DateInput: React.FC<IProps> = (props) => {
     (value: Dayjs | null) => {
       console.log(value);
       if (value != null) {
-        console.log('change value...');
         onChange(property, value?.format('DD/MM/YYYY') as string);
       }
     },

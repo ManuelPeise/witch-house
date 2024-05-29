@@ -8,42 +8,38 @@ namespace Logic.Shared
     public class LogRepository : ILogRepository
     {
         private bool disposedValue;
+        private bool disposedValue1;
         private readonly DatabaseContext _context;
-        private DbSet<LogMessageEntity>? _logTable;
 
         public LogRepository(DatabaseContext context)
         {
             _context = context;
-            _logTable = _context.Set<LogMessageEntity>();
         }
 
         public async Task AddLogMessage(LogMessageEntity logMessage)
         {
-            if (_logTable != null)
-            {
-                await _logTable.AddAsync(logMessage);
+            var table = _context.Set<LogMessageEntity>();
+            await table.AddAsync(logMessage);
 
-                await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-            }
+
         }
 
         public async Task<IEnumerable<LogMessageEntity>> GetLogMessages(DateTime? from, DateTime? to)
         {
-            if (_logTable != null)
+            var table = _context.Set<LogMessageEntity>();
+
+            if (from == null || to == null)
             {
-                if (from == null || to == null)
-                {
-                    return await Task.FromResult(_logTable.Select(x => x));
-                }
-
-                var fromDate = from ?? default(DateTime?);
-                var toDate = to ?? default(DateTime?);
-
-                return await Task.FromResult(_logTable.Where(msg => DateTime.Parse(msg.TimeStamp) >= from && DateTime.Parse(msg.TimeStamp) <= toDate));
+                return await Task.FromResult(table.Select(x => x));
             }
 
-            return new List<LogMessageEntity>();
+            var fromDate = from ?? default(DateTime?);
+            var toDate = to ?? default(DateTime?);
+
+            return await Task.FromResult(table.Where(msg => DateTime.Parse(msg.TimeStamp) >= from && DateTime.Parse(msg.TimeStamp) <= toDate));
+
         }
 
         public async Task DeleteMessage(int id)
@@ -52,7 +48,7 @@ namespace Logic.Shared
 
             var entityToDelete = await table.FirstOrDefaultAsync(x => x.Id == id);
 
-            if(entityToDelete != null)
+            if (entityToDelete != null)
             {
                 table.Remove(entityToDelete);
 
@@ -71,24 +67,16 @@ namespace Logic.Shared
             }
         }
 
-        public async Task SaveChanges()
-        {
-            await _context.SaveChangesAsync();
-        }
-
-        #region dispose
-
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!disposedValue1)
             {
                 if (disposing)
                 {
                     _context.Dispose();
-                    _logTable = null;
                 }
 
-                disposedValue = true;
+                disposedValue1 = true;
             }
         }
 
@@ -98,7 +86,5 @@ namespace Logic.Shared
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-
-        #endregion
     }
 }

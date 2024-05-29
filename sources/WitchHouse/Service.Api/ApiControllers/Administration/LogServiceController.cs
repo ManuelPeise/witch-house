@@ -1,4 +1,5 @@
-﻿using Data.Shared.Entities;
+﻿using Data.Database;
+using Data.Shared.Entities;
 using Logic.Administration;
 using Logic.Shared.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -11,10 +12,12 @@ namespace Service.Api.ApiControllers.Administration
     public class LogServiceController : ApiControllerBase
     {
         private readonly ILogRepository _logRepository;
+        private readonly DatabaseContext _databaseContext;
 
-        public LogServiceController(ILogRepository logRepository)
+        public LogServiceController(ILogRepository logRepository, DatabaseContext context)
         {
             _logRepository = logRepository;
+            _databaseContext = context;
         }
 
         [HttpGet(Name = "GetLogMessages")]
@@ -22,7 +25,7 @@ namespace Service.Api.ApiControllers.Administration
         {
             var currentUser = GetCurrentUser();
 
-            var service = new LogService(_logRepository, currentUser);
+            var service = new LogService(_databaseContext, _logRepository, currentUser);
 
             return await service.LoadLogMessages();
         }
@@ -32,7 +35,7 @@ namespace Service.Api.ApiControllers.Administration
         {
             var currentUser = GetCurrentUser();
 
-            var service = new LogService(_logRepository, currentUser);
+            var service = new LogService(_databaseContext, _logRepository, currentUser);
 
             await service.DeleteLogmessages(messageIds);
         }

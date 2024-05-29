@@ -24,7 +24,8 @@ namespace Service.Api.ApiControllers.Account
         [HttpGet("{userid}", Name = "GetProfile")]
         public async Task<ProfileExportModel?> GetProfile(string userid)
         {
-            var service = new FamilyAccountService(_databaseContext, _logRepository);
+            var currentUser = GetCurrentUser();
+            var service = new FamilyAccountService(_databaseContext, _logRepository, currentUser);
 
             return await service.GetProfile(userid);
         }
@@ -32,7 +33,8 @@ namespace Service.Api.ApiControllers.Account
         [HttpPost(Name = "CheckPassword")]
         public async Task<bool> CheckPassword([FromBody]PasswordUpdateModel model)
         {
-            var service = new FamilyAccountService(_databaseContext, _logRepository);
+            var currentUser = GetCurrentUser();
+            var service = new FamilyAccountService(_databaseContext, _logRepository, currentUser);
 
             return await service.CheckPassword(model);
         }
@@ -40,7 +42,8 @@ namespace Service.Api.ApiControllers.Account
         [HttpPost(Name = "UpdatePassword")]
         public async Task<bool> UpdatePassword([FromBody] PasswordUpdateModel model)
         {
-            var service = new FamilyAccountService(_databaseContext, _logRepository);
+            var currentUser = GetCurrentUser();
+            var service = new FamilyAccountService(_databaseContext, _logRepository, currentUser);
 
             return await service.UpdatePassword(model);
         }
@@ -48,7 +51,8 @@ namespace Service.Api.ApiControllers.Account
         [HttpPost(Name = "UpdateProfile")]
         public async Task UpdateProfile([FromBody] ProfileImportModel importModel)
         {
-            var service = new FamilyAccountService(_databaseContext, _logRepository);
+            var currentUser = GetCurrentUser();
+            var service = new FamilyAccountService(_databaseContext, _logRepository, currentUser);
 
             await service.UpdateProfile(importModel);
         }

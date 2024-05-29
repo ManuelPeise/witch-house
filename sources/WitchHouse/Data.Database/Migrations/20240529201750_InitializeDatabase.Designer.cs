@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240526194947_InitializeDatabase")]
+    [Migration("20240529201750_InitializeDatabase")]
     partial class InitializeDatabase
     {
         /// <inheritdoc />
@@ -43,7 +43,7 @@ namespace Data.Database.Migrations
                     b.Property<string>("DateOfBirth")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("FamilyGuid")
+                    b.Property<Guid?>("FamilyGuid")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("FirstName")
@@ -67,6 +67,14 @@ namespace Data.Database.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Token")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("UserName")
@@ -100,6 +108,14 @@ namespace Data.Database.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.ToTable("FamilyTable");
@@ -110,6 +126,17 @@ namespace Data.Database.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<string>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid?>("FamilyGuid")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -124,6 +151,14 @@ namespace Data.Database.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Trigger")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasColumnType("longtext");
 

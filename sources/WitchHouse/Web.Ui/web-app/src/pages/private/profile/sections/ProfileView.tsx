@@ -91,7 +91,7 @@ const ProfileView: React.FC<IProps> = (props) => {
             fullWidth
             disabled
             label={getResource('common:labelFamilyId')}
-            value={profileData.userId}
+            value={profileData.familyGuid ?? ''}
             onChange={handleChanged}
           />
         </FormItemWrapper>

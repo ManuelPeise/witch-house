@@ -38,7 +38,6 @@ const ProfilePageContainer: React.FC = () => {
 
   const updateProfile = React.useCallback(
     async (profile: ProfileData) => {
-      console.log(profile);
       await profileDataApi.post(endpoints.updateProfile, JSON.stringify(profile)).then(async () => {
         loadProfileData();
       });

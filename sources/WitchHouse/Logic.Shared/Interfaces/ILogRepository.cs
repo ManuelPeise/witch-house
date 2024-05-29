@@ -2,12 +2,11 @@
 
 namespace Logic.Shared.Interfaces
 {
-    public interface ILogRepository : IDisposable
+    public interface ILogRepository: IDisposable
     {
         Task<IEnumerable<LogMessageEntity>> GetLogMessages(DateTime? from, DateTime? to);
         Task AddLogMessage(LogMessageEntity logMessage);
         Task DeleteMessage(int id);
         Task DeleteMessages(int[] ids);
-        Task SaveChanges();
     }
 }

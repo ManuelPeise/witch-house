@@ -9,12 +9,12 @@ using Logic.Shared.Interfaces;
 
 namespace Logic.Family
 {
-    public class FamilyAccountService
+    public class FamilyAccountService : LogicBase
     {
         private readonly DatabaseContext _databaseContext;
         private readonly ILogRepository _logRepository;
 
-        public FamilyAccountService(DatabaseContext databaseContext, ILogRepository logRepository)
+        public FamilyAccountService(DatabaseContext databaseContext, ILogRepository logRepository, CurrentUser currentUser) : base(databaseContext, currentUser)
         {
             _databaseContext = databaseContext;
             _logRepository = logRepository;
@@ -50,7 +50,8 @@ namespace Logic.Family
                         familyGuid,
                         salt,
                         Helpers.GetEncodedSecret(accountImportModel.UserAccount.Secret, salt),
-                        familyEntity.City);
+                        familyEntity.City,
+                        UserRoleEnum.LocalAdmin);
 
                     if (accountEntity == null)
                     {
@@ -61,7 +62,7 @@ namespace Logic.Family
 
                     if (result != null)
                     {
-                        await unitOfWork.SaveChanges();
+                        await SaveChanges();
 
                         return true;
                     }
@@ -81,7 +82,7 @@ namespace Logic.Family
                     TimeStamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm")
                 });
 
-                await _logRepository.SaveChanges();
+                await SaveChanges();
 
                 return false;
             }
@@ -124,7 +125,7 @@ namespace Logic.Family
 
                     if (result != null)
                     {
-                        await unitOfWork.SaveChanges();
+                        await SaveChanges();
 
                         return true;
                     }
@@ -142,7 +143,7 @@ namespace Logic.Family
                     TimeStamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm")
                 });
 
-                await _logRepository.SaveChanges();
+                await SaveChanges();
 
                 return false;
             }
@@ -182,7 +183,7 @@ namespace Logic.Family
                     Trigger = nameof(FamilyAccountService),
                 });
 
-                await _logRepository.SaveChanges();
+                await SaveChanges();
 
                 return null;
             }
@@ -205,7 +206,7 @@ namespace Logic.Family
 
                         await unitOfWork.AccountRepository.Update(entity);
 
-                        await unitOfWork.SaveChanges();
+                        await SaveChanges();
                     }
                 }
 
@@ -220,7 +221,7 @@ namespace Logic.Family
                     Trigger = nameof(FamilyAccountService),
                 });
 
-                await _logRepository.SaveChanges();
+                await SaveChanges();
             }
         }
 
@@ -242,7 +243,6 @@ namespace Logic.Family
                     return true;
                 }
 
-                return false;
             }
             catch (Exception exception)
             {
@@ -254,7 +254,7 @@ namespace Logic.Family
                     TimeStamp = DateTime.UtcNow.ToString("yyyy.MM.dd HH:mm")
                 });
 
-                await _logRepository.SaveChanges();
+                await SaveChanges();
 
                 return false;
             }
@@ -268,7 +268,7 @@ namespace Logic.Family
                 {
                     var entity = await unitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
 
-                    if(entity == null)
+                    if (entity == null)
                     {
                         throw new Exception($"Could not check password of user: [{model.UserId}]!");
                     }
@@ -289,7 +289,7 @@ namespace Logic.Family
                     Trigger = nameof(FamilyAccountService),
                 });
 
-                await _logRepository.SaveChanges();
+                await SaveChanges();
 
                 return false;
             }
@@ -315,7 +315,7 @@ namespace Logic.Family
                     entity.Secret = securedPassword;
 
                     await unitOfWork.AccountRepository.Update(entity);
-                    await unitOfWork.SaveChanges();
+                    await SaveChanges();
 
                     return true;
                 }
@@ -331,7 +331,7 @@ namespace Logic.Family
                     Trigger = nameof(FamilyAccountService),
                 });
 
-                await _logRepository.SaveChanges();
+                await SaveChanges();
 
                 return false;
             }
