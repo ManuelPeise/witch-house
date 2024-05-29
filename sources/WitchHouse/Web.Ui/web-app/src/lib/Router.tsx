@@ -8,12 +8,14 @@ import RegisterPage from '../pages/public/Auth/RegisterPage';
 import LandingPage from '../pages/private/landingPage/LandingPage';
 import PrivatePagePayout from '../pages/private/PrivatePageLayout';
 import ProfilePageContainer from '../pages/private/profile/ProfilePageContainer';
+import LogPage from '../pages/private/administration/LogPage';
 
 export enum RouteTypes {
   Login = '/',
   Register = '/register',
   LandingPage = '/',
   Profile = '/profile',
+  Log = 'administration/log',
 }
 
 const Router: React.FC = () => {
@@ -26,6 +28,7 @@ const Router: React.FC = () => {
           <Route path={RouteTypes.LandingPage} Component={PrivatePagePayout}>
             <Route index Component={LandingPage} />
             <Route path={RouteTypes.Profile} Component={ProfilePageContainer} />
+            <Route path={RouteTypes.Log} Component={LogPage} />
           </Route>
         </Routes>
       );

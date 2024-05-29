@@ -1,4 +1,5 @@
 {
+  "labelAllTriggers": "Alle Trigger",
   "labelCancel": "Abbrechen",
   "labelChangePassword": "Passwort ändern",
   "labelCheckPassword": "Überprüfen",
@@ -24,5 +25,9 @@
   "labelRegister": "Registrieren",
   "labelSave": "Speichern",
   "labelUserId": "Benutzer Id",
-  "labelUserName": "Benutzername"
+  "labelUserName": "Benutzername",
+  "labelTimeStamp": "Zeitstempel",
+  "labelDelete": "Löschen",
+  "labelErrorMessage": "Fehlermeldung",
+  "labelStacktrace": "Stacktrace"
 }

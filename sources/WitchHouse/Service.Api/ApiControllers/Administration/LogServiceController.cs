@@ -8,23 +8,33 @@ using Service.Shared;
 namespace Service.Api.ApiControllers.Administration
 {
     [Authorize]
-    public class LogController : ApiControllerBase
+    public class LogServiceController : ApiControllerBase
     {
         private readonly ILogRepository _logRepository;
 
-        public LogController(ILogRepository logRepository)
+        public LogServiceController(ILogRepository logRepository)
         {
             _logRepository = logRepository;
         }
 
-        [HttpGet(Name = "GetLogmessages")]
-        public async Task<IEnumerable<LogMessageEntity>> GetLogmessages()
+        [HttpGet(Name = "GetLogMessages")]
+        public async Task<IEnumerable<LogMessageEntity>> GetLogMessages()
         {
             var currentUser = GetCurrentUser();
 
             var service = new LogService(_logRepository, currentUser);
 
             return await service.LoadLogMessages();
+        }
+
+        [HttpPost(Name ="DeleteLogMessages")]
+        public async Task DeleteLogMessages([FromBody] int[] messageIds)
+        {
+            var currentUser = GetCurrentUser();
+
+            var service = new LogService(_logRepository, currentUser);
+
+            await service.DeleteLogmessages(messageIds);
         }
     }
 }

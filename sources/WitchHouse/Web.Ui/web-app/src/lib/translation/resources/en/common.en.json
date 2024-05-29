@@ -1,6 +1,8 @@
 {
+  "labelAllTriggers": "All Triggers",
   "labelCancel": "Cancel",
   "labelChangePassword": "Change password",
+  "labelCheckPassword": "Check",
   "labelCity": "City",
   "labelCulture": "Culture",
   "labelCurrentPassword": "Current password",
@@ -23,6 +25,5 @@
   "labelRegister": "Register",
   "labelSave": "Save",
   "labelUserId": "User Id",
-  "labelUserName": "Username",
-  "labelCheckPassword": "Check"
+  "labelUserName": "Username"
 }

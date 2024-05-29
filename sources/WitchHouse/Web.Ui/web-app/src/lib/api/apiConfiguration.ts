@@ -4,6 +4,10 @@ export const endpoints = {
   checkUserName: 'AccountService/CheckUserName?userName={name}',
   getProfile: 'ProfileService/GetProfile/{model}',
   updateProfile: 'ProfileService/UpdateProfile',
+  administration: {
+    log: 'LogService/GetLogMessages',
+    delete: 'LogService/DeleteLogMessages',
+  },
   account: {
     passwordCheck: 'ProfileService/CheckPassword',
     updatePassword: 'ProfileService/UpdatePassword',

@@ -27,6 +27,7 @@ const SideMenuDrawer: React.FC<IProps> = (props) => {
     };
 
     loadSideMenu();
+    // eslint-disable-next-line
   }, []);
 
   const handleExpandedChanged = React.useCallback((key: number) => {

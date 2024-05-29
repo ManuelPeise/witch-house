@@ -20,30 +20,54 @@ namespace Logic.Administration
             _currentUser = currentUser;
         }
 
-        public async Task<IEnumerable<LogMessageEntity>> LoadLogMessages()
+        public async Task<List<LogMessageEntity>> LoadLogMessages()
         {
             try
             {
                 var messages = await _logRepository.GetLogMessages(null, null);
 
-                return messages;
-
-            }catch(Exception exception) 
+                return messages.ToList();
+            }
+            catch (Exception exception)
             {
 
                 await _logRepository.AddLogMessage(new LogMessageEntity
                 {
                     FamilyGuid = _currentUser.FamilyGuid,
                     Message = exception.Message,
-                    Stacktrace = exception.StackTrace??"",
+                    Stacktrace = exception.StackTrace ?? "",
                     Trigger = nameof(LogService),
                     TimeStamp = DateTime.Now.ToString(Constants.LogMessageDateFormat),
                 });
 
                 await _logRepository.SaveChanges();
 
-                return Enumerable.Empty<LogMessageEntity>();
+                return new List<LogMessageEntity>();
 
+            }
+        }
+
+        public async Task DeleteLogmessages(int[] ids)
+        {
+            try
+            {
+                await _logRepository.DeleteMessages(ids);
+
+                await _logRepository.SaveChanges();
+
+            }
+            catch (Exception exception)
+            {
+                await _logRepository.AddLogMessage(new LogMessageEntity
+                {
+                    FamilyGuid = _currentUser.FamilyGuid,
+                    Message = exception.Message,
+                    Stacktrace = exception.StackTrace ?? "",
+                    Trigger = nameof(LogService),
+                    TimeStamp = DateTime.Now.ToString(Constants.LogMessageDateFormat),
+                });
+
+                await _logRepository.SaveChanges();
             }
         }
     }

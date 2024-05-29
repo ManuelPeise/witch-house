@@ -1,3 +1,5 @@
+import { UserRoleEnum } from './enums/UserRoleEnum';
+
 export type ApiResult<T> = {
   isLoading: boolean;
   error: string;
@@ -30,4 +32,10 @@ export type DropdownItem = {
   id: number;
   value: string;
   label: string;
+};
+
+export type NavigationListItemProps = {
+  key: string;
+  userRole: UserRoleEnum;
+  component: React.ComponentType;
 };

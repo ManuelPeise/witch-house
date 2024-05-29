@@ -46,6 +46,31 @@ namespace Logic.Shared
             return new List<LogMessageEntity>();
         }
 
+        public async Task DeleteMessage(int id)
+        {
+            var table = _context.Set<LogMessageEntity>();
+
+            var entityToDelete = await table.FirstOrDefaultAsync(x => x.Id == id);
+
+            if(entityToDelete != null)
+            {
+                table.Remove(entityToDelete);
+
+            }
+        }
+
+        public async Task DeleteMessages(int[] ids)
+        {
+            var table = _context.Set<LogMessageEntity>();
+
+            var entitiesToDelete = table.Where(x => ids.Contains(x.Id));
+
+            if (entitiesToDelete.Any())
+            {
+                table.RemoveRange(entitiesToDelete);
+            }
+        }
+
         public async Task SaveChanges()
         {
             await _context.SaveChangesAsync();

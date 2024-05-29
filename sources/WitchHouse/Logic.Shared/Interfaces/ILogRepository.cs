@@ -6,7 +6,8 @@ namespace Logic.Shared.Interfaces
     {
         Task<IEnumerable<LogMessageEntity>> GetLogMessages(DateTime? from, DateTime? to);
         Task AddLogMessage(LogMessageEntity logMessage);
-
+        Task DeleteMessage(int id);
+        Task DeleteMessages(int[] ids);
         Task SaveChanges();
     }
 }

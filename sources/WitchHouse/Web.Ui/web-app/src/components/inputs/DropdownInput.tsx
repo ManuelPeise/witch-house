@@ -9,11 +9,12 @@ interface IProps {
   label?: string;
   selectedValue: number;
   items: DropdownItem[];
+  width?: number;
   onChange: (property: string, item: DropdownItem) => void;
 }
 
 const DropdownInput: React.FC<IProps> = (props) => {
-  const { fullWidth, label, selectedValue, items, disabled, property, onChange } = props;
+  const { fullWidth, label, selectedValue, items, disabled, property, width, onChange } = props;
 
   const handleChange = React.useCallback(
     (event: SelectChangeEvent<number>, child: React.ReactNode) => {
@@ -27,8 +28,9 @@ const DropdownInput: React.FC<IProps> = (props) => {
     [items, property, onChange]
   );
 
+  const currentWidth = !fullWidth ? '' : width;
   return (
-    <FormControl fullWidth={fullWidth}>
+    <FormControl fullWidth={fullWidth} style={{ minWidth: currentWidth, width: currentWidth, maxWidth: currentWidth }}>
       <InputLabel>{label}</InputLabel>
       <Select value={selectedValue} disabled={disabled} onChange={handleChange} label={label}>
         {items.map((item, index) => {
