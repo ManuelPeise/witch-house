@@ -4,8 +4,10 @@ using Data.Shared.Enums;
 using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
+using Data.Shared.Models.Settings;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
+using Newtonsoft.Json;
 
 namespace Logic.Family
 {
@@ -24,6 +26,7 @@ namespace Logic.Family
         {
             try
             {
+                var moduleResult = false;
                 using (var unitOfWork = new AccountUnitOfWork(_databaseContext))
                 {
                     var familyGuid = Guid.NewGuid();
@@ -62,9 +65,13 @@ namespace Logic.Family
 
                     if (result != null)
                     {
+                        moduleResult = await AssignUserModules(unitOfWork, accountEntity.Id);
+                    }
+
+                    if (result != null && moduleResult)
+                    {
                         await SaveChanges();
 
-                        return true;
                     }
 
                     return false;
@@ -92,6 +99,8 @@ namespace Logic.Family
         {
             try
             {
+                var moduleResult = false;
+
                 using (var unitOfWork = new AccountUnitOfWork(_databaseContext))
                 {
                     if (!Guid.TryParse(accountImportModel.FamilyGuid, out var familyGuid))
@@ -122,6 +131,11 @@ namespace Logic.Family
                     var result = await unitOfWork.AccountRepository.AddAsync(accountEntity);
 
                     if (result != null)
+                    {
+                        moduleResult = await AssignUserModules(unitOfWork, accountEntity.Id, accountEntity.Role);
+                    }
+
+                    if (result != null && moduleResult)
                     {
                         await SaveChanges();
 
@@ -343,7 +357,7 @@ namespace Logic.Family
                 {
                     var account = await unitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
 
-                    if(account == null)
+                    if (account == null)
                     {
                         throw new Exception($"Could not update user: [{model.UserId}]");
                     }
@@ -356,7 +370,8 @@ namespace Logic.Family
                     await SaveChanges();
                 }
 
-                }catch(Exception exception)
+            }
+            catch (Exception exception)
             {
                 await _logRepository.AddLogMessage(new LogMessageEntity
                 {
@@ -367,6 +382,56 @@ namespace Logic.Family
                 });
 
                 await SaveChanges();
+            }
+        }
+
+        private async Task<bool> AssignUserModules(AccountUnitOfWork unitOfWork, Guid userId, UserRoleEnum role = UserRoleEnum.LocalAdmin)
+        {
+            try
+            {
+                var modules = await unitOfWork.ModuleRepository.GetAllAsync();
+
+                if (modules.Any())
+                {
+                    foreach (var module in modules)
+                    {
+                        var moduleSettings = new UserModuleEntity
+                        {
+                            Id = Guid.NewGuid(),
+                            UserId = userId,
+                            ModuleId = module.Id,
+                            IsActive = role == UserRoleEnum.LocalAdmin ? true : false,
+                            SettingsJson = GetDefaultSettingsJson(module.ModuleType)
+                        };
+
+                        await unitOfWork.UserModuleRepository.AddAsync(moduleSettings);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message, exception);
+            }
+        }
+
+        private string GetDefaultSettingsJson(ModuleTypeEnum moduleType)
+        {
+            switch (moduleType)
+            {
+                case ModuleTypeEnum.MathUnits:
+                    return JsonConvert.SerializeObject(new MathSettings
+                    {
+                        AllowAddition = false,
+                        AllowSubtraction = false,
+                        AllowMultiply = false,
+                        AllowDivide = false,
+                        MaxValue = 0
+                    });
+                case ModuleTypeEnum.GermanUnits:
+                    return JsonConvert.SerializeObject(new GermanSettings { MaxWordLength = 0 });
+                default: return string.Empty;
             }
         }
     }

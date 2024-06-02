@@ -16,12 +16,16 @@ namespace Data.Database
         public DbSet<LogMessageEntity> MessageLogTable { get; set; }
         public DbSet<FamilyEntity> FamilyTable { get; set; }
         public DbSet<AccountEntity> AccountTable { get; set; }
+        public DbSet<ModuleEntity> Modules { get; set; }
+        public DbSet<UserModuleEntity> UserModuleSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
             builder.ApplyConfiguration(new AdminAccountSeed(_configuration));
+            builder.ApplyConfiguration(new ModuleSeed());
+
         }
     }
 }

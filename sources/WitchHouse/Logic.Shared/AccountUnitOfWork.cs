@@ -12,6 +12,8 @@ namespace Logic.Shared
         private ILogRepository? _logRepository;
         private IGenericRepository<FamilyEntity>? _familyRepository;
         private IGenericRepository<AccountEntity>? _accountRepository;
+        private IGenericRepository<ModuleEntity>? _moduleRepository;
+        private IGenericRepository<UserModuleEntity>? _userModuleRepository;
 
         public AccountUnitOfWork(DatabaseContext databaseContext)
         {
@@ -21,6 +23,9 @@ namespace Logic.Shared
         public ILogRepository LogRepository => _logRepository ?? new LogRepository(_databaseContext);
         public IGenericRepository<FamilyEntity> FamilyRepository => _familyRepository ?? new GenericRepository<FamilyEntity>(_databaseContext);
         public IGenericRepository<AccountEntity> AccountRepository => _accountRepository ?? new GenericRepository<AccountEntity>(_databaseContext);
+        public IGenericRepository<ModuleEntity> ModuleRepository => _moduleRepository ?? new GenericRepository<ModuleEntity>(_databaseContext);
+        public IGenericRepository<UserModuleEntity> UserModuleRepository => _userModuleRepository ?? new GenericRepository<UserModuleEntity>(_databaseContext);
+
 
         #region dispose
         protected virtual void Dispose(bool disposing)

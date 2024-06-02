@@ -88,16 +88,16 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("4f9841a9-c894-4075-8aa2-b7e93f4e6d02"),
-                            CreatedAt = "2024-05-30 16:55",
+                            Id = new Guid("90fc5a71-c261-47e9-81b6-ab50e6d54ebf"),
+                            CreatedAt = "2024-06-02 13:00",
                             CreatedBy = "System",
                             Culture = "en",
                             FirstName = "",
                             IsActive = false,
                             LastName = "",
                             Role = 1,
-                            Salt = "7df95f2b-c9b6-43c5-818a-eca75ae87ec7",
-                            Secret = "UEBzc3dvcmQ3ZGY5NWYyYi1jOWI2LTQzYzUtODE4YS1lY2E3NWFlODdlYzc=",
+                            Salt = "f6516c8f-e9d3-4b76-90ce-9bb23c262a13",
+                            Secret = "UEBzc3dvcmRmNjUxNmM4Zi1lOWQzLTRiNzYtOTBjZS05YmIyM2MyNjJhMTM=",
                             UpdatedAt = "",
                             UpdatedBy = "",
                             UserName = "System.Admin"
@@ -183,6 +183,102 @@ namespace Data.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MessageLogTable");
+                });
+
+            modelBuilder.Entity("Data.Shared.Entities.ModuleEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ModuleName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ModuleType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Modules");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("4132b67c-d7cb-4a16-a15f-64e3eefcb7ed"),
+                            CreatedAt = "2024.06.02",
+                            CreatedBy = "System",
+                            ModuleName = "MathUnits",
+                            ModuleType = 0,
+                            UpdatedAt = "",
+                            UpdatedBy = ""
+                        },
+                        new
+                        {
+                            Id = new Guid("5aaa3c16-2fb8-4c58-9fd4-3dac06a77489"),
+                            CreatedAt = "2024.06.02",
+                            CreatedBy = "System",
+                            ModuleName = "GermanUnits",
+                            ModuleType = 1,
+                            UpdatedAt = "",
+                            UpdatedBy = ""
+                        });
+                });
+
+            modelBuilder.Entity("Data.Shared.Entities.UserModuleEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid>("ModuleId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("SettingsJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserModuleSettings");
                 });
 #pragma warning restore 612, 618
         }
