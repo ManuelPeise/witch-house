@@ -1,4 +1,5 @@
 {
+  "labelAdmin": "Admin",
   "labelAllTriggers": "All Triggers",
   "labelCancel": "Cancel",
   "labelChangePassword": "Change password",
@@ -12,9 +13,12 @@
   "labelErrorMessage": "Error Message",
   "labelFamily": "Family",
   "labelFamilyId": "Family Id",
+  "labelFilter": "Filter...",
   "labelFirstName": "First name",
   "labelGerman": "German",
+  "labelIsActive": "User is active",
   "labelLastName": "Last name",
+  "labelLocalAdmin": "Local Admin",
   "labelLogin": "Login",
   "labelLogout": "Log out",
   "labelNavigateToLogin": "Log in to your account",
@@ -28,6 +32,7 @@
   "labelSave": "Save",
   "labelStacktrace": "Stacktrace",
   "labelTimeStamp": "Timestamp",
+  "labelUser": "User",
   "labelUserId": "User Id",
   "labelUserName": "Username"
 }

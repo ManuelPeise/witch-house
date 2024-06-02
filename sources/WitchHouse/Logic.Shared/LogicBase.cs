@@ -10,6 +10,7 @@ namespace Logic.Shared
         private readonly DatabaseContext _context;
         private readonly CurrentUser _currentUser;
 
+        public DatabaseContext DatabaseContext { get { return _context; } }
         public CurrentUser CurrentUser { get { return _currentUser; } }
         
         public LogicBase(DatabaseContext context, CurrentUser currentUser)

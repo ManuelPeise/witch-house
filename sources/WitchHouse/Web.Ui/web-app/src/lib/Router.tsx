@@ -9,6 +9,7 @@ import LandingPage from '../pages/private/landingPage/LandingPage';
 import PrivatePagePayout from '../pages/private/PrivatePageLayout';
 import ProfilePageContainer from '../pages/private/profile/ProfilePageContainer';
 import LogPage from '../pages/private/administration/LogPage';
+import FamilyAdministrationContainer from '../pages/private/familyAdministration/FamilyAdministrationPage';
 
 export enum RouteTypes {
   Login = '/',
@@ -16,6 +17,7 @@ export enum RouteTypes {
   LandingPage = '/',
   Profile = '/profile',
   Log = 'administration/log',
+  FamilyAdministration = 'administration/family',
 }
 
 const Router: React.FC = () => {
@@ -27,8 +29,11 @@ const Router: React.FC = () => {
         <Routes>
           <Route path={RouteTypes.LandingPage} Component={PrivatePagePayout}>
             <Route index Component={LandingPage} />
+            {/* profile */}
             <Route path={RouteTypes.Profile} Component={ProfilePageContainer} />
+            {/* administration */}
             <Route path={RouteTypes.Log} Component={LogPage} />
+            <Route path={RouteTypes.FamilyAdministration} Component={FamilyAdministrationContainer} />
           </Route>
         </Routes>
       );

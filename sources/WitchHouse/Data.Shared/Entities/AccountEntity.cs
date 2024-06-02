@@ -16,6 +16,7 @@ namespace Data.Shared.Entities
         public string Secret { get; set; } = string.Empty;
         public string? Token { get; set; }
         public string? RefreshToken { get; set; }
+        public bool IsActive { get; set; } = false;
 
         public ProfileExportModel ToExportModel()
         {
@@ -28,6 +29,20 @@ namespace Data.Shared.Entities
                 UserName = UserName,
                 Culture = Culture,
                 DateOfBirth = string.IsNullOrWhiteSpace(DateOfBirth) ? null : DateTime.Parse(DateOfBirth).ToString("yyyy/MM/dd"),
+            };
+        }
+
+        public UserDataExportModel ToUserDataExportModel()
+        {
+            return new UserDataExportModel
+            {
+                UserId = Id,
+                FamilyGuid = FamilyGuid,
+                FirstName = FirstName,
+                LastName = LastName,
+                UserName = UserName,
+                Role = Role,
+                IsActive = IsActive,
             };
         }
     }

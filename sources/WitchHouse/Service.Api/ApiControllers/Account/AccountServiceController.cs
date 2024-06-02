@@ -24,7 +24,7 @@ namespace Service.Api.ApiControllers.Account
         public async Task<bool> CheckUserName([FromQuery] string userName)
         {
             var currentUser = GetCurrentUser();
-            var service = new FamilyAccountService(_databaseContext, _logRepository, currentUser);
+            var service = new FamilyAccountService(_databaseContext, currentUser);
 
             return await service.CheckUserName(userName);
         }
@@ -34,19 +34,9 @@ namespace Service.Api.ApiControllers.Account
         public async Task<bool> RegisterFamily([FromBody] AccountImportModel importModel)
         {
             var currentUser = GetCurrentUser();
-            var service = new FamilyAccountService(_databaseContext, _logRepository, currentUser);
+            var service = new FamilyAccountService(_databaseContext, currentUser);
 
             return await service.CreateFamilyAccount(importModel);
-        }
-
-        [Authorize]
-        [HttpPost(Name = "AssignAccountToFamily")]
-        public async Task<bool> AssignAccountToFamily([FromBody] AccountImportModel importModel)
-        {
-            var currentUser = GetCurrentUser();
-            var service = new FamilyAccountService(_databaseContext, _logRepository, currentUser);
-
-            return await service.AssignAccountToFamily(importModel);
         }
     }
 }

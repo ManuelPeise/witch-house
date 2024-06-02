@@ -12,6 +12,7 @@ type LoginData = {
 export type LoginResult = {
   success: boolean;
   userId: string;
+  familyGuid: string;
   userName: string;
   language: 'en' | 'de';
   jwt: string;

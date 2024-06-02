@@ -14,10 +14,10 @@ namespace Logic.Family
         private readonly DatabaseContext _databaseContext;
         private readonly ILogRepository _logRepository;
 
-        public FamilyAccountService(DatabaseContext databaseContext, ILogRepository logRepository, CurrentUser currentUser) : base(databaseContext, currentUser)
+        public FamilyAccountService(DatabaseContext databaseContext, CurrentUser currentUser) : base(databaseContext, currentUser)
         {
             _databaseContext = databaseContext;
-            _logRepository = logRepository;
+            _logRepository = new LogRepository(databaseContext);
         }
 
         public async Task<bool> CreateFamilyAccount(AccountImportModel accountImportModel)
@@ -88,18 +88,18 @@ namespace Logic.Family
             }
         }
 
-        public async Task<bool> AssignAccountToFamily(AccountImportModel accountImportModel)
+        public async Task AssignAccountToFamily(FamilyMemberImportModel accountImportModel)
         {
             try
             {
                 using (var unitOfWork = new AccountUnitOfWork(_databaseContext))
                 {
-                    if (accountImportModel.Family == null)
+                    if (!Guid.TryParse(accountImportModel.FamilyGuid, out var familyGuid))
                     {
-                        return false;
+                        return;
                     }
 
-                    var familyEntity = await unitOfWork.FamilyRepository.GetFirstByIdAsync(accountImportModel.Family.FamilyGuid);
+                    var familyEntity = await unitOfWork.FamilyRepository.GetFirstByIdAsync(familyGuid);
 
                     if (familyEntity == null)
                     {
@@ -108,18 +108,16 @@ namespace Logic.Family
 
                     var salt = Guid.NewGuid().ToString();
 
-                    var accountEntity = accountImportModel.UserAccount.ToEntity(
-                        Guid.NewGuid(),
-                        familyEntity.Id,
-                        salt,
-                        Helpers.GetEncodedSecret(accountImportModel.UserAccount.Secret, salt),
-                        familyEntity.City,
-                        UserRoleEnum.User);
-
-                    if (accountEntity == null)
+                    var accountEntity = new AccountEntity
                     {
-                        throw new Exception("Could not create account.");
-                    }
+                        Id = Guid.NewGuid(),
+                        FamilyGuid = familyGuid,
+                        FirstName = accountImportModel.FirstName,
+                        LastName = accountImportModel.LastName,
+                        UserName = accountImportModel.UserName,
+                        Role = UserRoleEnum.User,
+                        Culture = "en",
+                    };
 
                     var result = await unitOfWork.AccountRepository.AddAsync(accountEntity);
 
@@ -127,10 +125,10 @@ namespace Logic.Family
                     {
                         await SaveChanges();
 
-                        return true;
+                        return;
                     }
 
-                    return false;
+                    return;
                 }
             }
             catch (Exception exception)
@@ -145,7 +143,7 @@ namespace Logic.Family
 
                 await SaveChanges();
 
-                return false;
+                return;
             }
         }
 
@@ -334,6 +332,41 @@ namespace Logic.Family
                 await SaveChanges();
 
                 return false;
+            }
+        }
+
+        public async Task UpdateUser(UserUpdateImportModel model)
+        {
+            try
+            {
+                using (var unitOfWork = new AccountUnitOfWork(_databaseContext))
+                {
+                    var account = await unitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
+
+                    if(account == null)
+                    {
+                        throw new Exception($"Could not update user: [{model.UserId}]");
+                    }
+
+                    account.IsActive = model.IsActive;
+                    account.Role = (UserRoleEnum)Enum.Parse(typeof(UserRoleEnum), model.Role.ToString());
+
+                    await unitOfWork.AccountRepository.Update(account);
+
+                    await SaveChanges();
+                }
+
+                }catch(Exception exception)
+            {
+                await _logRepository.AddLogMessage(new LogMessageEntity
+                {
+                    Message = exception.Message,
+                    Stacktrace = exception.StackTrace ?? "",
+                    TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
+                    Trigger = nameof(FamilyAccountService),
+                });
+
+                await SaveChanges();
             }
         }
     }

@@ -5,7 +5,7 @@ export type ApiResult<T> = {
   error: string;
   data: T | null;
   get: (url: string) => Promise<void>;
-  post: (url: string, json: string) => Promise<void>;
+  post: (url: string, json: any) => Promise<void>;
 };
 
 export type ProfileData = {
@@ -38,4 +38,26 @@ export type NavigationListItemProps = {
   key: string;
   userRole: UserRoleEnum;
   component: React.ComponentType;
+};
+
+export type CheckboxProps = {
+  property: string;
+  label: string;
+  disabled?: boolean;
+  checked: boolean;
+  onChange: (key: string, value: any) => void;
+};
+
+export type RadioInputProps = {
+  disabled: boolean;
+  label: string;
+  value: string;
+};
+export type RadioGroupProps = {
+  property: string;
+  hasDivider?: boolean;
+  groupLabel: string;
+  value: any;
+  radioProps: RadioInputProps[];
+  onChange: (key: string, value: any) => void;
 };

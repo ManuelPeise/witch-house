@@ -7,6 +7,9 @@ export const endpoints = {
   administration: {
     log: 'LogService/GetLogMessages',
     delete: 'LogService/DeleteLogMessages',
+    getFamilyUsers: 'FamilyAdministrationService/GetFamilyUsers?familyGuid={id}',
+    addFamilyMember: 'FamilyAdministrationService/AddFamilyUser',
+    updateFamilyMember: 'FamilyAdministrationService/UpdateFamilyMember',
   },
   account: {
     passwordCheck: 'ProfileService/CheckPassword',

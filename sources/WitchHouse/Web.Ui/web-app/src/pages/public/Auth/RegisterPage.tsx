@@ -52,7 +52,7 @@ const RegisterPage: React.FC = () => {
     }
     return (
       model.family.familyName?.length < 3 ||
-      model.family.city?.length < 3 ||
+      (model.family.city?.length && model?.family?.city.length > 3) ||
       model.userAccount.firstName?.length < 3 ||
       model.userAccount.lastName?.length < 3 ||
       model.userAccount.userName?.length < 5 ||
@@ -60,7 +60,6 @@ const RegisterPage: React.FC = () => {
     );
   }, [model, isValidUserName]);
 
-  console.log(registerDisabled, model);
   const handleFamilyChanged = React.useCallback(
     (key: string, value: string) => {
       setModel({ ...model, family: { ...model.family, [key]: value } });
@@ -134,7 +133,7 @@ const RegisterPage: React.FC = () => {
               fullWidth
               property="city"
               label={getResource('common:labelCity')}
-              value={model.family.city}
+              value={model?.family?.city ?? ''}
               onChange={handleFamilyChanged}
             />
           </FormItemWrapper>

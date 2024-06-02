@@ -25,7 +25,7 @@ export const useApi = <T>(): ApiResult<T> => {
     }
   }, []);
 
-  const post = React.useCallback(async (url: string, json: string) => {
+  const post = React.useCallback(async (url: string, json: any) => {
     try {
       setIsLoading(true);
 

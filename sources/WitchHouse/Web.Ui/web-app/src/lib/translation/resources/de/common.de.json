@@ -7,9 +7,12 @@
   "labelCulture": "Sprache",
   "labelCurrentPassword": "Aktuelles Password",
   "labelDateOfBirth": "Geburtsdatum",
+  "labelDelete": "Löschen",
   "labelEnglish": "Englisch",
+  "labelErrorMessage": "Fehlermeldung",
   "labelFamily": "Familie",
   "labelFamilyId": "Familien Id",
+  "labelFilter": "Filter...",
   "labelFirstName": "Vorname",
   "labelGerman": "Deutch",
   "labelLastName": "Familienname",
@@ -24,10 +27,8 @@
   "labelProfileData": "Profildaten",
   "labelRegister": "Registrieren",
   "labelSave": "Speichern",
-  "labelUserId": "Benutzer Id",
-  "labelUserName": "Benutzername",
+  "labelStacktrace": "Stacktrace",
   "labelTimeStamp": "Zeitstempel",
-  "labelDelete": "Löschen",
-  "labelErrorMessage": "Fehlermeldung",
-  "labelStacktrace": "Stacktrace"
+  "labelUserId": "Benutzer Id",
+  "labelUserName": "Benutzername"
 }

@@ -56,6 +56,7 @@ namespace Logic.Authentication
                             {
                                 Success = true,
                                 UserId = accountEntity.Id,
+                                FamilyGuid = accountEntity.FamilyGuid,
                                 UserName = accountEntity.UserName,
                                 Language = accountEntity.Culture,
                                 Jwt = jwt,

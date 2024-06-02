@@ -6,6 +6,7 @@ namespace Data.Shared.Models.Export
     {
         public bool Success { get; set; }
         public Guid UserId { get; set; }
+        public Guid? FamilyGuid { get; set; }
         public UserRoleEnum UserRole { get; set; }
         public string Language { get; set; } = "en";
         public string UserName { get; set; } = string.Empty;

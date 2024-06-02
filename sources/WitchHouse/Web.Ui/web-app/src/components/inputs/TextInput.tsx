@@ -8,11 +8,14 @@ interface IProps {
   isPassword?: boolean;
   label?: string;
   value: string;
+  variant?: 'filled' | 'outlined' | 'standard';
+  marginBottom?: number;
+  marginTop?: number;
   onChange: (key: string, value: string) => void;
 }
 
 const TextInput: React.FC<IProps> = (props) => {
-  const { property, disabled, fullWidth, isPassword, label, value, onChange } = props;
+  const { property, disabled, fullWidth, isPassword, label, value, variant, marginBottom, marginTop, onChange } = props;
 
   const handleChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,9 +26,11 @@ const TextInput: React.FC<IProps> = (props) => {
 
   return (
     <TextField
+      sx={{ marginBottom: marginBottom, marginTop: marginTop }}
       autoComplete="off"
       fullWidth={fullWidth}
       disabled={disabled}
+      variant={variant}
       value={value}
       type={isPassword ? 'password' : 'text'}
       label={label}
