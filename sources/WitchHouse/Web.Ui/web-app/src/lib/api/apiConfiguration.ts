@@ -10,6 +10,9 @@ export const endpoints = {
     getFamilyUsers: 'FamilyAdministrationService/GetFamilyUsers?familyGuid={id}',
     addFamilyMember: 'FamilyAdministrationService/AddFamilyUser',
     updateFamilyMember: 'FamilyAdministrationService/UpdateFamilyMember',
+    loadModuleConfiguration: 'ModuleService/LoadModuleConfiguration',
+    updateModule: 'ModuleService/UpdateModuleConfiguration',
+    loadModuleSettings: 'ModuleService/LoadModuleSettings?userGuid={id}',
   },
   account: {
     passwordCheck: 'ProfileService/CheckPassword',

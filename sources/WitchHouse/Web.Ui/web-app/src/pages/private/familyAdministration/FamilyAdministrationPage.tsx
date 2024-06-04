@@ -13,6 +13,8 @@ import UserDetailsForm from './components/UserDetailsForm';
 import { FamilyAdministrationSectionEnum } from './enums/FamilyAdministrationSectionEnum';
 import { FamilyMemberModel, FamilyMemberUpdate } from '../../public/Auth/types';
 import AddUserForm from './components/AddUserForm';
+import ModuleSettingsForm from './components/ModuleAdministration';
+import ModuleSettingsAdministration from './components/ModuleSettingsAdministration';
 
 interface IProps {
   filterText: string;
@@ -174,6 +176,19 @@ const FamilyAdministrationPage: React.FC<IProps> = (props) => {
           disabled={loginResult.userId === selectedUser.userId}
           onSave={onUpdateFamilyMember}
         />
+      )}
+      {sectionType === FamilyAdministrationSectionEnum.Modules && (
+        <ModuleSettingsForm
+          requestModel={{
+            userGuid: selectedUser.userId,
+            familyGuid: selectedUser.familyGuid,
+            roleId: selectedUser.role,
+          }}
+          disabled={selectedUser.userId === loginResult.userId}
+        />
+      )}
+      {sectionType === FamilyAdministrationSectionEnum.ModuleSettings && (
+        <ModuleSettingsAdministration selectedUser={selectedUser} />
       )}
     </VerticalTabbedPage>
   );

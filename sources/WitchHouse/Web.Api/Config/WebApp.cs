@@ -1,4 +1,5 @@
 ﻿using Data.Database;
+using Logic.Administration;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -53,10 +54,14 @@ namespace Web.Api.Config
         public static void ConfigureRepositories(WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<ILogRepository, LogRepository>();
+            builder.Services.AddScoped<IAccountUnitOfWork, AccountUnitOfWork>();
+            builder.Services.AddScoped<IModuleConfigurationService, ModuleConfigurationService>();
+            builder.Services.AddScoped<ISettingsService, SettingsService>();
         }
 
         public static void ConfigureServices(WebApplicationBuilder builder)
         {
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

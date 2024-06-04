@@ -3,6 +3,7 @@ using Data.Shared.Entities;
 using Logic.Administration;
 using Logic.Shared.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Shared;
 
@@ -14,7 +15,7 @@ namespace Service.Api.ApiControllers.Administration
         private readonly ILogRepository _logRepository;
         private readonly DatabaseContext _databaseContext;
 
-        public LogServiceController(ILogRepository logRepository, DatabaseContext context)
+        public LogServiceController(ILogRepository logRepository, DatabaseContext context, IHttpContextAccessor contextAccessor): base(contextAccessor)
         {
             _logRepository = logRepository;
             _databaseContext = context;

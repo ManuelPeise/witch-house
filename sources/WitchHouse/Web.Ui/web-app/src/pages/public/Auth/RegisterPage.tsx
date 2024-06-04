@@ -13,24 +13,26 @@ import { useApi } from '../../../hooks/useApi';
 import { endpoints } from '../../../lib/api/apiConfiguration';
 import LinkButton from '../../../components/buttons/LinkButton';
 
+const initialModel: AccountImportModel = {
+  family: {
+    familyName: '',
+    city: '',
+  },
+  userAccount: {
+    firstName: '',
+    lastName: '',
+    userName: '',
+    secret: '',
+  },
+};
+
 const RegisterPage: React.FC = () => {
   const { getResource } = useI18n();
   const { onRegister } = useAuth();
   const { data, get } = useApi<boolean>();
   const navigate = useNavigate();
 
-  const [model, setModel] = React.useState<AccountImportModel>({
-    family: {
-      familyName: '',
-      city: '',
-    },
-    userAccount: {
-      firstName: '',
-      lastName: '',
-      userName: '',
-      secret: '',
-    },
-  });
+  const [model, setModel] = React.useState<AccountImportModel>(initialModel);
 
   React.useEffect(() => {
     const checkUserName = async () => {
@@ -43,20 +45,23 @@ const RegisterPage: React.FC = () => {
   }, [model.userAccount.userName, get]);
 
   const isValidUserName = React.useMemo(() => {
+    if (data == null) {
+      return false;
+    }
+
     return data;
   }, [data]);
 
-  const registerDisabled = React.useMemo(() => {
-    if (isValidUserName === false) {
-      return true;
-    }
+  const canSave = React.useMemo(() => {
     return (
-      model.family.familyName?.length < 3 ||
-      (model.family.city?.length && model?.family?.city.length > 3) ||
-      model.userAccount.firstName?.length < 3 ||
-      model.userAccount.lastName?.length < 3 ||
-      model.userAccount.userName?.length < 5 ||
-      model.userAccount.secret?.length <= 7
+      model.family.familyName?.length > 3 &&
+      model.family.city?.length &&
+      model?.family?.city.length > 3 &&
+      model.userAccount.firstName?.length > 3 &&
+      model.userAccount.lastName?.length > 3 &&
+      isValidUserName &&
+      model.userAccount.userName?.length > 5 &&
+      model.userAccount.secret?.length > 7
     );
   }, [model, isValidUserName]);
 
@@ -163,9 +168,9 @@ const RegisterPage: React.FC = () => {
               <Grid item xs={12} style={{ display: 'flex', justifyContent: 'flex-end', padding: 10, gap: 6 }}>
                 <LinkButton title={getResource('common:labelNavigateToLogin')} onClick={navigateToLogin} />
                 <SubmitButton
-                  title={getResource('common:labelLogin')}
+                  title={getResource('common:labelRegister')}
                   variant="outlined"
-                  disabled={registerDisabled}
+                  disabled={!canSave}
                   onClick={handleRegister}
                 />
               </Grid>

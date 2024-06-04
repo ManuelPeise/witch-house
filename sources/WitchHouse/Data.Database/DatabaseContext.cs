@@ -17,7 +17,8 @@ namespace Data.Database
         public DbSet<FamilyEntity> FamilyTable { get; set; }
         public DbSet<AccountEntity> AccountTable { get; set; }
         public DbSet<ModuleEntity> Modules { get; set; }
-        public DbSet<UserModuleEntity> UserModuleSettings { get; set; }
+        public DbSet<UserModuleEntity> UserModules { get; set; }
+        public DbSet<SettingsEntity> Settings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

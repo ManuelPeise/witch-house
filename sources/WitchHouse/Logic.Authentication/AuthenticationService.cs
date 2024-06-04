@@ -1,5 +1,4 @@
-﻿using Data.Database;
-using Data.Shared.Entities;
+﻿using Data.Shared.Entities;
 using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Logic.Shared;
@@ -9,80 +8,74 @@ using System.Security.Claims;
 
 namespace Logic.Authentication
 {
-    public class AuthenticationService: LogicBase
+    public class AuthenticationService : LogicBase
     {
-        private readonly DatabaseContext _databaseContext;
-        private readonly ILogRepository _logRepository;
-
-        public AuthenticationService(DatabaseContext databaseContext, ILogRepository logRepository, CurrentUser currentUser):base(databaseContext, currentUser)
+        private readonly IAccountUnitOfWork _accountUnitOfWork;
+        public AuthenticationService(IAccountUnitOfWork accountUnitOfWork) : base()
         {
-            _databaseContext = databaseContext;
-            _logRepository = logRepository;
+            _accountUnitOfWork = accountUnitOfWork;
         }
 
         public async Task<LoginResult> LogIn(IConfiguration config, AccountLoginModel loginModel)
         {
             try
             {
-                using (var unitOfWork = new AccountUnitOfWork(_databaseContext))
+
+                var accounts = await _accountUnitOfWork.AccountRepository.GetByAsync(acc => acc.UserName.ToLower() == loginModel.UserName.ToLower());
+
+                if (accounts.Count() > 1)
                 {
-                    var accounts = await unitOfWork.AccountRepository.GetByAsync(acc => acc.UserName.ToLower() == loginModel.UserName.ToLower());
-
-                    if (accounts.Count() > 1)
-                    {
-                        throw new Exception($"Found multiple accounts with [UserName] {loginModel.UserName}!");
-                    }
-
-                    var accountEntity = accounts.FirstOrDefault();
-
-                    if (accountEntity != null)
-                    {
-                        var encodedPassword = Helpers.GetEncodedSecret(loginModel.Secret, accountEntity.Salt);
-
-                        if (encodedPassword == accountEntity.Secret)
-                        {
-                            var tokenGenerator = new JwtTokenGenerator();
-
-                            var (jwt, refreshToken) = tokenGenerator.GenerateToken(config, LoadUserClaims(accountEntity), 100);
-
-                            accountEntity.Token = jwt;
-                            accountEntity.RefreshToken = refreshToken;
-
-                            await unitOfWork.AccountRepository.Update(accountEntity);
-
-                            await SaveChanges();
-
-                            return new LoginResult
-                            {
-                                Success = true,
-                                UserId = accountEntity.Id,
-                                FamilyGuid = accountEntity.FamilyGuid,
-                                UserName = accountEntity.UserName,
-                                Language = accountEntity.Culture,
-                                Jwt = jwt,
-                                RefreshToken = refreshToken,
-                                UserRole = accountEntity.Role,
-                            };
-                        }
-                    }
-
-                    return new LoginResult
-                    {
-                        Success = false,
-                    };
+                    throw new Exception($"Found multiple accounts with [UserName] {loginModel.UserName}!");
                 }
+
+                var accountEntity = accounts.FirstOrDefault();
+
+                if (accountEntity != null)
+                {
+                    var encodedPassword = Helpers.GetEncodedSecret(loginModel.Secret, accountEntity.Salt);
+
+                    if (encodedPassword == accountEntity.Secret)
+                    {
+                        var tokenGenerator = new JwtTokenGenerator();
+
+                        var (jwt, refreshToken) = tokenGenerator.GenerateToken(config, LoadUserClaims(accountEntity), 100);
+
+                        accountEntity.Token = jwt;
+                        accountEntity.RefreshToken = refreshToken;
+
+                        await _accountUnitOfWork.AccountRepository.Update(accountEntity);
+
+                        await _accountUnitOfWork.SaveChanges();
+
+                        return new LoginResult
+                        {
+                            Success = true,
+                            UserId = accountEntity.Id,
+                            FamilyGuid = accountEntity.FamilyGuid,
+                            UserName = accountEntity.UserName,
+                            Language = accountEntity.Culture,
+                            Jwt = jwt,
+                            RefreshToken = refreshToken,
+                            UserRole = accountEntity.Role,
+                        };
+                    }
+                }
+
+                return new LoginResult
+                {
+                    Success = false,
+                };
+
             }
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm"),
                     Trigger = nameof(AuthenticationService)
                 });
-
-                await SaveChanges();
 
                 return new LoginResult
                 {

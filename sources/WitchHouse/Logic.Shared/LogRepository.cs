@@ -8,7 +8,6 @@ namespace Logic.Shared
     public class LogRepository : ILogRepository
     {
         private bool disposedValue;
-        private bool disposedValue1;
         private readonly DatabaseContext _context;
 
         public LogRepository(DatabaseContext context)
@@ -22,8 +21,6 @@ namespace Logic.Shared
             await table.AddAsync(logMessage);
 
             await _context.SaveChangesAsync();
-
-
         }
 
         public async Task<IEnumerable<LogMessageEntity>> GetLogMessages(DateTime? from, DateTime? to)
@@ -69,14 +66,14 @@ namespace Logic.Shared
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue1)
+            if (!disposedValue)
             {
                 if (disposing)
                 {
                     _context.Dispose();
                 }
 
-                disposedValue1 = true;
+                disposedValue = true;
             }
         }
 

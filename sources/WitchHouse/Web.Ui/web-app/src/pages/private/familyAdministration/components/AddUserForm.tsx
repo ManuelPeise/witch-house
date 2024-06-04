@@ -25,6 +25,7 @@ const AddUserForm: React.FC<IProps> = (props) => {
       userName: '',
       role: UserRoleEnum.User,
       isActive: false,
+      moduleSettings: [],
     };
   }, [loginResult]);
 
@@ -43,7 +44,9 @@ const AddUserForm: React.FC<IProps> = (props) => {
 
   const handleSave = React.useCallback(async () => {
     await onSave(data);
-  }, [data, onSave]);
+
+    setData(initialState);
+  }, [data, initialState, onSave]);
 
   const isModified = React.useMemo(() => {
     return JSON.stringify(data) !== JSON.stringify(initialState);

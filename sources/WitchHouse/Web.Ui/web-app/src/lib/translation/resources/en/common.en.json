@@ -1,6 +1,10 @@
 {
   "labelAdmin": "Admin",
   "labelAllTriggers": "All Triggers",
+  "labelAllowAddition": "Allow Addition",
+  "labelAllowDivide": "Allow Divide",
+  "labelAllowMultiply": "Allow Multiply",
+  "labelAllowSubtract": "Allow Subtract",
   "labelCancel": "Cancel",
   "labelChangePassword": "Change password",
   "labelCheckPassword": "Check",
@@ -16,11 +20,13 @@
   "labelFilter": "Filter...",
   "labelFirstName": "First name",
   "labelGerman": "German",
+  "labelGermanUnits": "German Training",
   "labelIsActive": "User is active",
   "labelLastName": "Last name",
   "labelLocalAdmin": "Local Admin",
   "labelLogin": "Login",
   "labelLogout": "Log out",
+  "labelMathUnits": "Math Training",
   "labelNavigateToLogin": "Log in to your account",
   "labelNavigateToRegister": "Create your account",
   "labelNewPassword": "New password",
@@ -34,5 +40,7 @@
   "labelTimeStamp": "Timestamp",
   "labelUser": "User",
   "labelUserId": "User Id",
-  "labelUserName": "Username"
+  "labelUserName": "Username",
+  "labelMaxValue": "Max Value",
+  "labelMaxWordLength": "Max Word Length"
 }

@@ -9,10 +9,11 @@ const CheckboxInput: React.FC<IProps> = (props) => {
 
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
-      onChange(property, checked);
+      onChange(property, event.currentTarget.checked);
     },
     [property, onChange]
   );
+
   return (
     <FormControlLabel
       label={label}

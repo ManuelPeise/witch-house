@@ -1,4 +1,7 @@
 {
   "labelAddFamilyMember": "Add New Family Member",
-  "labelFamilyMembers": "Family Members"
+  "labelFamilyMembers": "Family Members",
+  "labelModuleAdministration": "Module Administration",
+  "labelSchoolTraining": "School Training",
+  "labelSchoolTrainingStatistics": "School Training Statistics"
 }

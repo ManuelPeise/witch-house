@@ -1,5 +1,6 @@
 ﻿using Data.Shared.Enums;
 using Data.Shared.Models.Account;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -9,14 +10,15 @@ namespace Service.Shared
     [Route("api/[controller]/[action]")]
     public abstract class ApiControllerBase : ControllerBase
     {
-        protected ApiControllerBase()
+        private IHttpContextAccessor _contextAccessor;
+        protected ApiControllerBase(IHttpContextAccessor httpContextAccessor)
         {
-
+            _contextAccessor = httpContextAccessor;
         }
 
         protected CurrentUser GetCurrentUser()
         {
-            var claims = HttpContext.User.Claims;
+            var claims = _contextAccessor.HttpContext.User.Claims;
 
             var userGuid = claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault()?.Value ?? string.Empty;
             var userName = claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value ?? string.Empty;

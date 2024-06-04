@@ -14,17 +14,17 @@ namespace Data.Database.SeedData
             {
                 new ModuleEntity
                 {
-                    Id = Guid.NewGuid(),
-                    ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.MathUnits),
-                    ModuleType = ModuleTypeEnum.MathUnits,
+                    Id = new Guid("c62daaff-4f9b-4283-a1ea-1a9f42df2d99"),
+                    ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.SchoolTraining),
+                    ModuleType = ModuleTypeEnum.SchoolTraining,
                     CreatedAt = DateTime.Now.ToString("yyyy.MM.dd"),
                     CreatedBy = "System"
                 },
                 new ModuleEntity
                 {
-                    Id= Guid.NewGuid(),
-                    ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.GermanUnits),
-                    ModuleType=ModuleTypeEnum.GermanUnits,
+                    Id= new Guid("cd472d2e-28c9-42b0-9cba-536b0ddb923b"),
+                    ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.SchoolTrainingStatistics),
+                    ModuleType=ModuleTypeEnum.SchoolTrainingStatistics,
                     CreatedAt = DateTime.Now.ToString("yyyy.MM.dd"),
                     CreatedBy = "System"
                 }

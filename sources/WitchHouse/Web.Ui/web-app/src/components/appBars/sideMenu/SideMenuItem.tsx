@@ -38,7 +38,6 @@ const SideMenuItem: React.FC<IProps> = (props) => {
       {selectedItem === node.id && (
         <List className="sub-item-list" disablePadding>
           {node.subMenuNodes.map((sub, index) => {
-            console.log(sub.userRoles, userRole);
             return sub.userRoles.includes(userRole) ? (
               <ListItemButton
                 className="side-menu-sub-item-button"

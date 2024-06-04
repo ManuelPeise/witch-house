@@ -1,6 +1,4 @@
-﻿using Data.Database;
-using Data.Shared.Entities;
-using Data.Shared.Enums;
+﻿using Data.Shared.Entities;
 using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Logic.Shared;
@@ -11,11 +9,13 @@ namespace Logic.Administration
 {
     public class FamilyAdministration : LogicBase
     {
-        private readonly ILogRepository _logReopsitory;
+        private readonly IAccountUnitOfWork _unitOfWork;
+        private readonly CurrentUser _currentUser;
 
-        public FamilyAdministration(DatabaseContext context, CurrentUser currentUser) : base(context, currentUser)
+        public FamilyAdministration(IAccountUnitOfWork unitOfWork, CurrentUser currentUser) : base()
         {
-            _logReopsitory = new LogRepository(context);
+            _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
         }
 
         public async Task<List<UserDataExportModel>> GetFamilyUsers(Guid? familyId)
@@ -27,36 +27,32 @@ namespace Logic.Administration
                     throw new Exception($"FamilyGuid could not be null!");
                 }
 
-                using (var unitOfWork = new AccountUnitOfWork(DatabaseContext))
+                var entities = await _unitOfWork.AccountRepository.GetByAsync(acc => acc.FamilyGuid != null && acc.FamilyGuid == familyId);
+
+                if (!entities.Any())
                 {
-                    var entities = await unitOfWork.AccountRepository.GetByAsync(acc => acc.FamilyGuid != null && acc.FamilyGuid == familyId);
-
-                    if (!entities.Any())
-                    {
-                        throw new Exception($"Could not find users of [{familyId}]!");
-                    }
-
-
-                    var result = (from e in entities
-                                  select e.ToUserDataExportModel()).ToList();
-
-                    return result;
+                    throw new Exception($"Could not find users of [{familyId}]!");
                 }
+
+
+                var exportModels = (from e in entities
+                                    select e.ToUserDataExportModel()).ToList();
+
+                return exportModels;
 
             }
             catch (Exception exception)
             {
-                await _logReopsitory.AddLogMessage(new LogMessageEntity
+                await _unitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     FamilyGuid = familyId,
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.Now.ToString(Constants.LogMessageDateFormat),
                     Trigger = nameof(FamilyAdministration),
-
                 });
 
-                await SaveChanges();
+                await _unitOfWork.SaveChanges(_currentUser);
 
                 return new List<UserDataExportModel>();
             }

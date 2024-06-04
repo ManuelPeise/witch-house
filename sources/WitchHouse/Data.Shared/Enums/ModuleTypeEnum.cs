@@ -2,7 +2,8 @@
 {
     public enum ModuleTypeEnum
     {
-        MathUnits = 0,
-        GermanUnits = 1
+        SchoolTraining = 0,
+        SchoolTrainingStatistics = 1
+      
     }
 }

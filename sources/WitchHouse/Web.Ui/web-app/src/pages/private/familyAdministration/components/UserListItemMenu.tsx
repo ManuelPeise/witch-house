@@ -64,7 +64,10 @@ const UserListItemMenu: React.FC<IProps> = (props) => {
         onClose={handleMenuClose}
       >
         <MenuItem onClick={handleSectionChanged.bind(null, FamilyAdministrationSectionEnum.Details)}>Details</MenuItem>
-        {/* <MenuItem onClick={handleSectionChanged.bind(null, FamilyAdministrationSectionEnum.Add)}>Test 2</MenuItem> */}
+        <MenuItem onClick={handleSectionChanged.bind(null, FamilyAdministrationSectionEnum.Modules)}>Modules</MenuItem>
+        <MenuItem onClick={handleSectionChanged.bind(null, FamilyAdministrationSectionEnum.ModuleSettings)}>
+          Module Settings
+        </MenuItem>
       </Menu>
     </Box>
   );

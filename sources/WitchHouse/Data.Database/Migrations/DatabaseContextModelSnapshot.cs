@@ -88,16 +88,16 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("90fc5a71-c261-47e9-81b6-ab50e6d54ebf"),
-                            CreatedAt = "2024-06-02 13:00",
+                            Id = new Guid("9ea3e392-07d7-4e58-b177-0d684ee41992"),
+                            CreatedAt = "2024-06-04 15:59",
                             CreatedBy = "System",
                             Culture = "en",
                             FirstName = "",
                             IsActive = false,
                             LastName = "",
                             Role = 1,
-                            Salt = "f6516c8f-e9d3-4b76-90ce-9bb23c262a13",
-                            Secret = "UEBzc3dvcmRmNjUxNmM4Zi1lOWQzLTRiNzYtOTBjZS05YmIyM2MyNjJhMTM=",
+                            Salt = "1a104d76-7e0b-4765-a2f3-9389d88b3ff8",
+                            Secret = "UEBzc3dvcmQxYTEwNGQ3Ni03ZTBiLTQ3NjUtYTJmMy05Mzg5ZDg4YjNmZjg=",
                             UpdatedAt = "",
                             UpdatedBy = "",
                             UserName = "System.Admin"
@@ -221,24 +221,64 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("4132b67c-d7cb-4a16-a15f-64e3eefcb7ed"),
-                            CreatedAt = "2024.06.02",
+                            Id = new Guid("c62daaff-4f9b-4283-a1ea-1a9f42df2d99"),
+                            CreatedAt = "2024.06.04",
                             CreatedBy = "System",
-                            ModuleName = "MathUnits",
+                            ModuleName = "SchoolTraining",
                             ModuleType = 0,
                             UpdatedAt = "",
                             UpdatedBy = ""
                         },
                         new
                         {
-                            Id = new Guid("5aaa3c16-2fb8-4c58-9fd4-3dac06a77489"),
-                            CreatedAt = "2024.06.02",
+                            Id = new Guid("cd472d2e-28c9-42b0-9cba-536b0ddb923b"),
+                            CreatedAt = "2024.06.04",
                             CreatedBy = "System",
-                            ModuleName = "GermanUnits",
+                            ModuleName = "SchoolTrainingStatistics",
                             ModuleType = 1,
                             UpdatedAt = "",
                             UpdatedBy = ""
                         });
+                });
+
+            modelBuilder.Entity("Data.Shared.Entities.SettingsEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ModuleType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SettingsJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("SettingsType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("Data.Shared.Entities.UserModuleEntity", b =>
@@ -261,9 +301,8 @@ namespace Data.Database.Migrations
                     b.Property<Guid>("ModuleId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("SettingsJson")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("ModuleType")
+                        .HasColumnType("int");
 
                     b.Property<string>("UpdatedAt")
                         .IsRequired()
@@ -278,7 +317,7 @@ namespace Data.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserModuleSettings");
+                    b.ToTable("UserModules");
                 });
 #pragma warning restore 612, 618
         }
