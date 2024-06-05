@@ -1,6 +1,7 @@
 ﻿using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
+using Data.Shared.Models.Response;
 using Logic.Authentication;
 using Logic.Shared.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -29,7 +30,7 @@ namespace Service.Api.ApiControllers.Authentication
         }
 
         [HttpPost(Name = "MobileAccountLogin")]
-        public async Task<LoginResult> MobileAccountLogin([FromBody] MobileLoginRequestModel model)
+        public async Task<ResponseMessage<LoginResult>> MobileAccountLogin([FromBody] MobileLoginRequestModel model)
         {
             var service = new AuthenticationService(_unitOfWork);
 

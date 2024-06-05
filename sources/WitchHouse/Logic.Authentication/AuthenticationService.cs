@@ -1,7 +1,9 @@
 ﻿using Data.Shared.Entities;
+using Data.Shared.Enums;
 using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
+using Data.Shared.Models.Response;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -85,7 +87,7 @@ namespace Logic.Authentication
             }
         }
 
-        public async Task<LoginResult> MobileLoginRequest(IConfiguration config, MobileLoginRequestModel requestModel)
+        public async Task<ResponseMessage<LoginResult>> MobileLoginRequest(IConfiguration config, MobileLoginRequestModel requestModel)
         {
             try
             {
@@ -100,6 +102,19 @@ namespace Logic.Authentication
 
                 if (accountEntity != null)
                 {
+                    var appModules = await _accountUnitOfWork.UserModuleRepository.GetByAsync(x => x.UserId == accountEntity.Id && x.ModuleType == ModuleTypeEnum.MobileApp);
+
+                    if (appModules.FirstOrDefault() == null || !appModules.First().IsActive)
+                    {
+                        return new ResponseMessage<LoginResult>
+                        {
+                            Success = false,
+                            StatusCode = 401,
+                            MessageKey = "common:labelAccessDenied",
+                            Data = null
+                        };
+                    }
+
                     var encodedPin = Helpers.GetEncodedSecret(requestModel.Pin, accountEntity.Salt);
 
                     if (string.IsNullOrWhiteSpace(accountEntity.Pin))
@@ -108,6 +123,8 @@ namespace Logic.Authentication
 
                         await _accountUnitOfWork.SaveChanges();
                     }
+
+                   
 
                     if (encodedPin == accountEntity.Pin)
                     {
@@ -122,27 +139,36 @@ namespace Logic.Authentication
 
                         await _accountUnitOfWork.SaveChanges();
 
-                        return new LoginResult
+                        return new ResponseMessage<LoginResult>
                         {
-                            Success = true,
-                            UserId = accountEntity.Id,
-                            FamilyGuid = accountEntity.FamilyGuid,
-                            UserName = accountEntity.UserName,
-                            Language = accountEntity.Culture,
-                            Jwt = jwt,
-                            RefreshToken = refreshToken,
-                            UserRole = accountEntity.Role,
-                        };
-                    }
-                }
 
-                return new LoginResult
+                            Success = true,
+                            StatusCode = 200,
+                            MessageKey = "common:labelLoginSuccess",
+                            Data = new LoginResult
+                            {
+                                UserId = accountEntity.Id,
+                                FamilyGuid = accountEntity.FamilyGuid,
+                                UserName = accountEntity.UserName,
+                                Language = accountEntity.Culture,
+                                Jwt = jwt,
+                                RefreshToken = refreshToken,
+                                UserRole = accountEntity.Role,
+                            }
+                        };
+                }
+            }
+
+                return new ResponseMessage<LoginResult>
                 {
                     Success = false,
+                    StatusCode = 401,
+                    MessageKey = "common:labelAccessDenied",
+                    Data = null
                 };
 
-            }
-            catch(Exception exception)
+        }
+            catch (Exception exception)
             {
                 await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
@@ -152,16 +178,19 @@ namespace Logic.Authentication
                     Trigger = nameof(AuthenticationService)
                 });
 
-                return new LoginResult
+                return new ResponseMessage<LoginResult>
                 {
                     Success = false,
+                    StatusCode = 401,
+                    MessageKey = "common:labelCheckLoginData",
+                    Data = null
                 };
             }
         }
 
         private List<Claim> LoadUserClaims(AccountEntity account)
-        {
-            return new List<Claim>
+{
+    return new List<Claim>
             {
                     new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
                     new Claim(ClaimTypes.Name, account.UserName),
@@ -169,6 +198,6 @@ namespace Logic.Authentication
                     new Claim("FamilyGuid", account.FamilyGuid.ToString()),
                     // new Claim(ClaimTypes.UserData, JsonConvert.SerializeObject(account)),
             };
-        }
+}
     }
 }
