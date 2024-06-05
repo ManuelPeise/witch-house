@@ -83,7 +83,7 @@ namespace Logic.Administration
                             ModuleType = setting.ModuleType,
                             ModuleSettingsType = setting.SettingsType,
                             UserId = setting.UserId,
-                            Settings = JsonConvert.DeserializeObject<SchoolSettings>(setting.SettingsJson)?? null
+                            Settings = JsonConvert.DeserializeObject<SchoolSettings>(setting.SettingsJson) ?? null
                         });
                     }
                 }
@@ -166,7 +166,10 @@ namespace Logic.Administration
 
                 await _accountUnitOfWork.UserModuleRepository.Update(moduleToUpdate);
 
-                await _settingsService.CreateSchoolTrainingSettings(module);
+                if (moduleToUpdate.ModuleType == ModuleTypeEnum.SchoolTraining)
+                {
+                    await _settingsService.CreateSchoolTrainingSettings(module);
+                }
 
                 await _accountUnitOfWork.SaveChanges(currentUser);
 
@@ -199,15 +202,16 @@ namespace Logic.Administration
                     {
                         FamilyGuid = currentUser.FamilyGuid,
                         Message = $"Settings for [{settings.UserId} - {Enum.GetName(typeof(ModuleSettingsTypeEnum), settings.ModuleSettingsType)}] upadated with success!",
-                        Stacktrace="",
+                        Stacktrace = "",
                         Trigger = nameof(ModuleConfigurationService),
                         TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
                         CreatedAt = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
-                        CreatedBy = currentUser.UserName?? "System"
+                        CreatedBy = currentUser.UserName ?? "System"
                     });
                 }
 
-            }catch(Exception exception)
+            }
+            catch (Exception exception)
             {
                 await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
@@ -298,6 +302,6 @@ namespace Logic.Administration
             GC.SuppressFinalize(this);
         }
 
-       
+
     }
 }

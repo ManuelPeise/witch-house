@@ -8,7 +8,6 @@ using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Logic.Authentication
 {
