@@ -127,6 +127,7 @@ namespace Logic.Family
                     UserName = accountImportModel.UserName,
                     Role = UserRoleEnum.User,
                     Culture = "en",
+                    Salt = salt
                 };
 
                 var result = await _accountUnitOfWork.AccountRepository.AddAsync(accountEntity);

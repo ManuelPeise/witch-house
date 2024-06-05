@@ -3,6 +3,7 @@ using System;
 using Data.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20240605194617_ExtendAccountEntityWithPin")]
+    partial class ExtendAccountEntityWithPin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,8 +95,8 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("2e65c828-397f-4d75-af20-4d94d7bbdb45"),
-                            CreatedAt = "2024-06-05 22:03",
+                            Id = new Guid("8322a4c8-b498-415c-8021-61d40c47e020"),
+                            CreatedAt = "2024-06-05 21:46",
                             CreatedBy = "System",
                             Culture = "en",
                             FirstName = "",
@@ -101,8 +104,8 @@ namespace Data.Database.Migrations
                             LastName = "",
                             Pin = "",
                             Role = 1,
-                            Salt = "bacb3fe6-efe9-46e7-801b-bb2b4b9f6028",
-                            Secret = "UEBzc3dvcmRiYWNiM2ZlNi1lZmU5LTQ2ZTctODAxYi1iYjJiNGI5ZjYwMjg=",
+                            Salt = "bff72b84-2bf5-4fc2-9c2f-2b21536f6d33",
+                            Secret = "UEBzc3dvcmRiZmY3MmI4NC0yYmY1LTRmYzItOWMyZi0yYjIxNTM2ZjZkMzM=",
                             UpdatedAt = "",
                             UpdatedBy = "",
                             UserName = "System.Admin"
@@ -226,21 +229,11 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6f9aed6f-07cf-4dcf-8b9f-e5fd52b35ffc"),
-                            CreatedAt = "2024.06.05",
-                            CreatedBy = "System",
-                            ModuleName = "MobileApp",
-                            ModuleType = 0,
-                            UpdatedAt = "",
-                            UpdatedBy = ""
-                        },
-                        new
-                        {
                             Id = new Guid("c62daaff-4f9b-4283-a1ea-1a9f42df2d99"),
                             CreatedAt = "2024.06.05",
                             CreatedBy = "System",
                             ModuleName = "SchoolTraining",
-                            ModuleType = 1,
+                            ModuleType = 0,
                             UpdatedAt = "",
                             UpdatedBy = ""
                         },
@@ -250,7 +243,7 @@ namespace Data.Database.Migrations
                             CreatedAt = "2024.06.05",
                             CreatedBy = "System",
                             ModuleName = "SchoolTrainingStatistics",
-                            ModuleType = 2,
+                            ModuleType = 1,
                             UpdatedAt = "",
                             UpdatedBy = ""
                         });

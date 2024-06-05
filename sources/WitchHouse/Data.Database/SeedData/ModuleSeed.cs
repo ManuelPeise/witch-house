@@ -14,6 +14,14 @@ namespace Data.Database.SeedData
             {
                 new ModuleEntity
                 {
+                    Id = new Guid("6f9aed6f-07cf-4dcf-8b9f-e5fd52b35ffc"),
+                    ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.MobileApp),
+                    ModuleType = ModuleTypeEnum.MobileApp,
+                    CreatedAt = DateTime.Now.ToString("yyyy.MM.dd"),
+                    CreatedBy = "System"
+                },
+                new ModuleEntity
+                {
                     Id = new Guid("c62daaff-4f9b-4283-a1ea-1a9f42df2d99"),
                     ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.SchoolTraining),
                     ModuleType = ModuleTypeEnum.SchoolTraining,

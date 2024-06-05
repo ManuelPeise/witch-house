@@ -2,8 +2,9 @@
 {
     public enum ModuleTypeEnum
     {
-        SchoolTraining = 0,
-        SchoolTrainingStatistics = 1
+        MobileApp = 0,
+        SchoolTraining = 1,
+        SchoolTrainingStatistics = 2
       
     }
 }

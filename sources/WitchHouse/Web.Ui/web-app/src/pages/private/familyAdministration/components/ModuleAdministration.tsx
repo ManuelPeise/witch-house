@@ -24,6 +24,8 @@ export const ModuleAdministration: React.FC<IProps> = (props) => {
   const getLabel = React.useCallback(
     (type: ModuleTypeEnum) => {
       switch (type) {
+        case ModuleTypeEnum.MobileApp:
+          return getResource('administration:labelMobileApp');
         case ModuleTypeEnum.SchoolTraining:
           return getResource('administration:labelSchoolTraining');
         case ModuleTypeEnum.SchoolTrainingStatistics:

@@ -13,6 +13,7 @@ namespace Data.Shared.Entities
         public string Culture { get; set; } = string.Empty;
         public UserRoleEnum Role { get; set; }
         public string Salt { get; set; } = string.Empty;
+        public string Pin { get; set; } = string.Empty;
         public string Secret { get; set; } = string.Empty;
         public string? Token { get; set; }
         public string? RefreshToken { get; set; }
