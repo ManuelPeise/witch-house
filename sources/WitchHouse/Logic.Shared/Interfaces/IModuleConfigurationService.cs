@@ -11,6 +11,7 @@ namespace Logic.Shared.Interfaces
         Task<List<UserModule>> GetUserModules(Guid userId, ModuleTypeEnum moduleType);
         Task CreateModules(CurrentUser currentUser, Guid userId, bool isActive);
         Task UpdateModule(UserModule module, CurrentUser currentUser);
-        Task<List<ModuleSettings>> LoadActiveModuleSettings(Guid userId, CurrentUser currentUser);
+        Task<List<ModuleSettings>> LoadActiveSchoolModuleSettings(Guid userId, CurrentUser currentUser);
+        Task UpdateSchoolModuleSettings(ModuleSettings settings, CurrentUser currentUser);
     }
 }

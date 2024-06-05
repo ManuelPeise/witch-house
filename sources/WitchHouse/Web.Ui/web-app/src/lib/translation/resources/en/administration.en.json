@@ -1,7 +1,23 @@
 {
+  "captionAddFamilyUser": "Add Family User",
+  "captionCalculationRules": "CalculationRules",
+  "captionGermanSettings": "German Settings",
+  "captionMathSettings": "Math Settings",
+  "captionMaxWordLength": "Max Word Length",
+  "captionMinMaxValue": " Min / Max Value",
+  "captionModuleAdministration": "Module Administration",
+  "captionSchoolModuleSettings": "School Module Settings",
+  "captionUserDetails": "User Details",
+  "errorNoActiveModules": "There are no active school training modules available, please check module settings!",
   "labelAddFamilyMember": "Add New Family Member",
+  "labelAddition": "Addition",
+  "labelDivide": "Divide",
   "labelFamilyMembers": "Family Members",
-  "labelModuleAdministration": "Module Administration",
+  "labelMaxLetterCount": "Max Letters",
+  "labelMaxValue": "Max Value",
+  "labelMinValue": "Min Value",
+  "labelMultiply": "Multiply",
   "labelSchoolTraining": "School Training",
-  "labelSchoolTrainingStatistics": "School Training Statistics"
+  "labelSchoolTrainingStatistics": "School Training Statistics",
+  "labelSubtraction": "Subtract"
 }

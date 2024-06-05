@@ -26,16 +26,22 @@ namespace Service.Api.ApiControllers.Administration
             return await _moduleConfiguration.LoadUserModuleConfiguration(requestModel, _currentUser);
         }
 
-        [HttpGet(Name = "LoadModuleSettings")]
-        public async Task<List<ModuleSettings>> LoadModuleSettings([FromQuery] Guid userGuid)
+        [HttpGet(Name = "LoadModuleSchoolSettings")]
+        public async Task<List<ModuleSettings>> LoadModuleSchoolSettings([FromQuery] Guid userGuid)
         {
-            return await _moduleConfiguration.LoadActiveModuleSettings(userGuid, _currentUser);
+            return await _moduleConfiguration.LoadActiveSchoolModuleSettings(userGuid, _currentUser);
         }
 
         [HttpPost(Name = "UpdateModuleConfiguration")]
         public async Task UpdateModuleConfiguration([FromBody] UserModule module)
         {
             await _moduleConfiguration.UpdateModule(module, _currentUser);
+        }
+
+        [HttpPost(Name = "UpdateSchoolSettings")]
+        public async Task UpdateSchoolSettings([FromBody] ModuleSettings settings)
+        {
+           await _moduleConfiguration.UpdateSchoolModuleSettings(settings, _currentUser);
         }
     }
 }

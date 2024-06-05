@@ -2,17 +2,19 @@ import { Box, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import React from 'react';
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import { FamilyAdministrationSectionEnum } from '../enums/FamilyAdministrationSectionEnum';
+import { useI18n } from '../../../../hooks/useI18n';
 
 interface IProps {
-  userName: string;
+  firstName: string;
+  lastName: string;
   index: number;
   onSectionChanged: (section: FamilyAdministrationSectionEnum, index: number) => void;
 }
 
 const UserListItemMenu: React.FC<IProps> = (props) => {
-  const { userName, index, onSectionChanged } = props;
+  const { firstName, lastName, index, onSectionChanged } = props;
   const [element, setElement] = React.useState<HTMLElement | null>(null);
-
+  const { getResource } = useI18n();
   const handleMenuOpen = React.useCallback((e: React.MouseEvent<HTMLElement>) => {
     setElement(e.currentTarget);
   }, []);
@@ -31,7 +33,7 @@ const UserListItemMenu: React.FC<IProps> = (props) => {
 
   const menuStyleProps: React.CSSProperties = {
     width: 'auto',
-    minWidth: '20%',
+    minWidth: '340px',
   };
 
   return (
@@ -46,7 +48,7 @@ const UserListItemMenu: React.FC<IProps> = (props) => {
           paddingRight: '2rem',
         }}
       >
-        <Typography variant="h5">{userName}</Typography>
+        <Typography variant="h5">{`${firstName} ${lastName}`}</Typography>
         <IconButton size="small" onClick={handleMenuOpen}>
           <ArrowCircleDownIcon sx={{ width: 40, height: 40 }} />
         </IconButton>
@@ -63,10 +65,14 @@ const UserListItemMenu: React.FC<IProps> = (props) => {
         }}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleSectionChanged.bind(null, FamilyAdministrationSectionEnum.Details)}>Details</MenuItem>
-        <MenuItem onClick={handleSectionChanged.bind(null, FamilyAdministrationSectionEnum.Modules)}>Modules</MenuItem>
+        <MenuItem onClick={handleSectionChanged.bind(null, FamilyAdministrationSectionEnum.Details)}>
+          {getResource('administration:captionUserDetails')}
+        </MenuItem>
+        <MenuItem onClick={handleSectionChanged.bind(null, FamilyAdministrationSectionEnum.Modules)}>
+          {getResource('administration:captionModuleAdministration')}
+        </MenuItem>
         <MenuItem onClick={handleSectionChanged.bind(null, FamilyAdministrationSectionEnum.ModuleSettings)}>
-          Module Settings
+          {getResource('administration:captionSchoolModuleSettings')}
         </MenuItem>
       </Menu>
     </Box>

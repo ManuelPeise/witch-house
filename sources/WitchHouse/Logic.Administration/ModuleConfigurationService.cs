@@ -5,6 +5,7 @@ using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
+using Newtonsoft.Json;
 
 namespace Logic.Administration
 {
@@ -30,7 +31,6 @@ namespace Logic.Administration
                 foreach (var module in modules)
                 {
                     await CreateUserModules(module, userId, module.ModuleType, currentUser, isActive);
-
                 }
             }
             catch (Exception exception)
@@ -64,7 +64,7 @@ namespace Logic.Administration
             }
         }
 
-        public async Task<List<ModuleSettings>> LoadActiveModuleSettings(Guid userId, CurrentUser currentUser)
+        public async Task<List<ModuleSettings>> LoadActiveSchoolModuleSettings(Guid userId, CurrentUser currentUser)
         {
             var settings = new List<ModuleSettings>();
 
@@ -83,7 +83,7 @@ namespace Logic.Administration
                             ModuleType = setting.ModuleType,
                             ModuleSettingsType = setting.SettingsType,
                             UserId = setting.UserId,
-                            Settings = setting.SettingsJson
+                            Settings = JsonConvert.DeserializeObject<SchoolSettings>(setting.SettingsJson)?? null
                         });
                     }
                 }
@@ -183,6 +183,43 @@ namespace Logic.Administration
             }
         }
 
+        public async Task UpdateSchoolModuleSettings(ModuleSettings settings, CurrentUser currentUser)
+        {
+            try
+            {
+                var entity = await _settingsService.GetSettingsBy(settings.UserId, settings.ModuleSettingsType);
+
+                if (entity != null)
+                {
+                    entity.SettingsJson = JsonConvert.SerializeObject(settings.Settings);
+
+                    await _settingsService.UpdateSettings(entity);
+
+                    await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
+                    {
+                        FamilyGuid = currentUser.FamilyGuid,
+                        Message = $"Settings for [{settings.UserId} - {Enum.GetName(typeof(ModuleSettingsTypeEnum), settings.ModuleSettingsType)}] upadated with success!",
+                        Stacktrace="",
+                        Trigger = nameof(ModuleConfigurationService),
+                        TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
+                        CreatedAt = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
+                        CreatedBy = currentUser.UserName?? "System"
+                    });
+                }
+
+            }catch(Exception exception)
+            {
+                await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
+                {
+                    FamilyGuid = currentUser.FamilyGuid,
+                    Message = exception.Message,
+                    Stacktrace = exception.StackTrace ?? "",
+                    TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
+                    Trigger = nameof(ModuleConfigurationService),
+                });
+            }
+        }
+
         private async Task CreateUserModules(ModuleEntity module, Guid userId, ModuleTypeEnum moduleType, CurrentUser currentUser, bool isActive)
         {
             try
@@ -260,5 +297,7 @@ namespace Logic.Administration
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+       
     }
 }

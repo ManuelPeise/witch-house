@@ -1,4 +1,4 @@
-import { Grid, List, ListItem } from '@mui/material';
+import { List, ListItem } from '@mui/material';
 import React from 'react';
 import { UserDataModel } from '../types';
 import { useI18n } from '../../../../hooks/useI18n';
@@ -57,69 +57,60 @@ const AddUserForm: React.FC<IProps> = (props) => {
   }, [data, isModified]);
 
   return (
-    <Grid container padding={5} justifyContent="center">
-      <Grid item xs={10}>
-        <List>
-          {data.familyGuid && (
-            <TextInputListItem
-              textFieldProps={{
-                property: 'familyGuid',
-                fullWidth: true,
-                disabled: true,
-                label: getResource('common:labelFamilyId'),
-                value: data.familyGuid,
-                onChange: handleChange,
-              }}
-            />
-          )}
-          <TextInputListItem
-            textFieldProps={{
-              property: 'firstName',
-              fullWidth: true,
-              disabled: false,
-              label: getResource('common:labelFirstName'),
-              value: data.firstName,
-              onChange: handleChange,
-            }}
-          />
-          <TextInputListItem
-            textFieldProps={{
-              property: 'lastName',
-              fullWidth: true,
-              disabled: false,
-              label: getResource('common:labelLastName'),
-              value: data.lastName,
-              onChange: handleChange,
-            }}
-          />
-          <TextInputListItem
-            textFieldProps={{
-              property: 'userName',
-              marginBottom: 5,
-              fullWidth: true,
-              disabled: false,
-              label: getResource('common:labelUserName'),
-              value: data.userName,
-              onChange: handleChange,
-            }}
-          />
-          <ListItem sx={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '2rem', marginTop: '3rem' }}>
-            <SubmitButton
-              title={getResource('common:labelCancel')}
-              disabled={!isModified}
-              variant="text"
-              onClick={handleCancel}
-            />
-            <SubmitButton
-              title={getResource('common:labelSave')}
-              disabled={!canSave}
-              variant="text"
-              onClick={handleSave}
-            />
-          </ListItem>
-        </List>
-      </Grid>
-    </Grid>
+    <List>
+      {data.familyGuid && (
+        <TextInputListItem
+          textFieldProps={{
+            property: 'familyGuid',
+            fullWidth: true,
+            disabled: true,
+            label: getResource('common:labelFamilyId'),
+            value: data.familyGuid,
+            onChange: handleChange,
+          }}
+        />
+      )}
+      <TextInputListItem
+        textFieldProps={{
+          property: 'firstName',
+          fullWidth: true,
+          disabled: false,
+          label: getResource('common:labelFirstName'),
+          value: data.firstName,
+          onChange: handleChange,
+        }}
+      />
+      <TextInputListItem
+        textFieldProps={{
+          property: 'lastName',
+          fullWidth: true,
+          disabled: false,
+          label: getResource('common:labelLastName'),
+          value: data.lastName,
+          onChange: handleChange,
+        }}
+      />
+      <TextInputListItem
+        textFieldProps={{
+          property: 'userName',
+          marginBottom: 5,
+          fullWidth: true,
+          disabled: false,
+          label: getResource('common:labelUserName'),
+          value: data.userName,
+          onChange: handleChange,
+        }}
+      />
+      <ListItem sx={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '2rem', marginTop: '3rem' }}>
+        <SubmitButton
+          title={getResource('common:labelCancel')}
+          disabled={!isModified}
+          variant="text"
+          onClick={handleCancel}
+        />
+        <SubmitButton title={getResource('common:labelSave')} disabled={!canSave} variant="text" onClick={handleSave} />
+      </ListItem>
+    </List>
   );
 };
 

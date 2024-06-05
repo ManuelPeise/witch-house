@@ -32,18 +32,6 @@ export type ModuleProps = {
   moduleType: ModuleTypeEnum;
 };
 
-export type MathSettings = {
-  allowAddition: boolean;
-  allowSubtraction: boolean;
-  allowMultiply: boolean;
-  allowDivide: boolean;
-  maxValue: number;
-};
-
-export type GermanSettings = {
-  maxWordLength: number;
-};
-
 export type UserModuleRequestModel = {
   userGuid: string;
   familyGuid: string;
@@ -54,5 +42,17 @@ export type ModuleSettings = {
   userId: string;
   moduleType: ModuleTypeEnum;
   moduleSettingsType: ModuleSettingsTypeEnum;
-  settings: string;
+  settings: SchoolSettings | null;
+};
+
+export type SchoolSettings = {
+  moduleType: ModuleTypeEnum;
+  settingsType: ModuleSettingsTypeEnum;
+  allowAddition: boolean;
+  allowSubtraction: boolean;
+  allowMultiply: boolean;
+  allowDivide: boolean;
+  minValue: number;
+  maxValue: number;
+  maxWordLength: number;
 };

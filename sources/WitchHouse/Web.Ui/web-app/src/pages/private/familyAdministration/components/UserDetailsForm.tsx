@@ -1,4 +1,4 @@
-import { Grid, List, ListItem } from '@mui/material';
+import { List, ListItem } from '@mui/material';
 import React from 'react';
 import { UserDataModel } from '../types';
 import { useI18n } from '../../../../hooks/useI18n';
@@ -45,112 +45,108 @@ const UserDetailsForm: React.FC<IProps> = (props) => {
   }, [userData, data]);
 
   return (
-    <Grid container padding={5} justifyContent="center">
-      <Grid item xs={10}>
-        <List>
-          <ListItemSwitch
-            hasDivider
-            marginBottom={5}
-            property="isActive"
-            disabled={disabled}
-            checked={data.isActive}
-            label={getResource('common:labelIsActive')}
-            onChange={handleChange}
-          />
+    <List disablePadding>
+      <ListItemSwitch
+        hasDivider
+        marginBottom={1}
+        property="isActive"
+        disabled={disabled}
+        checked={data.isActive}
+        label={getResource('common:labelIsActive')}
+        onChange={handleChange}
+      />
 
-          <TextInputListItem
-            textFieldProps={{
-              property: 'userId',
-              fullWidth: true,
-              disabled: true,
-              label: getResource('common:labelUserId'),
-              value: data.userId,
-              onChange: handleChange,
-            }}
-          />
-          {data.familyGuid && (
-            <TextInputListItem
-              textFieldProps={{
-                property: 'familyGuid',
-                fullWidth: true,
-                disabled: true,
-                label: getResource('common:labelFamilyId'),
-                value: data.familyGuid,
-                onChange: handleChange,
-              }}
-            />
-          )}
-          <TextInputListItem
-            textFieldProps={{
-              property: 'firstName',
-              fullWidth: true,
-              disabled: true,
-              label: getResource('common:labelFirstName'),
-              value: data.firstName,
-              onChange: handleChange,
-            }}
-          />
-          <TextInputListItem
-            textFieldProps={{
-              property: 'lastName',
-              fullWidth: true,
-              disabled: true,
-              label: getResource('common:labelLastName'),
-              value: data.lastName,
-              onChange: handleChange,
-            }}
-          />
-          <TextInputListItem
-            hasDivider
-            textFieldProps={{
-              property: 'userName',
-              marginBottom: 5,
-              fullWidth: true,
-              disabled: true,
-              label: getResource('common:labelUserName'),
-              value: data.userName,
-              onChange: handleChange,
-            }}
-          />
-          <RadioGroupListItem
-            hasDivider
-            marginTop={1}
-            marginBottom={1}
-            groupLabel="UserRole"
-            value={data.role}
-            property="role"
-            radioProps={[
-              { label: getResource('common:labelAdmin'), value: UserRoleEnum.Admin.toString(), disabled: true },
-              {
-                label: getResource('common:labelLocalAdmin'),
-                value: UserRoleEnum.LocalAdmin.toString(),
-                disabled: disabled,
-              },
-              {
-                label: getResource('common:labelUser'),
-                value: UserRoleEnum.User.toString(),
-                disabled: disabled,
-              },
-            ]}
-            onChange={handleChange}
-          />
-          <ListItem sx={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '2rem', marginTop: '3rem' }}>
-            <SubmitButton
-              title={getResource('common:labelCancel')}
-              disabled={!isModified}
-              variant="text"
-              onClick={handleCancel}
-            />
-            <SubmitButton
-              title={getResource('common:labelSave')}
-              disabled={!isModified}
-              variant="text"
-              onClick={handleSave}
-            />
-          </ListItem>
-        </List>
-      </Grid>
-    </Grid>
+      <TextInputListItem
+        textFieldProps={{
+          property: 'userId',
+          fullWidth: true,
+          disabled: true,
+          label: getResource('common:labelUserId'),
+          value: data.userId,
+          onChange: handleChange,
+        }}
+      />
+      {data.familyGuid && (
+        <TextInputListItem
+          textFieldProps={{
+            property: 'familyGuid',
+            fullWidth: true,
+            disabled: true,
+            label: getResource('common:labelFamilyId'),
+            value: data.familyGuid,
+            onChange: handleChange,
+          }}
+        />
+      )}
+      <TextInputListItem
+        textFieldProps={{
+          property: 'firstName',
+          fullWidth: true,
+          disabled: true,
+          label: getResource('common:labelFirstName'),
+          value: data.firstName,
+          onChange: handleChange,
+        }}
+      />
+      <TextInputListItem
+        textFieldProps={{
+          property: 'lastName',
+          fullWidth: true,
+          disabled: true,
+          label: getResource('common:labelLastName'),
+          value: data.lastName,
+          onChange: handleChange,
+        }}
+      />
+      <TextInputListItem
+        hasDivider
+        textFieldProps={{
+          property: 'userName',
+          marginBottom: 1,
+          fullWidth: true,
+          disabled: true,
+          label: getResource('common:labelUserName'),
+          value: data.userName,
+          onChange: handleChange,
+        }}
+      />
+      <RadioGroupListItem
+        hasDivider
+        marginTop={1}
+        marginBottom={1}
+        groupLabel="UserRole"
+        value={data.role}
+        property="role"
+        radioProps={[
+          { label: getResource('common:labelAdmin'), value: UserRoleEnum.Admin.toString(), disabled: true },
+          {
+            label: getResource('common:labelLocalAdmin'),
+            value: UserRoleEnum.LocalAdmin.toString(),
+            disabled: disabled,
+          },
+          {
+            label: getResource('common:labelUser'),
+            value: UserRoleEnum.User.toString(),
+            disabled: disabled,
+          },
+        ]}
+        onChange={handleChange}
+      />
+      <ListItem sx={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '2rem', marginTop: '3rem' }}>
+        <SubmitButton
+          title={getResource('common:labelCancel')}
+          disabled={!isModified}
+          variant="text"
+          onClick={handleCancel}
+        />
+        <SubmitButton
+          title={getResource('common:labelSave')}
+          disabled={!isModified}
+          variant="text"
+          onClick={handleSave}
+        />
+      </ListItem>
+    </List>
   );
 };
 

@@ -37,7 +37,7 @@ const NumberInput: React.FC<IProps> = (props) => {
       fullWidth={fullWidth}
       disabled={disabled}
       variant={variant}
-      value={value ?? 0}
+      value={value === undefined || value === 0 ? '' : value}
       inputProps={{ style: { textAlign: 'end' } }}
       type={isPassword ? 'password' : 'text'}
       label={label}

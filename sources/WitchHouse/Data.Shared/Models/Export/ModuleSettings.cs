@@ -7,6 +7,19 @@ namespace Data.Shared.Models.Export
         public Guid UserId { get; set; }
         public ModuleTypeEnum ModuleType { get; set; }
         public ModuleSettingsTypeEnum ModuleSettingsType { get; set; }
-        public string Settings { get; set; } = string.Empty;
+        public SchoolSettings Settings { get; set; } = new SchoolSettings();
+    }
+
+    public class SchoolSettings
+    {
+        // math settings
+        public bool AllowAddition { get; set; }
+        public bool AllowSubtraction { get; set; }
+        public bool AllowMultiply { get; set; }
+        public bool AllowDivide { get; set; }
+        public int MinValue { get; set; }
+        public int MaxValue { get; set; }
+        // german settings
+        public int MaxWordLength { get; set; }
     }
 }

@@ -12,7 +12,8 @@ export const endpoints = {
     updateFamilyMember: 'FamilyAdministrationService/UpdateFamilyMember',
     loadModuleConfiguration: 'ModuleService/LoadModuleConfiguration',
     updateModule: 'ModuleService/UpdateModuleConfiguration',
-    loadModuleSettings: 'ModuleService/LoadModuleSettings?userGuid={id}',
+    loadModuleSettings: 'ModuleService/LoadModuleSchoolSettings?userGuid={id}',
+    updateModuleSettings: 'ModuleService/UpdateSchoolSettings',
   },
   account: {
     passwordCheck: 'ProfileService/CheckPassword',

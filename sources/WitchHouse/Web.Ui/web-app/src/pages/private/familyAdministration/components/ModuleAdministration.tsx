@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, List, ListItem, Typography } from '@mui/material';
+import { List, ListItem } from '@mui/material';
 import { useApi } from '../../../../hooks/useApi';
 import { ModuleConfiguration, UserModuleRequestModel } from '../types';
 import { endpoints } from '../../../../lib/api/apiConfiguration';
@@ -12,7 +12,7 @@ interface IProps {
   disabled?: boolean;
 }
 
-export const ModuleSettingsForm: React.FC<IProps> = (props) => {
+export const ModuleAdministration: React.FC<IProps> = (props) => {
   const { requestModel, disabled } = props;
   const { getResource } = useI18n();
   const { data, post } = useApi<ModuleConfiguration>();
@@ -58,32 +58,23 @@ export const ModuleSettingsForm: React.FC<IProps> = (props) => {
   }, []);
 
   return (
-    <Grid container padding={5} justifyContent="center">
-      <Grid item xs={12} sx={{ padding: '1rem' }}>
-        <Typography sx={{ paddingLeft: '1.5rem' }} variant="h6">
-          {getResource('administration:labelModuleAdministration')}
-        </Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <List>
-          {data?.modules.map((module, index) => {
-            return (
-              <ListItem divider>
-                <SwitchWithLabel
-                  label={getLabel(module.moduleType)}
-                  property={index.toString()}
-                  key={index}
-                  disabled={disabled ?? true}
-                  checked={module.isActive}
-                  onChange={onActiveChange}
-                />
-              </ListItem>
-            );
-          })}
-        </List>
-      </Grid>
-    </Grid>
+    <List disablePadding>
+      {data?.modules.map((module, index) => {
+        return (
+          <ListItem key={index} divider>
+            <SwitchWithLabel
+              label={getLabel(module.moduleType)}
+              property={index.toString()}
+              key={index}
+              disabled={disabled ?? true}
+              checked={module.isActive}
+              onChange={onActiveChange}
+            />
+          </ListItem>
+        );
+      })}
+    </List>
   );
 };
 
-export default ModuleSettingsForm;
+export default ModuleAdministration;

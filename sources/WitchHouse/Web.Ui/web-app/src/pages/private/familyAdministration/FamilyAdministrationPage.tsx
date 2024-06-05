@@ -13,8 +13,9 @@ import UserDetailsForm from './components/UserDetailsForm';
 import { FamilyAdministrationSectionEnum } from './enums/FamilyAdministrationSectionEnum';
 import { FamilyMemberModel, FamilyMemberUpdate } from '../../public/Auth/types';
 import AddUserForm from './components/AddUserForm';
-import ModuleSettingsForm from './components/ModuleAdministration';
-import ModuleSettingsAdministration from './components/ModuleSettingsAdministration';
+import ModuleAdministration from './components/ModuleAdministration';
+import ModuleSettingsAdministration from './components/SchoolModuleSettingsAdministration';
+import SectionLayout from './components/SectionLayout';
 
 interface IProps {
   filterText: string;
@@ -129,6 +130,7 @@ const FamilyAdministrationPage: React.FC<IProps> = (props) => {
     <VerticalTabbedPage
       evaluation={10}
       paperHeight={800}
+      minWidth={340}
       component={
         <List disablePadding>
           <ListItem
@@ -161,7 +163,8 @@ const FamilyAdministrationPage: React.FC<IProps> = (props) => {
               <UserListItemMenu
                 key={index}
                 index={index}
-                userName={user.userName}
+                firstName={user.firstName}
+                lastName={user.lastName}
                 onSectionChanged={handleSectionChanged}
               />
             );
@@ -169,26 +172,40 @@ const FamilyAdministrationPage: React.FC<IProps> = (props) => {
         </List>
       }
     >
-      {sectionType === FamilyAdministrationSectionEnum.Add && <AddUserForm onSave={onSaveFamilyMember} />}
+      {sectionType === FamilyAdministrationSectionEnum.Add && (
+        <SectionLayout caption={getResource('administration:captionAddFamilyUser')}>
+          <AddUserForm onSave={onSaveFamilyMember} />
+        </SectionLayout>
+      )}
+
       {sectionType === FamilyAdministrationSectionEnum.Details && (
-        <UserDetailsForm
-          userData={selectedUser}
-          disabled={loginResult.userId === selectedUser.userId}
-          onSave={onUpdateFamilyMember}
-        />
+        <SectionLayout caption={getResource('administration:captionUserDetails')}>
+          <UserDetailsForm
+            userData={selectedUser}
+            disabled={loginResult.userId === selectedUser.userId}
+            onSave={onUpdateFamilyMember}
+          />
+        </SectionLayout>
       )}
       {sectionType === FamilyAdministrationSectionEnum.Modules && (
-        <ModuleSettingsForm
-          requestModel={{
-            userGuid: selectedUser.userId,
-            familyGuid: selectedUser.familyGuid,
-            roleId: selectedUser.role,
-          }}
-          disabled={selectedUser.userId === loginResult.userId}
-        />
+        <SectionLayout caption={getResource('administration:captionModuleAdministration')}>
+          <ModuleAdministration
+            requestModel={{
+              userGuid: selectedUser.userId,
+              familyGuid: selectedUser.familyGuid,
+              roleId: selectedUser.role,
+            }}
+            disabled={selectedUser.userId === loginResult.userId}
+          />
+        </SectionLayout>
       )}
       {sectionType === FamilyAdministrationSectionEnum.ModuleSettings && (
-        <ModuleSettingsAdministration selectedUser={selectedUser} />
+        <SectionLayout caption={getResource('administration:captionSchoolModuleSettings')}>
+          <ModuleSettingsAdministration
+            selectedUser={selectedUser}
+            disabled={selectedUser.userId === loginResult.userId}
+          />
+        </SectionLayout>
       )}
     </VerticalTabbedPage>
   );
