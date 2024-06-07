@@ -29,7 +29,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service.Api", "Service.Api\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logic.Authentication", "Logic.Authentication\Logic.Authentication.csproj", "{E6235385-4C23-403C-9B38-CE1249991636}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic.Administration", "Logic.Administration\Logic.Administration.csproj", "{62457FA1-CFB9-4857-B7BF-5A6157AB514D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logic.Administration", "Logic.Administration\Logic.Administration.csproj", "{62457FA1-CFB9-4857-B7BF-5A6157AB514D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic.Sync", "Logic.Sync\Logic.Sync.csproj", "{5BD5D7DC-037A-43F2-B170-6ADB20A7AA95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{62457FA1-CFB9-4857-B7BF-5A6157AB514D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62457FA1-CFB9-4857-B7BF-5A6157AB514D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62457FA1-CFB9-4857-B7BF-5A6157AB514D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BD5D7DC-037A-43F2-B170-6ADB20A7AA95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BD5D7DC-037A-43F2-B170-6ADB20A7AA95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BD5D7DC-037A-43F2-B170-6ADB20A7AA95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BD5D7DC-037A-43F2-B170-6ADB20A7AA95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{C557A83C-130D-4E2B-A8D2-264A2BB8A000} = {37B69BAC-E1CA-4BC5-BF19-999E9AF72380}
 		{E6235385-4C23-403C-9B38-CE1249991636} = {D9023A4B-1C8E-489B-B526-4B9BF02584E7}
 		{62457FA1-CFB9-4857-B7BF-5A6157AB514D} = {D9023A4B-1C8E-489B-B526-4B9BF02584E7}
+		{5BD5D7DC-037A-43F2-B170-6ADB20A7AA95} = {D9023A4B-1C8E-489B-B526-4B9BF02584E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C3F0FE7-B68D-467D-837F-20A92A8104AE}

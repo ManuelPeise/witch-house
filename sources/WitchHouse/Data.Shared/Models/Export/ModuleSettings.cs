@@ -7,7 +7,7 @@ namespace Data.Shared.Models.Export
         public Guid UserId { get; set; }
         public ModuleTypeEnum ModuleType { get; set; }
         public ModuleSettingsTypeEnum ModuleSettingsType { get; set; }
-        public SchoolSettings Settings { get; set; } = new SchoolSettings();
+        public SchoolSettings? Settings { get; set; }
     }
 
     public class SchoolSettings

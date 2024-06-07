@@ -2,6 +2,7 @@
 using Logic.Administration;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
+using Logic.Sync;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +10,7 @@ using System.Text;
 
 namespace Web.Api.Config
 {
-    
+
     public static class WebApp
     {
         private static string CorsPolicy = "Policy";
@@ -57,6 +58,7 @@ namespace Web.Api.Config
             builder.Services.AddScoped<IAccountUnitOfWork, AccountUnitOfWork>();
             builder.Services.AddScoped<IModuleConfigurationService, ModuleConfigurationService>();
             builder.Services.AddScoped<ISettingsService, SettingsService>();
+            builder.Services.AddScoped<ISyncHandler, DataSyncHandler>();
         }
 
         public static void ConfigureServices(WebApplicationBuilder builder)
@@ -81,11 +83,8 @@ namespace Web.Api.Config
 
         public static void ConfigureApp(WebApplication app)
         {
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
 

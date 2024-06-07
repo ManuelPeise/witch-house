@@ -127,6 +127,7 @@ namespace Logic.Family
                     UserName = accountImportModel.UserName,
                     Role = UserRoleEnum.User,
                     Culture = "en",
+                    Secret = Helpers.GetEncodedSecret("P@ssword", salt),
                     Salt = salt
                 };
 

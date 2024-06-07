@@ -8,6 +8,7 @@ using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Logic.Authentication
 {
@@ -101,6 +102,8 @@ namespace Logic.Authentication
 
                 if (accountEntity != null)
                 {
+                    var encodedPassword = Helpers.GetEncodedSecret(requestModel.Password, accountEntity.Salt);
+
                     var appModules = await _accountUnitOfWork.UserModuleRepository.GetByAsync(x => x.UserId == accountEntity.Id && x.ModuleType == ModuleTypeEnum.MobileApp);
 
                     if (appModules.FirstOrDefault() == null || !appModules.First().IsActive)
@@ -114,18 +117,7 @@ namespace Logic.Authentication
                         };
                     }
 
-                    var encodedPin = Helpers.GetEncodedSecret(requestModel.Pin, accountEntity.Salt);
-
-                    if (string.IsNullOrWhiteSpace(accountEntity.Pin))
-                    {
-                        accountEntity.Pin = encodedPin;
-
-                        await _accountUnitOfWork.SaveChanges();
-                    }
-
-                   
-
-                    if (encodedPin == accountEntity.Pin)
+                    if (encodedPassword == accountEntity.Secret)
                     {
                         var tokenGenerator = new JwtTokenGenerator();
 
@@ -155,8 +147,8 @@ namespace Logic.Authentication
                                 UserRole = accountEntity.Role,
                             }
                         };
+                    }
                 }
-            }
 
                 return new ResponseMessage<LoginResult>
                 {
@@ -166,7 +158,7 @@ namespace Logic.Authentication
                     Data = null
                 };
 
-        }
+            }
             catch (Exception exception)
             {
                 await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
@@ -188,8 +180,8 @@ namespace Logic.Authentication
         }
 
         private List<Claim> LoadUserClaims(AccountEntity account)
-{
-    return new List<Claim>
+        {
+            return new List<Claim>
             {
                     new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
                     new Claim(ClaimTypes.Name, account.UserName),
@@ -197,6 +189,6 @@ namespace Logic.Authentication
                     new Claim("FamilyGuid", account.FamilyGuid.ToString()),
                     // new Claim(ClaimTypes.UserData, JsonConvert.SerializeObject(account)),
             };
-}
+        }
     }
 }

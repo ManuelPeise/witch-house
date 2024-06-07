@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+    <PackageReference Include="System.Runtime" Version="4.3.1" />
+    <PackageReference Include="System.Runtime.Handles" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +21,7 @@
     <ProjectReference Include="..\Logic.Authentication\Logic.Authentication.csproj" />
     <ProjectReference Include="..\Logic.Family\Logic.Family.csproj" />
     <ProjectReference Include="..\Logic.Shared\Logic.Shared.csproj" />
+    <ProjectReference Include="..\Logic.Sync\Logic.Sync.csproj" />
     <ProjectReference Include="..\Service.Shared\Service.Shared.csproj" />
   </ItemGroup>
 
