@@ -11,6 +11,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import SubmitButton from '../../_components/_inputs/SubmitButton';
 import { FontSizeEnum } from '../../_lib/enums/FontSizeEnum';
 import { useAuth } from '../../_hooks/useAuth';
+import LoadingOverLay from '../../_components/_loading/LoadingOverlay';
 
 const loginModel: LoginRequest = {
   userName: '',
@@ -19,7 +20,7 @@ const loginModel: LoginRequest = {
 
 const LoginScreen: React.FC = () => {
   const { getResource } = useI18n();
-  const { isAuthenticated, loginResult, onLogin } = useAuth();
+  const { isLoading, onLogin } = useAuth();
   const [loginRequest, setLoginRequest] = React.useState<LoginRequest>(loginModel);
 
   React.useEffect(() => {
@@ -70,7 +71,7 @@ const LoginScreen: React.FC = () => {
                 value={loginRequest.password}
                 onChange={onPasswordChanged}
                 isPassword
-                placeholder={getResource('common:placeHolderPin')}
+                placeholder={getResource('common:placeHolderPassword')}
               />
             </View>
             <View style={[styles.item, styles.buttonContainer]}>
@@ -87,6 +88,7 @@ const LoginScreen: React.FC = () => {
           </View>
         </View>
       </ScrollView>
+      {isLoading && <LoadingOverLay color={ColorEnum.BlackBlue} size="large" scale={4} />}
     </AuthPageWrapper>
   );
 };

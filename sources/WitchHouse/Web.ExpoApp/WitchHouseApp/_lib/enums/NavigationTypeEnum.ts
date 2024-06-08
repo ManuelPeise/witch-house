@@ -5,4 +5,6 @@ export enum NavigationTypeEnum {
   Initialize = 'initialize',
   AppDataLoad = 'app-data-load',
   Home = 'home',
+  Training = 'training',
+  Settings = 'settings',
 }

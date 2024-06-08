@@ -24,3 +24,7 @@ export type LoginRequest = {
   userName: string;
   password: string;
 };
+
+export type AppSettings = {
+  syncData: boolean;
+};

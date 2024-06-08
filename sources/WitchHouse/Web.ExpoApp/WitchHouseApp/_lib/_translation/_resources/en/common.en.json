@@ -1,8 +1,19 @@
 {
+  "headerHome": "HOME",
+  "headerSettings": "SETTINGS",
+  "headerTraining": "TRAINING",
+  "labelDataSettings": "Data Settings",
+  "labelExecuteDataSync": "Execute Sync",
+  "labelInitializeApp": "Initialize",
+  "labelLoggedInAs": "Logged in as {UserName}",
   "labelLogin": "LOGIN",
-  "placeHolderPin": "Pin Code",
+  "labelLogout": "Log Out",
+  "labelStart": "START",
+  "labelSyncData": "Sync Data",
+  "menuItemHome": "Home",
+  "menuItemSettings": "Settings",
+  "menuItemTraining": "Training",
+  "placeHolderPassword": "Password",
   "placeHolderPinReplication": "Pin Replication",
-  "placeHolderUserName": "Username",
-  "start": "START",
-  "labelInitializeApp": "Initialize"
+  "placeHolderUserName": "Username"
 }

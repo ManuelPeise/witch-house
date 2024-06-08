@@ -17,3 +17,8 @@ export type ResponseMessage<TModel> = {
   messageKey: string;
   data: TModel;
 };
+
+export type JwtData = {
+  jwtToken: string;
+  refreshToken: string;
+};

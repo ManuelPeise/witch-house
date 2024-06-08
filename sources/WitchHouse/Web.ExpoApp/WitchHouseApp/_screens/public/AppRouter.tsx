@@ -6,8 +6,6 @@ import PrivateStack from '../../_stacks/PrivateStack';
 const AppRouter: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
-  console.log('Auth?:', isAuthenticated);
-
   return isAuthenticated ? <PrivateStack /> : <AuthStack />;
 };
 
