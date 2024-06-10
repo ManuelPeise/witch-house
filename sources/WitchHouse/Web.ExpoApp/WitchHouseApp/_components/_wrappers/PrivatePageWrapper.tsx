@@ -11,7 +11,7 @@ const PrivatePageWrapper: React.FC<IProps> = (props) => {
   return (
     <SafeAreaView>
       <View style={styles.wrapper}>
-        <ImageBackground style={styles.image} source={image}>
+        <ImageBackground style={styles.image} source={image} resizeMode="cover">
           {children}
         </ImageBackground>
       </View>

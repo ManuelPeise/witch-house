@@ -14,6 +14,7 @@ import { useDataSync } from '../../../_hooks/useDataSync';
 import { ColorEnum } from '../../../_lib/enums/ColorEnum';
 import { useAuth } from '../../../_hooks/useAuth';
 import LoadingOverLay from '../../../_components/_loading/LoadingOverlay';
+import { BorderRadiusEnum } from '../../../_lib/enums/BorderRadiusEnum';
 
 const SettingsScreen: React.FC = () => {
   const { getResource } = useI18n();
@@ -48,9 +49,11 @@ const SettingsScreen: React.FC = () => {
               disabled={!model.syncData}
               label={getResource('common:labelExecuteDataSync')}
               fontSize={FontSizeEnum.md}
+              borderColor={ColorEnum.Blue}
+              borderRadius={BorderRadiusEnum.Medium}
               onPress={syncData}
               backGround="blue"
-              color={ColorEnum.LightGray}
+              color={ColorEnum.White}
             />
           </View>
         </SettingsItem>

@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationTypeEnum } from '../_lib/enums/NavigationTypeEnum';
 import HomeScreen from '../_screens/private/HomeScreen';
@@ -10,8 +9,21 @@ import { useI18n } from '../_hooks/useI18n';
 import AppDrawer from './_drawer/AppDrawer';
 import TrainingScreen from '../_screens/private/_training/TrainingScreen';
 import SettingsScreen from '../_screens/private/_settings/SettingsScreen';
+import TrainingPage from '../_screens/private/_training/TrainingPage';
+import { UnitTypeEnum } from '../_lib/enums/MathUnitTypeEnum';
 
-const Drawer = createDrawerNavigator();
+export type TrainingRouteParam = {
+  rule: UnitTypeEnum;
+};
+
+export type RootParamList = {
+  home: undefined;
+  trainingOverview: undefined;
+  settings: undefined;
+  schoolTraining: { rule: UnitTypeEnum };
+};
+
+const Drawer = createDrawerNavigator<RootParamList>();
 
 const PrivateStack: React.FC = () => {
   const { onLogout } = useAuth();
@@ -38,7 +50,7 @@ const PrivateStack: React.FC = () => {
         options={{ headerShown: true, title: getResource('common:headerHome') }}
       />
       <Drawer.Screen
-        name={NavigationTypeEnum.Training}
+        name={NavigationTypeEnum.TrainingOverview}
         component={TrainingScreen}
         options={{ headerShown: true, title: getResource('common:headerTraining') }}
       />
@@ -46,6 +58,11 @@ const PrivateStack: React.FC = () => {
         name={NavigationTypeEnum.Settings}
         component={SettingsScreen}
         options={{ headerShown: true, title: getResource('common:headerSettings') }}
+      />
+      <Drawer.Screen
+        name={NavigationTypeEnum.SchoolTraining}
+        component={TrainingPage}
+        options={{ headerShown: true, title: getResource('common:headerSchoolTraining') }}
       />
     </Drawer.Navigator>
   );

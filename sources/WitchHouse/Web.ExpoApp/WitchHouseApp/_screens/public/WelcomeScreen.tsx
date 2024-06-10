@@ -7,6 +7,9 @@ import { useI18n } from '../../_hooks/useI18n';
 import { useStorage } from '../../_hooks/useStorage';
 import { AppSettings } from '../../_lib/types';
 import { AsyncStorageKeyEnum } from '../../_lib/enums/AsyncStorageKeyEnum';
+import { ColorEnum } from '../../_lib/enums/ColorEnum';
+import { FontSizeEnum } from '../../_lib/enums/FontSizeEnum';
+import { BorderRadiusEnum } from '../../_lib/enums/BorderRadiusEnum';
 
 const WelcomeScreen: React.FC = () => {
   const { getResource } = useI18n();
@@ -14,7 +17,6 @@ const WelcomeScreen: React.FC = () => {
 
   const setDefaultStorageData = React.useCallback(async () => {
     if (model == null) {
-      console.log('[welcome screen - ~17]Set app settings..');
       const settings: AppSettings = { syncData: true };
       await storeItem(settings);
     }
@@ -27,7 +29,16 @@ const WelcomeScreen: React.FC = () => {
   return (
     <AuthPageWrapper>
       <View style={styles.container}>
-        <LinkButton to={NavigationTypeEnum.Login} label={getResource('common:labelStart')} />
+        <LinkButton
+          backGround="transparent"
+          padding={3}
+          color={ColorEnum.White}
+          fontSize={FontSizeEnum.md}
+          borderColor={ColorEnum.White}
+          to={NavigationTypeEnum.Login}
+          borderRadius={BorderRadiusEnum.Medium}
+          label={getResource('common:labelStart')}
+        />
       </View>
     </AuthPageWrapper>
   );

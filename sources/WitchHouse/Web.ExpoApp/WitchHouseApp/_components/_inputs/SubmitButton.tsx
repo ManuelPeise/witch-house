@@ -7,22 +7,29 @@ import { FontSizeEnum } from '../../_lib/enums/FontSizeEnum';
 interface IProps {
   label: string;
   disabled?: boolean;
-  backGround?: 'blue';
+  backGround?: 'blue' | 'transparent';
+  borderColor?: ColorEnum;
+  borderRadius?: BorderRadiusEnum;
   fontSize: FontSizeEnum;
   fullWidth?: boolean;
   color?: ColorEnum;
+  width?: number;
   onPress: () => Promise<void>;
 }
 
 const SubmitButton: React.FC<IProps> = (props) => {
-  const { disabled, label, fontSize, fullWidth, backGround, color, onPress } = props;
+  const { disabled, label, fontSize, fullWidth, backGround, borderColor, color, borderRadius, width, onPress } = props;
 
-  const backGroundStyle = disabled ? styles['disabled'] : styles[backGround ?? 'transparent'];
+  const backGroundStyle = disabled ? styles['disabled'] : styles[backGround];
 
   return (
     <Pressable
       disabled={disabled}
-      style={[backGroundStyle, styles.button, { width: fullWidth ? '100%' : null }]}
+      style={[
+        backGroundStyle,
+        styles.button,
+        { width: fullWidth ? '100%' : width, borderColor: borderColor, borderRadius: borderRadius },
+      ]}
       onPress={onPress}
     >
       <View style={styles.spacer}>
@@ -34,7 +41,7 @@ const SubmitButton: React.FC<IProps> = (props) => {
 
 const styles = StyleSheet.create({
   button: {
-    borderWidth: 0,
+    borderWidth: 2,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },

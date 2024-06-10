@@ -1,10 +1,12 @@
 export enum NavigationTypeEnum {
-  AppStart = 'app-start',
+  // AppStart = 'app-start',
   Welcome = 'welcome',
   Login = 'login',
-  Initialize = 'initialize',
-  AppDataLoad = 'app-data-load',
+  // Initialize = 'initialize',
+  // AppDataLoad = 'app-data-load',
   Home = 'home',
-  Training = 'training',
+  TrainingOverview = 'trainingOverview',
   Settings = 'settings',
+  // TrainingPage = 'trainingPage',
+  SchoolTraining = 'schoolTraining',
 }

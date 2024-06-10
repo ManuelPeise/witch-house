@@ -1,11 +1,6 @@
-import {
-  DrawerContentComponentProps,
-  DrawerContentScrollView,
-  DrawerItem,
-  DrawerItemList,
-} from '@react-navigation/drawer';
+import { DrawerContentComponentProps, DrawerContentScrollView } from '@react-navigation/drawer';
 import React from 'react';
-import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import witchHouse from '../../img/witchHouse.jpg';
 import { useAuth } from '../../_hooks/useAuth';
 import { ColorEnum } from '../../_lib/enums/ColorEnum';
@@ -13,15 +8,16 @@ import { useI18n } from '../../_hooks/useI18n';
 import AppDrawerItem from './AppDrawerItem';
 import LoadingOverLay from '../../_components/_loading/LoadingOverlay';
 import { useDataSync } from '../../_hooks/useDataSync';
+import { NavigationTypeEnum } from '../../_lib/enums/NavigationTypeEnum';
 
 interface IProps {
   containerProps: DrawerContentComponentProps;
 }
 
 const AppDrawer: React.FC<IProps> = (props) => {
-  const { loginResult, onLogout } = useAuth();
+  const { loginResult } = useAuth();
   const { getResource } = useI18n();
-  const { data, isLoading, executeDataSync } = useDataSync();
+  const { isLoading } = useDataSync();
 
   const routeNames = React.useMemo(() => {
     return props.containerProps.state.routeNames;
@@ -30,16 +26,20 @@ const AppDrawer: React.FC<IProps> = (props) => {
   const getDisplayName = React.useCallback(
     (route: string) => {
       switch (route) {
-        case 'home':
+        case NavigationTypeEnum.Home:
           return getResource('common:menuItemHome');
-        case 'training':
+        case NavigationTypeEnum.TrainingOverview:
           return getResource('common:menuItemTraining');
-        case 'settings':
+        case NavigationTypeEnum.Settings:
           return getResource('common:menuItemSettings');
       }
     },
     [getResource]
   );
+
+  const routesToDisplay = React.useMemo(() => {
+    return [NavigationTypeEnum.Home, NavigationTypeEnum.TrainingOverview, NavigationTypeEnum.Settings];
+  }, []);
 
   return (
     <View style={styles.drawer}>
@@ -54,22 +54,24 @@ const AppDrawer: React.FC<IProps> = (props) => {
         </ImageBackground>
         <View style={styles.drawerMenu}>
           {routeNames.map((route, index) => {
-            return (
-              <AppDrawerItem
-                key={index}
-                displayName={getDisplayName(route)}
-                to={route}
-                index={index}
-                selectedIndex={props.containerProps.state.index}
-              />
-            );
+            if (routesToDisplay.includes(route as NavigationTypeEnum)) {
+              return (
+                <AppDrawerItem
+                  key={index}
+                  displayName={getDisplayName(route)}
+                  to={route}
+                  index={index}
+                  selectedIndex={props.containerProps.state.index}
+                />
+              );
+            }
           })}
         </View>
-        <View style={styles.footer}>
+        {/* <View style={styles.footer}>
           <Pressable onPress={onLogout}>
             <Text style={{ textAlign: 'center' }}>{getResource('common:labelLogout')}</Text>
           </Pressable>
-        </View>
+        </View> */}
       </DrawerContentScrollView>
       {isLoading && <LoadingOverLay scale={4} size="large" color={ColorEnum.Blue} />}
     </View>

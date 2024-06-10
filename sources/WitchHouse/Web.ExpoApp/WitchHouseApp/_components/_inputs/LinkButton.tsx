@@ -5,25 +5,48 @@ import { ColorEnum } from '../../_lib/enums/ColorEnum';
 import { BorderRadiusEnum } from '../../_lib/enums/BorderRadiusEnum';
 import { FontSizeEnum } from '../../_lib/enums/FontSizeEnum';
 import { useNavigation } from '@react-navigation/native';
+import { TrainingRouteParam } from '../../_stacks/PrivateStack';
 
 interface IProps {
   to: NavigationTypeEnum;
   label: string;
+  backGround?: 'blue' | 'transparent';
+  color?: ColorEnum;
+  borderColor?: ColorEnum;
+  borderRadius?: BorderRadiusEnum;
+  fontSize: FontSizeEnum;
+  padding?: number;
+  fullWidth?: boolean;
+  width?: number;
+  param?: TrainingRouteParam;
 }
 
 const LinkButton: React.FC<IProps> = (props) => {
-  const { to, label } = props;
+  const { to, label, backGround, fullWidth, width, borderColor, borderRadius, color, fontSize, param, padding } = props;
 
-  const navigation = useNavigation();
-
+  const { navigate } = useNavigation();
+  const backGroundStyle = styles[backGround];
   const onNavigate = React.useCallback(async () => {
-    navigation.navigate(to as never);
-  }, [to]);
+    if (param) {
+      const parameter = { name: to as never, params: param, merge: false } as never;
+
+      navigate(parameter);
+    } else {
+      navigate(to as never);
+    }
+  }, [navigate, to, param]);
 
   return (
-    <Pressable style={styles.button} onPress={onNavigate}>
-      <View style={styles.spacer}>
-        <Text style={styles.text}>{label}</Text>
+    <Pressable
+      style={[
+        backGroundStyle,
+        styles.button,
+        { width: fullWidth ? '100%' : width, borderColor: borderColor, borderRadius: borderRadius },
+      ]}
+      onPress={onNavigate}
+    >
+      <View style={[styles.spacer, { padding: padding }]}>
+        <Text style={(styles.text, { color: color, fontSize: fontSize })}>{label}</Text>
       </View>
     </Pressable>
   );

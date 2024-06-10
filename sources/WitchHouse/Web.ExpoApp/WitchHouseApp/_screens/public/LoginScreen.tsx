@@ -80,8 +80,10 @@ const LoginScreen: React.FC = () => {
                 backGround="blue"
                 fullWidth
                 disabled={loginDisabled}
-                color={ColorEnum.LightGray}
-                fontSize={FontSizeEnum.md}
+                borderRadius={BorderRadiusEnum.Medium}
+                borderColor={ColorEnum.Blue}
+                color={ColorEnum.White}
+                fontSize={FontSizeEnum.xl}
                 onPress={handleLogin}
               />
             </View>

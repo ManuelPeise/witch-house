@@ -13,6 +13,7 @@ export const useDataSync = () => {
   const [apiIsAvailable, setApiIsAvailable] = React.useState<boolean>(false);
   const [syncedData, setSyncedData] = React.useState<DataSyncModel | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
   const saveSyncedData = React.useCallback(async () => {
     if (syncedData != null) {
       await AsyncStorage.setItem(AsyncStorageKeyEnum.UserData, JSON.stringify(syncedData.userData));
@@ -28,27 +29,6 @@ export const useDataSync = () => {
     saveSyncedData();
   }, [syncedData]);
 
-  const getUpdatedModel = React.useCallback(async (model: DataSyncModel): Promise<DataSyncModel> => {
-    const [userDataJson, schoolModulesJson] = await Promise.all([
-      await AsyncStorage.getItem(AsyncStorageKeyEnum.UserData),
-      await AsyncStorage.getItem(AsyncStorageKeyEnum.SchoolModules),
-    ]);
-
-    if (userDataJson == null || schoolModulesJson == null) {
-      console.log('Is Null');
-    }
-
-    const existingUserData: UserDataSync = JSON.parse(userDataJson);
-    const schoolModules: SchoolModuleSync = JSON.parse(schoolModulesJson);
-
-    const update: DataSyncModel = {
-      userData: { ...existingUserData, ...model?.userData },
-      schoolModules: { ...schoolModules, ...model?.schoolModules },
-    };
-
-    return update;
-  }, []);
-
   const syncAppData = React.useCallback(async (userGuid: string) => {
     const model: DataSyncImportModel = { userId: userGuid };
     const tokenDataJson = SecureStore.getItem(SecureStoreKeyEnum.Jwt) ?? null;
@@ -63,9 +43,8 @@ export const useDataSync = () => {
         await axiosClient.post(endPoints.sync.syncAppData, JSON.stringify(model)).then(async (res) => {
           if (res.status === 200) {
             const data: DataSyncModel = res.data;
-            const model = await getUpdatedModel(data);
 
-            setSyncedData(model);
+            setSyncedData(res.data);
           } else if (res.status === 401) {
             console.log('Unauthorized');
           }
