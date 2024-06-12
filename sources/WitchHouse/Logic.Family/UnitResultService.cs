@@ -41,7 +41,7 @@ namespace Logic.Family
                                                          TimeStamp = unitStatisticGroup.Key,
                                                          Success = unitStatisticGroup.Sum(x => x.Success),
                                                          Failed = unitStatisticGroup.Sum(x => x.Failed)
-                                                     }).ToList()
+                                                     }).OrderBy(x => x.TimeStamp).ToList()
                                       }).ToList();
 
                     return statistics;

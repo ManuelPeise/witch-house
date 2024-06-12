@@ -8,7 +8,7 @@ using Service.Shared;
 
 namespace Service.Api.ApiControllers.Training
 {
-    //[Authorize]
+    [Authorize]
     public class TrainingResultService : ApiControllerBase
     {
         private readonly IUnitResultService _unitResultService;
