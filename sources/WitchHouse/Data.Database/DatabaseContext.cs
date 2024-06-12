@@ -19,6 +19,7 @@ namespace Data.Database
         public DbSet<ModuleEntity> Modules { get; set; }
         public DbSet<UserModuleEntity> UserModules { get; set; }
         public DbSet<SettingsEntity> Settings { get; set; }
+        public DbSet<UnitResultEntity> UnitResults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

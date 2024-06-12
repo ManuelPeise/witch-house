@@ -10,7 +10,7 @@ import AppDrawer from './_drawer/AppDrawer';
 import TrainingScreen from '../_screens/private/_training/TrainingScreen';
 import SettingsScreen from '../_screens/private/_settings/SettingsScreen';
 import TrainingPage from '../_screens/private/_training/TrainingPage';
-import { UnitTypeEnum } from '../_lib/enums/MathUnitTypeEnum';
+import { UnitTypeEnum } from '../_lib/enums/UnitTypeEnum';
 
 export type TrainingRouteParam = {
   rule: UnitTypeEnum;

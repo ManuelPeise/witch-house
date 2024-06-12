@@ -21,6 +21,7 @@ interface IProps {
 const TrainingResult: React.FC<IProps> = (props) => {
   const { training, handleRestart, handleQuit } = props;
   const { getResource } = useI18n();
+
   const { unitCount, failedUnits, success } = React.useMemo(() => {
     let success = 0;
     let failed = 0;

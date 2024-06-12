@@ -8,6 +8,7 @@ import { endPoints } from '../_lib/api/apiConfiguration';
 import { checkApiIsAvailable } from '../_lib/api/apiUtils';
 import { AsyncStorageKeyEnum } from '../_lib/enums/AsyncStorageKeyEnum';
 import { DataSyncImportModel, DataSyncModel, SchoolModuleSync, UserDataSync } from '../_lib/sync';
+import { LoginResult } from '../_lib/types';
 
 export const useDataSync = () => {
   const [apiIsAvailable, setApiIsAvailable] = React.useState<boolean>(false);
@@ -29,6 +30,7 @@ export const useDataSync = () => {
     saveSyncedData();
   }, [syncedData]);
 
+  // TODO refactor to sync unitSettings and unitResults
   const syncAppData = React.useCallback(async (userGuid: string) => {
     const model: DataSyncImportModel = { userId: userGuid };
     const tokenDataJson = SecureStore.getItem(SecureStoreKeyEnum.Jwt) ?? null;
@@ -42,8 +44,6 @@ export const useDataSync = () => {
 
         await axiosClient.post(endPoints.sync.syncAppData, JSON.stringify(model)).then(async (res) => {
           if (res.status === 200) {
-            const data: DataSyncModel = res.data;
-
             setSyncedData(res.data);
           } else if (res.status === 401) {
             console.log('Unauthorized');
@@ -55,6 +55,10 @@ export const useDataSync = () => {
         setIsLoading(false);
       }
     }
+  }, []);
+
+  const saveLoginResult = React.useCallback(async (data: LoginResult) => {
+    await AsyncStorage.setItem(AsyncStorageKeyEnum.LoginResult, JSON.stringify(data));
   }, []);
 
   const executeDataSync = React.useCallback(
@@ -70,5 +74,6 @@ export const useDataSync = () => {
     apiIsAvailable,
     setApiIsAvailable,
     executeDataSync,
+    saveLoginResult,
   };
 };

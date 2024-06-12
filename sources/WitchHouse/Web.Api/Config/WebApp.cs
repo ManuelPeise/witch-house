@@ -1,5 +1,6 @@
 ﻿using Data.Database;
 using Logic.Administration;
+using Logic.Family;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Logic.Sync;
@@ -59,6 +60,7 @@ namespace Web.Api.Config
             builder.Services.AddScoped<IModuleConfigurationService, ModuleConfigurationService>();
             builder.Services.AddScoped<ISettingsService, SettingsService>();
             builder.Services.AddScoped<ISyncHandler, DataSyncHandler>();
+            builder.Services.AddScoped<IUnitResultService, UnitResultService>();
         }
 
         public static void ConfigureServices(WebApplicationBuilder builder)

@@ -12,7 +12,7 @@ export const AuthContext = React.createContext<AuthState>({} as AuthState);
 
 const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
   const { children } = props;
-  const { apiIsAvailable, setApiIsAvailable, executeDataSync } = useDataSync();
+  const { apiIsAvailable, setApiIsAvailable, saveLoginResult } = useDataSync();
   const [loginResult, setLoginResult] = React.useState<LoginResult | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
@@ -56,11 +56,12 @@ const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
               jwtToken: responseData.data.jwt,
               refreshToken: responseData.data.refreshToken,
             };
-            console.log('TokenData', tokenData);
+
             SecureStore.setItem(SecureStoreKeyEnum.LoginResult, JSON.stringify(responseData.data));
             SecureStore.setItem(SecureStoreKeyEnum.Jwt, JSON.stringify(tokenData));
 
-            await executeDataSync(responseData.data.userId);
+            await saveLoginResult(responseData.data);
+
             axiosClient.defaults.headers.common['Authorization'] = `bearer ${responseData.data.jwt}`;
             setIsAuthenticated(true);
           }

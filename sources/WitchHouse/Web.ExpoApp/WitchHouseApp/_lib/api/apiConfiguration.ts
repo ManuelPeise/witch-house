@@ -9,4 +9,9 @@ export const endPoints = {
   sync: {
     syncAppData: 'DataSync/SyncAppData',
   },
+  training: {
+    getTrainingResultStatistics: 'TrainingResultService/GetUnitResultStatistics',
+    saveTrainingResult: 'TrainingResultService/SaveUnitResult',
+    saveTrainingResults: 'TrainingResultService/SaveUnitResults',
+  },
 };

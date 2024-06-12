@@ -1,4 +1,4 @@
-import { UnitTypeEnum } from '../../../_lib/enums/MathUnitTypeEnum';
+import { UnitTypeEnum } from '../../../_lib/enums/UnitTypeEnum';
 import { SchoolSettings } from '../../../_lib/sync';
 import { letters } from './constants';
 import { TrainingData, TrainingOption } from './types';
@@ -111,9 +111,12 @@ export class UnitCreator {
         result = firstValue * secondValue;
         break;
       case UnitTypeEnum.Divide:
-        console.log('create divide...');
         result = Math.max(firstValue, secondValue) / Math.min(firstValue, secondValue);
         break;
+    }
+
+    if (this._rule === UnitTypeEnum.Divide) {
+      return result % 1 === 0 && result <= this._settings.maxValue;
     }
 
     const existingEntries = trainingData?.filter((x) => x?.result?.value === result.toString()) ?? [];

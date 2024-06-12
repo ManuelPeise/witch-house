@@ -3,6 +3,7 @@ export type ApiResult<TModel> = {
   data: TModel | null;
   get: (options: ApiOptions) => Promise<void>;
   post: (options: ApiOptions, model: TModel) => Promise<void>;
+  sendPostRequest: (serviceUrl: string, requestModel: any) => Promise<Boolean>;
 };
 
 export type ApiOptions = {

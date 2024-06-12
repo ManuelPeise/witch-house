@@ -7,7 +7,7 @@ import { useI18n } from '../../../_hooks/useI18n';
 import { ModuleSettings } from '../../../_lib/sync';
 import LinkButton from '../../../_components/_inputs/LinkButton';
 import { NavigationTypeEnum } from '../../../_lib/enums/NavigationTypeEnum';
-import { UnitTypeEnum } from '../../../_lib/enums/MathUnitTypeEnum';
+import { UnitTypeEnum } from '../../../_lib/enums/UnitTypeEnum';
 import { FontSizeEnum } from '../../../_lib/enums/FontSizeEnum';
 
 interface IProps {

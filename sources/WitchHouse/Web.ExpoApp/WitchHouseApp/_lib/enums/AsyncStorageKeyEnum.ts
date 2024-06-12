@@ -3,4 +3,5 @@ export enum AsyncStorageKeyEnum {
   SchoolModules = 'school-modules',
   AppSettings = 'app-settings',
   TrainingResults = 'trainingResults',
+  LoginResult = 'loginResult',
 }

@@ -3,7 +3,7 @@ import PrivatePageWrapper from '../../../_components/_wrappers/PrivatePageWrappe
 import books from '../../../img/schoolBooks.png';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { TrainingRouteParam, RootParamList } from '../../../_stacks/PrivateStack';
-import { UnitTypeEnum } from '../../../_lib/enums/MathUnitTypeEnum';
+import { UnitTypeEnum } from '../../../_lib/enums/UnitTypeEnum';
 import { StyleSheet, Text, View } from 'react-native';
 import { useStorage } from '../../../_hooks/useStorage';
 import { SchoolModuleSync } from '../../../_lib/sync';
@@ -15,11 +15,13 @@ import { FontSizeEnum } from '../../../_lib/enums/FontSizeEnum';
 import { ColorEnum } from '../../../_lib/enums/ColorEnum';
 import { BorderRadiusEnum } from '../../../_lib/enums/BorderRadiusEnum';
 import MultipleChoiceForm from '../../../_components/_forms/MultipleChoiceForm';
-import { Training, TrainingResultModel } from './types';
+import { Training, TrainingResultExportModel, TrainingResultModel } from './types';
 import { UnitCreator } from './unitCreator';
 import TrainingResult from './TrainingResult';
 import { NavigationTypeEnum } from '../../../_lib/enums/NavigationTypeEnum';
 import { useAuth } from '../../../_hooks/useAuth';
+import { useApi } from '../../../_hooks/useApi';
+import { endPoints } from '../../../_lib/api/apiConfiguration';
 
 const TrainingPage: React.FC = () => {
   const { getResource } = useI18n();
@@ -28,8 +30,13 @@ const TrainingPage: React.FC = () => {
   const { model } = useStorage<SchoolModuleSync[]>(AsyncStorageKeyEnum.SchoolModules);
   const { loginResult } = useAuth();
   const trainingResultStorage = useStorage<TrainingResultModel[]>(AsyncStorageKeyEnum.TrainingResults);
+  const { sendPostRequest } = useApi<TrainingResultExportModel>();
 
   const [training, setTraining] = React.useState<Training | null>(null);
+
+  const existingTrainingResults = React.useMemo(() => {
+    return trainingResultStorage.model != null ? trainingResultStorage.model.slice() : [];
+  }, [trainingResultStorage]);
 
   const routeParam: TrainingRouteParam = React.useMemo(() => {
     return params as TrainingRouteParam;
@@ -46,6 +53,30 @@ const TrainingPage: React.FC = () => {
         return getResource('common:titleLetterUnit');
     }
   }, [routeParam, getResource]);
+
+  const handleSaveTrainingResults = React.useCallback(async () => {
+    const exportModels: TrainingResultExportModel[] = existingTrainingResults.map((res) => {
+      return {
+        userId: res.userId,
+        unitType: res.unitKey,
+        success: res.success,
+        failed: res.failed,
+        timeStamp: res.timeStamp,
+      };
+    });
+
+    if (exportModels.length) {
+      await sendPostRequest(endPoints.training.saveTrainingResults, exportModels).then(async (res) => {
+        if (res) {
+          trainingResultStorage.storeItem([]);
+        }
+      });
+    }
+  }, [existingTrainingResults]);
+
+  React.useEffect(() => {
+    handleSaveTrainingResults();
+  }, [handleSaveTrainingResults]);
 
   React.useEffect(() => {
     if (routeParam != null && model) {
@@ -80,17 +111,6 @@ const TrainingPage: React.FC = () => {
     setTraining({ ...training, trainingData: unitCreator.getTrainingData(), isRunning: true });
   }, [routeParam, training]);
 
-  const handleRestart = React.useCallback(async () => {
-    const moduleSettingsType =
-      routeParam.rule === UnitTypeEnum.Letters ? ModuleSettingsTypeEnum.GermanUnits : ModuleSettingsTypeEnum.MathUnits;
-
-    const moduleSettings =
-      model.find((x) => x.moduleSettings.moduleSettingsType === moduleSettingsType)?.moduleSettings.settings ?? null;
-
-    const unitCreator = new UnitCreator(routeParam.rule, moduleSettings);
-    setTraining({ ...training, trainingData: unitCreator.getTrainingData(), isRunning: true, isFinished: false });
-  }, [routeParam, training]);
-
   const getResultValues = React.useCallback(() => {
     let success = 0;
     let failed = 0;
@@ -107,37 +127,57 @@ const TrainingPage: React.FC = () => {
   }, [training]);
 
   const saveTrainingResult = React.useCallback(async () => {
-    const existingResults = trainingResultStorage.model != null ? trainingResultStorage.model.slice() : [];
-
-    console.log(existingResults);
-    const date: Date = new Date();
-
     const result = getResultValues();
 
-    const resultToAdd: TrainingResultModel = {
-      unitKey: training.unitType,
+    const date: Date = new Date();
+
+    const trainingResult: TrainingResultExportModel = {
       userId: loginResult.userId,
-      familyId: loginResult.familyGuid,
-      timeStamp: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`,
+      unitType: routeParam.rule,
       success: result.success,
       failed: result.failed,
+      timeStamp: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`,
     };
 
-    existingResults.push(resultToAdd);
+    await sendPostRequest(endPoints.training.saveTrainingResult, trainingResult).then(async (res) => {
+      if (!res) {
+        const resultToAdd: TrainingResultModel = {
+          unitKey: training.unitType,
+          userId: loginResult.userId,
+          familyId: loginResult.familyGuid,
+          timeStamp: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`,
+          success: result.success,
+          failed: result.failed,
+        };
 
-    await trainingResultStorage.storeItem(existingResults);
-  }, [loginResult, trainingResultStorage, getResultValues]);
+        existingTrainingResults.push(resultToAdd);
+
+        await trainingResultStorage.storeItem(existingTrainingResults);
+      }
+    });
+  }, [loginResult, trainingResultStorage, getResultValues, sendPostRequest]);
 
   const handleFinishTraining = React.useCallback(async () => {
-    await saveTrainingResult();
     setTraining({ ...training, isRunning: false, isFinished: true });
-  }, [training]);
+  }, [training, saveTrainingResult]);
 
   const handleQuit = React.useCallback(async () => {
     await saveTrainingResult();
     setTraining({ ...training, isRunning: false, isFinished: false });
     navigate(NavigationTypeEnum.TrainingOverview as never);
   }, [training, navigate]);
+
+  const handleRestart = React.useCallback(async () => {
+    await saveTrainingResult();
+    const moduleSettingsType =
+      routeParam.rule === UnitTypeEnum.Letters ? ModuleSettingsTypeEnum.GermanUnits : ModuleSettingsTypeEnum.MathUnits;
+
+    const moduleSettings =
+      model.find((x) => x.moduleSettings.moduleSettingsType === moduleSettingsType)?.moduleSettings.settings ?? null;
+
+    const unitCreator = new UnitCreator(routeParam.rule, moduleSettings);
+    setTraining({ ...training, trainingData: unitCreator.getTrainingData(), isRunning: true, isFinished: false });
+  }, [routeParam, training, saveTrainingResult]);
 
   return (
     <PrivatePageWrapper image={books}>

@@ -1,4 +1,4 @@
-import { UnitTypeEnum } from '../../../_lib/enums/MathUnitTypeEnum';
+import { UnitTypeEnum } from '../../../_lib/enums/UnitTypeEnum';
 import { ModuleSettings, SchoolSettings } from '../../../_lib/sync';
 
 export type Training = {
@@ -28,4 +28,12 @@ export type TrainingResultModel = {
   timeStamp: string;
   success: number;
   failed: number;
+};
+
+export type TrainingResultExportModel = {
+  unitType: UnitTypeEnum;
+  userId: string;
+  success: number;
+  failed: number;
+  timeStamp: string;
 };
