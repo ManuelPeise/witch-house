@@ -1,13 +1,12 @@
 ﻿using Data.Shared.Models.Sync;
 using Logic.Shared.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Shared;
 
 namespace Service.Api.ApiControllers.Sync
 {
-    [Authorize]
+   //  [Authorize]
     public class DataSyncController : ApiControllerBase
     {
         private readonly ISyncHandler _syncHandler;

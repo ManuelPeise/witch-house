@@ -51,18 +51,20 @@ const UnitStatisticScreen: React.FC = () => {
     }
   }, [hasAccess, userData]);
 
-  const getLabel = React.useCallback((type: UnitTypeEnum, length: number): string => {
+  const getLabel = React.useCallback((type: UnitTypeEnum): string => {
     switch (type) {
       case UnitTypeEnum.Addition:
-        return getResource('common:labelAdditionStatistics').replace('{count}', length.toFixed());
+        return getResource('common:labelAdditionStatistics');
       case UnitTypeEnum.Subtract:
-        return getResource('common:labelSubtractStatistics').replace('{count}', length.toFixed());
+        return getResource('common:labelSubtractStatistics');
       case UnitTypeEnum.Multiply:
-        return getResource('common:labelMultiplyStatistics').replace('{count}', length.toFixed());
+        return getResource('common:labelMultiplyStatistics');
       case UnitTypeEnum.Divide:
-        return getResource('common:labelDivideStatistics').replace('{count}', length.toFixed());
+        return getResource('common:labelDivideStatistics');
+      case UnitTypeEnum.Doubling:
+        return getResource('common:labelDoublingStatistics');
       case UnitTypeEnum.Letters:
-        return getResource('common:labelLetters').replace('{count}', length.toFixed());
+        return getResource('common:labelLetterStatistics');
     }
   }, []);
 
@@ -105,7 +107,7 @@ const UnitStatisticScreen: React.FC = () => {
             return (
               <LineChartDiagram
                 key={index}
-                label={getLabel(set.unitType, set.entries.length)}
+                label={getLabel(set.unitType)}
                 width={Dimensions.get('window').width - 50}
                 height={200}
                 yLabel="Points"

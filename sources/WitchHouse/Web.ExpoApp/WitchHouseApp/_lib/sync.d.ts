@@ -16,23 +16,6 @@ export type UserModule = {
   isActive: boolean;
 };
 
-export type SchoolSettings = {
-  allowAddition: boolean;
-  allowSubtraction: boolean;
-  allowMultiply: boolean;
-  allowDivide: boolean;
-  minValue: number;
-  maxValue: number;
-  maxWordLength: number;
-};
-
-export type ModuleSettings = {
-  userId: string;
-  moduleType: ModuleTypeEnum;
-  moduleSettingsType: ModuleSettingsTypeEnum;
-  settings: SchoolSettings;
-};
-
 export type SchoolModuleSync = {
   userModule: UserModule;
   moduleSettings: ModuleSettings;

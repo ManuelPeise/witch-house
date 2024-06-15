@@ -4,35 +4,52 @@ import { BorderRadiusEnum } from '../../../_lib/enums/BorderRadiusEnum';
 import { ColorEnum } from '../../../_lib/enums/ColorEnum';
 import { ModuleSettingsTypeEnum } from '../../../_lib/enums/ModuleSettingsTypeEnum';
 import { useI18n } from '../../../_hooks/useI18n';
-import { ModuleSettings } from '../../../_lib/sync';
 import LinkButton from '../../../_components/_inputs/LinkButton';
 import { NavigationTypeEnum } from '../../../_lib/enums/NavigationTypeEnum';
 import { UnitTypeEnum } from '../../../_lib/enums/UnitTypeEnum';
 import { FontSizeEnum } from '../../../_lib/enums/FontSizeEnum';
+import { ModuleSettings } from '../../../_lib/types';
+import * as SecureStore from 'expo-secure-store';
+import { SecureStoreKeyEnum } from '../../../_lib/enums/SecureStoreKeyEnum';
 
-interface IProps {
-  settings: ModuleSettings;
+interface IPops {
+  settingsType: ModuleSettingsTypeEnum;
 }
 
-const TrainingOverview: React.FC<IProps> = (props) => {
-  const { settings } = props;
+const TrainingOverview: React.FC<IPops> = (props) => {
+  const { settingsType } = props;
   const { getResource } = useI18n();
 
+  const loadTrainingSettings = React.useCallback((): ModuleSettings[] => {
+    let config: ModuleSettings[] = null;
+    const json = SecureStore.getItem(SecureStoreKeyEnum.TrainingModuleSettings);
+    if (json != null && json.length) {
+      config = JSON.parse(json);
+    }
+    return config;
+  }, []);
+
+  const trainingSettings = React.useMemo(() => {
+    const allSettings = loadTrainingSettings();
+
+    return allSettings.find((x) => x.moduleSettingsType === settingsType);
+  }, [settingsType, loadTrainingSettings]);
+
   const title = React.useMemo(() => {
-    switch (settings.moduleSettingsType) {
+    switch (settingsType) {
       case ModuleSettingsTypeEnum.MathUnits:
         return getResource('common:titleMathUnits');
       case ModuleSettingsTypeEnum.GermanUnits:
         return getResource('common:titleGermanUnits');
     }
-  }, [settings, getResource]);
+  }, [settingsType, getResource]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.navContainer}>
         {/* render math settings buttons */}
-        {settings.moduleSettingsType === ModuleSettingsTypeEnum.MathUnits && settings.settings.allowAddition && (
+        {settingsType === ModuleSettingsTypeEnum.MathUnits && trainingSettings?.settings.allowAddition && (
           <LinkButton
             to={NavigationTypeEnum.SchoolTraining}
             label={getResource('common:labelAddition')}
@@ -45,7 +62,7 @@ const TrainingOverview: React.FC<IProps> = (props) => {
             param={{ rule: UnitTypeEnum.Addition }}
           />
         )}
-        {settings.moduleSettingsType === ModuleSettingsTypeEnum.MathUnits && settings.settings.allowSubtraction && (
+        {settingsType === ModuleSettingsTypeEnum.MathUnits && trainingSettings?.settings.allowSubtraction && (
           <LinkButton
             to={NavigationTypeEnum.SchoolTraining}
             label={getResource('common:labelSubtract')}
@@ -57,7 +74,7 @@ const TrainingOverview: React.FC<IProps> = (props) => {
             param={{ rule: UnitTypeEnum.Subtract }}
           />
         )}
-        {settings.moduleSettingsType === ModuleSettingsTypeEnum.MathUnits && settings.settings.allowMultiply && (
+        {settingsType === ModuleSettingsTypeEnum.MathUnits && trainingSettings?.settings.allowMultiply && (
           <LinkButton
             to={NavigationTypeEnum.SchoolTraining}
             label={getResource('common:labelMultiply')}
@@ -69,7 +86,7 @@ const TrainingOverview: React.FC<IProps> = (props) => {
             param={{ rule: UnitTypeEnum.Multiply }}
           />
         )}
-        {settings.moduleSettingsType === ModuleSettingsTypeEnum.MathUnits && settings.settings.allowDivide && (
+        {settingsType === ModuleSettingsTypeEnum.MathUnits && trainingSettings?.settings.allowDivide && (
           <LinkButton
             to={NavigationTypeEnum.SchoolTraining}
             label={getResource('common:labelDivide')}
@@ -81,8 +98,21 @@ const TrainingOverview: React.FC<IProps> = (props) => {
             param={{ rule: UnitTypeEnum.Divide }}
           />
         )}
+        {settingsType === ModuleSettingsTypeEnum.MathUnits && trainingSettings?.settings.allowDoubling && (
+          <LinkButton
+            to={NavigationTypeEnum.SchoolTraining}
+            label={getResource('common:labelDoubling')}
+            color={ColorEnum.Blue}
+            backGround="blue"
+            fontSize={FontSizeEnum.md}
+            borderColor={ColorEnum.Blue}
+            borderRadius={BorderRadiusEnum.Medium}
+            padding={3}
+            param={{ rule: UnitTypeEnum.Doubling }}
+          />
+        )}
         {/* render german settings buttons */}
-        {settings.moduleSettingsType === ModuleSettingsTypeEnum.GermanUnits && (
+        {settingsType === ModuleSettingsTypeEnum.GermanUnits && (
           <LinkButton
             to={NavigationTypeEnum.SchoolTraining}
             label={getResource('common:labelLetters')}

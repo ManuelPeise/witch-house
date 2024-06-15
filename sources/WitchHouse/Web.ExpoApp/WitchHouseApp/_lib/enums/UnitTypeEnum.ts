@@ -3,5 +3,6 @@ export enum UnitTypeEnum {
   Subtract = 1,
   Multiply = 2,
   Divide = 3,
-  Letters = 4,
+  Doubling = 4,
+  Letters = 5,
 }

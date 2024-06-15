@@ -52,6 +52,7 @@ export type SchoolSettings = {
   allowSubtraction: boolean;
   allowMultiply: boolean;
   allowDivide: boolean;
+  allowDoubling: boolean;
   minValue: number;
   maxValue: number;
   maxWordLength: number;

@@ -42,7 +42,6 @@ const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
 
     if (syncDataModel?.userData != null && syncDataModel?.jwt != null) {
       const model = await syncAppData(syncDataModel.userData, syncDataModel.jwt);
-
       if (model != null) {
         const userDataUpdate = { ...syncDataModel.userData, ...model.userData };
         setUserData(userDataUpdate);

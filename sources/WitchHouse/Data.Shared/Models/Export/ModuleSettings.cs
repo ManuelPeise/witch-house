@@ -17,6 +17,7 @@ namespace Data.Shared.Models.Export
         public bool AllowSubtraction { get; set; }
         public bool AllowMultiply { get; set; }
         public bool AllowDivide { get; set; }
+        public bool AllowDoubling { get; set; }
         public int MinValue { get; set; }
         public int MaxValue { get; set; }
         // german settings

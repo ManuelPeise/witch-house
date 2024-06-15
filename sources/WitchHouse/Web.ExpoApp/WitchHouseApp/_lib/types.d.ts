@@ -31,6 +31,17 @@ export type MobileLoginResult = {
   trainingModuleSettings: ModuleSettings[];
 };
 
+export type SchoolSettings = {
+  allowAddition: boolean;
+  allowSubtraction: boolean;
+  allowMultiply: boolean;
+  allowDivide: boolean;
+  allowDoubling: boolean;
+  minValue: number;
+  maxValue: number;
+  maxWordLength: number;
+};
+
 export type ModuleSettings = {
   userId: string;
   moduleType: ModuleTypeEnum;

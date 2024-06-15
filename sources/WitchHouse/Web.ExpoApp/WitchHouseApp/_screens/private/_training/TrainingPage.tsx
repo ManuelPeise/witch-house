@@ -22,17 +22,29 @@ import { NavigationTypeEnum } from '../../../_lib/enums/NavigationTypeEnum';
 import { useAuth } from '../../../_hooks/useAuth';
 import { useApi } from '../../../_hooks/useApi';
 import { endPoints } from '../../../_lib/api/apiConfiguration';
+import * as SecureStore from 'expo-secure-store';
+import { SecureStoreKeyEnum } from '../../../_lib/enums/SecureStoreKeyEnum';
+import { ModuleSettings } from '../../../_lib/types';
 
 const TrainingPage: React.FC = () => {
   const { getResource } = useI18n();
   const { navigate } = useNavigation();
   const { params } = useRoute<RouteProp<RootParamList>>();
-  const { model } = useStorage<SchoolModuleSync[]>(AsyncStorageKeyEnum.SchoolModules);
   const { userData } = useAuth();
   const trainingResultStorage = useStorage<TrainingResultModel[]>(AsyncStorageKeyEnum.TrainingResults);
   const { sendPostRequest } = useApi<TrainingResultExportModel>();
 
   const [training, setTraining] = React.useState<Training | null>(null);
+
+  const loadTrainingSettings = React.useCallback((): ModuleSettings[] => {
+    let config: ModuleSettings[] = null;
+    const json = SecureStore.getItem(SecureStoreKeyEnum.TrainingModuleSettings);
+    if (json != null && json.length) {
+      config = JSON.parse(json);
+    }
+
+    return config;
+  }, []);
 
   const existingTrainingResults = React.useMemo(() => {
     return trainingResultStorage.model != null ? trainingResultStorage.model.slice() : [];
@@ -79,14 +91,14 @@ const TrainingPage: React.FC = () => {
   }, [handleSaveTrainingResults]);
 
   React.useEffect(() => {
-    if (routeParam != null && model) {
+    const settings = loadTrainingSettings();
+    if (routeParam != null && settings) {
       const moduleSettingsType =
         routeParam.rule === UnitTypeEnum.Letters
           ? ModuleSettingsTypeEnum.GermanUnits
           : ModuleSettingsTypeEnum.MathUnits;
 
-      const moduleSettings =
-        model.find((x) => x.moduleSettings.moduleSettingsType === moduleSettingsType)?.moduleSettings.settings ?? null;
+      const moduleSettings = settings.find((x) => x.moduleSettingsType === moduleSettingsType)?.settings ?? null;
 
       setTraining({
         title: trainingTitle,
@@ -97,19 +109,19 @@ const TrainingPage: React.FC = () => {
         trainingData: [],
       });
     }
-  }, [routeParam, trainingTitle, model]);
+  }, [routeParam, trainingTitle, loadTrainingSettings]);
 
   const handleStart = React.useCallback(async () => {
+    const settings = loadTrainingSettings();
     const moduleSettingsType =
       routeParam.rule === UnitTypeEnum.Letters ? ModuleSettingsTypeEnum.GermanUnits : ModuleSettingsTypeEnum.MathUnits;
 
-    const moduleSettings =
-      model.find((x) => x.moduleSettings.moduleSettingsType === moduleSettingsType)?.moduleSettings.settings ?? null;
+    const moduleSettings = settings.find((x) => x.moduleSettingsType === moduleSettingsType)?.settings ?? null;
 
     const unitCreator = new UnitCreator(routeParam.rule, moduleSettings);
 
     setTraining({ ...training, trainingData: unitCreator.getTrainingData(), isRunning: true });
-  }, [routeParam, training]);
+  }, [routeParam, training, loadTrainingSettings]);
 
   const getResultValues = React.useCallback(() => {
     let success = 0;
@@ -169,15 +181,15 @@ const TrainingPage: React.FC = () => {
 
   const handleRestart = React.useCallback(async () => {
     await saveTrainingResult();
+    const settings = loadTrainingSettings();
     const moduleSettingsType =
       routeParam.rule === UnitTypeEnum.Letters ? ModuleSettingsTypeEnum.GermanUnits : ModuleSettingsTypeEnum.MathUnits;
 
-    const moduleSettings =
-      model.find((x) => x.moduleSettings.moduleSettingsType === moduleSettingsType)?.moduleSettings.settings ?? null;
+    const moduleSettings = settings.find((x) => x.moduleSettingsType === moduleSettingsType)?.settings ?? null;
 
     const unitCreator = new UnitCreator(routeParam.rule, moduleSettings);
     setTraining({ ...training, trainingData: unitCreator.getTrainingData(), isRunning: true, isFinished: false });
-  }, [routeParam, training, saveTrainingResult]);
+  }, [routeParam, training, loadTrainingSettings, saveTrainingResult]);
 
   return (
     <PrivatePageWrapper image={books}>

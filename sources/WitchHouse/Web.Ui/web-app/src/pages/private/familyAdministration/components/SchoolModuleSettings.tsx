@@ -26,6 +26,7 @@ const SchoolModuleSettings: React.FC<IProps> = (props) => {
       allowSubtraction: false,
       allowMultiply: false,
       allowDivide: false,
+      allowDoubling: false,
       minValue: 0,
       maxValue: 0,
       maxWordLength: 0,
@@ -78,7 +79,8 @@ const SchoolModuleSettings: React.FC<IProps> = (props) => {
         key === 'allowAddition' ||
         key === 'allowSubtraction' ||
         key === 'allowMultiply' ||
-        key === 'allowDivide'
+        key === 'allowDivide' ||
+        key === 'allowDoubling'
       )
         setSettings({ ...settings, [key]: value as boolean });
       return;
@@ -139,6 +141,15 @@ const SchoolModuleSettings: React.FC<IProps> = (props) => {
                 property="allowDivide"
                 label={getResource('administration:labelDivide')}
                 checked={settings.allowDivide}
+                disabled={disabled}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <CheckboxInput
+                property="allowDoubling"
+                label={getResource('administration:labelDoubling')}
+                checked={settings.allowDoubling}
                 disabled={disabled}
                 onChange={handleChange}
               />

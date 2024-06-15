@@ -26,7 +26,6 @@ export const useDataSync = () => {
       };
 
       await axiosClient.post(endPoints.sync.syncAppData, JSON.stringify(model)).then(async (res) => {
-        console.log('Sync status', res.status);
         if (res.status === 200) {
           responseData = res.data;
 

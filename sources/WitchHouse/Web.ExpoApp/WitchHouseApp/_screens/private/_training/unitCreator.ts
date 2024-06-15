@@ -1,5 +1,5 @@
 import { UnitTypeEnum } from '../../../_lib/enums/UnitTypeEnum';
-import { SchoolSettings } from '../../../_lib/sync';
+import { SchoolSettings } from '../../../_lib/types';
 import { letters } from './constants';
 import { TrainingData, TrainingOption } from './types';
 
@@ -23,6 +23,8 @@ export class UnitCreator {
         return this.getMathUnitTrainingData();
       case UnitTypeEnum.Divide:
         return this.getMathUnitTrainingData();
+      case UnitTypeEnum.Doubling:
+        return this.getMathUnitTrainingData();
       case UnitTypeEnum.Letters:
         return this.getLetterTrainingData();
     }
@@ -39,7 +41,10 @@ export class UnitCreator {
         trainingDataCollection.push({
           unitLabel: this.getUnitLabel(firstValue, secondValue),
           result: null,
-          options: this.getMathOptions(firstValue, secondValue),
+          options:
+            this._rule !== UnitTypeEnum.Doubling
+              ? this.getMathOptions(firstValue, secondValue)
+              : this.getDoublingOptions(firstValue),
         });
       } else {
       }
@@ -54,7 +59,26 @@ export class UnitCreator {
     const options: TrainingOption[] = [{ key: 0, value: excluded[0].toString() }];
 
     do {
-      const value = this.getRandomNumber(letters.length - 1, 0);
+      const value = this.getRandomNumber(this._settings.maxValue, 0);
+
+      if (excluded.includes(value)) {
+        continue;
+      }
+
+      options.push({ key: key, value: value.toString() });
+      excluded.push(value);
+    } while (options.length < 4);
+
+    return this.shuffleOptions(options);
+  }
+
+  private getDoublingOptions(firstValue: number): TrainingOption[] {
+    let key: number = 1;
+    const excluded: number[] = [firstValue * 2];
+    const options: TrainingOption[] = [{ key: 0, value: excluded[0].toString() }];
+
+    do {
+      const value = this.getRandomNumber(this._settings.maxValue, 0);
 
       if (excluded.includes(value)) {
         continue;
@@ -92,6 +116,8 @@ export class UnitCreator {
         return `${firstValue} x ${secondValue} =`;
       case UnitTypeEnum.Divide:
         return `${Math.max(firstValue, secondValue)} : ${Math.min(firstValue, secondValue)} =`;
+      case UnitTypeEnum.Doubling:
+        return `${firstValue}`;
     }
 
     return label;
@@ -113,10 +139,16 @@ export class UnitCreator {
       case UnitTypeEnum.Divide:
         result = Math.max(firstValue, secondValue) / Math.min(firstValue, secondValue);
         break;
+      case UnitTypeEnum.Doubling:
+        result = firstValue * 2;
     }
 
     if (this._rule === UnitTypeEnum.Divide) {
       return result % 1 === 0 && result <= this._settings.maxValue;
+    }
+
+    if (this._rule === UnitTypeEnum.Doubling) {
+      return result <= this._settings.maxValue;
     }
 
     const existingEntries = trainingData?.filter((x) => x?.result?.value === result.toString()) ?? [];
