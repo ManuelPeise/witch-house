@@ -51,5 +51,13 @@ namespace Service.Api.ApiControllers.Account
 
             await service.UpdateProfile(importModel);
         }
+
+        [HttpPost(Name = "UploadProfileImage")]
+        public async Task UploadProfileImage([FromBody] ProfileImageUploadModel importModel)
+        {
+            var service = new FamilyAccountService(_accountUnitOfWork, _moduleConfigurationService);
+
+            await service.UploadProfileImage(importModel);
+        }
     }
 }

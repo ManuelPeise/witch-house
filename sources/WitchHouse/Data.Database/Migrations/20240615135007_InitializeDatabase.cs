@@ -30,10 +30,12 @@ namespace Data.Database.Migrations
                     Culture = table.Column<string>(type: "longtext", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
                     Salt = table.Column<string>(type: "longtext", nullable: false),
+                    Pin = table.Column<string>(type: "longtext", nullable: false),
                     Secret = table.Column<string>(type: "longtext", nullable: false),
                     Token = table.Column<string>(type: "longtext", nullable: true),
                     RefreshToken = table.Column<string>(type: "longtext", nullable: true),
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    ProfileImage = table.Column<string>(type: "longtext", nullable: true),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: false),
                     CreatedAt = table.Column<string>(type: "longtext", nullable: false),
                     UpdatedBy = table.Column<string>(type: "longtext", nullable: false),
@@ -124,6 +126,27 @@ namespace Data.Database.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "UnitResults",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    UnitType = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Success = table.Column<int>(type: "int", nullable: false),
+                    Failed = table.Column<int>(type: "int", nullable: false),
+                    TimeStamp = table.Column<string>(type: "longtext", nullable: true),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: false),
+                    CreatedAt = table.Column<string>(type: "longtext", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: false),
+                    UpdatedAt = table.Column<string>(type: "longtext", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UnitResults", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "UserModules",
                 columns: table => new
                 {
@@ -145,16 +168,17 @@ namespace Data.Database.Migrations
 
             migrationBuilder.InsertData(
                 table: "AccountTable",
-                columns: new[] { "Id", "CreatedAt", "CreatedBy", "Culture", "DateOfBirth", "FamilyGuid", "FirstName", "IsActive", "LastName", "RefreshToken", "Role", "Salt", "Secret", "Token", "UpdatedAt", "UpdatedBy", "UserName" },
-                values: new object[] { new Guid("9ea3e392-07d7-4e58-b177-0d684ee41992"), "2024-06-04 15:59", "System", "en", null, null, "", false, "", null, 1, "1a104d76-7e0b-4765-a2f3-9389d88b3ff8", "UEBzc3dvcmQxYTEwNGQ3Ni03ZTBiLTQ3NjUtYTJmMy05Mzg5ZDg4YjNmZjg=", null, "", "", "System.Admin" });
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "Culture", "DateOfBirth", "FamilyGuid", "FirstName", "IsActive", "LastName", "Pin", "ProfileImage", "RefreshToken", "Role", "Salt", "Secret", "Token", "UpdatedAt", "UpdatedBy", "UserName" },
+                values: new object[] { new Guid("11477051-b947-43d4-b7ef-0e3413081e93"), "2024-06-15 15:50", "System", "en", null, null, "", false, "", "", null, null, 1, "c1364f1b-c12a-4625-96ec-18678383fbf6", "UEBzc3dvcmRjMTM2NGYxYi1jMTJhLTQ2MjUtOTZlYy0xODY3ODM4M2ZiZjY=", null, "", "", "System.Admin" });
 
             migrationBuilder.InsertData(
                 table: "Modules",
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModuleName", "ModuleType", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { new Guid("c62daaff-4f9b-4283-a1ea-1a9f42df2d99"), "2024.06.04", "System", "SchoolTraining", 0, "", "" },
-                    { new Guid("cd472d2e-28c9-42b0-9cba-536b0ddb923b"), "2024.06.04", "System", "SchoolTrainingStatistics", 1, "", "" }
+                    { new Guid("6f9aed6f-07cf-4dcf-8b9f-e5fd52b35ffc"), "2024.06.15", "System", "MobileApp", 0, "", "" },
+                    { new Guid("c62daaff-4f9b-4283-a1ea-1a9f42df2d99"), "2024.06.15", "System", "SchoolTraining", 1, "", "" },
+                    { new Guid("cd472d2e-28c9-42b0-9cba-536b0ddb923b"), "2024.06.15", "System", "SchoolTrainingStatistics", 2, "", "" }
                 });
         }
 
@@ -175,6 +199,9 @@ namespace Data.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "Settings");
+
+            migrationBuilder.DropTable(
+                name: "UnitResults");
 
             migrationBuilder.DropTable(
                 name: "UserModules");

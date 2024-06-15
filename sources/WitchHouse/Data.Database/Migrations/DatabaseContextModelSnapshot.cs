@@ -56,6 +56,9 @@ namespace Data.Database.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("ProfileImage")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("RefreshToken")
                         .HasColumnType("longtext");
 
@@ -92,8 +95,8 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("dac4b8f9-4ece-4bed-95f9-860d4d53924f"),
-                            CreatedAt = "2024-06-12 21:17",
+                            Id = new Guid("11477051-b947-43d4-b7ef-0e3413081e93"),
+                            CreatedAt = "2024-06-15 15:50",
                             CreatedBy = "System",
                             Culture = "en",
                             FirstName = "",
@@ -101,8 +104,8 @@ namespace Data.Database.Migrations
                             LastName = "",
                             Pin = "",
                             Role = 1,
-                            Salt = "f760b21a-e1b1-4929-9e9a-55e705408202",
-                            Secret = "UEBzc3dvcmRmNzYwYjIxYS1lMWIxLTQ5MjktOWU5YS01NWU3MDU0MDgyMDI=",
+                            Salt = "c1364f1b-c12a-4625-96ec-18678383fbf6",
+                            Secret = "UEBzc3dvcmRjMTM2NGYxYi1jMTJhLTQ2MjUtOTZlYy0xODY3ODM4M2ZiZjY=",
                             UpdatedAt = "",
                             UpdatedBy = "",
                             UserName = "System.Admin"
@@ -227,7 +230,7 @@ namespace Data.Database.Migrations
                         new
                         {
                             Id = new Guid("6f9aed6f-07cf-4dcf-8b9f-e5fd52b35ffc"),
-                            CreatedAt = "2024.06.12",
+                            CreatedAt = "2024.06.15",
                             CreatedBy = "System",
                             ModuleName = "MobileApp",
                             ModuleType = 0,
@@ -237,7 +240,7 @@ namespace Data.Database.Migrations
                         new
                         {
                             Id = new Guid("c62daaff-4f9b-4283-a1ea-1a9f42df2d99"),
-                            CreatedAt = "2024.06.12",
+                            CreatedAt = "2024.06.15",
                             CreatedBy = "System",
                             ModuleName = "SchoolTraining",
                             ModuleType = 1,
@@ -247,7 +250,7 @@ namespace Data.Database.Migrations
                         new
                         {
                             Id = new Guid("cd472d2e-28c9-42b0-9cba-536b0ddb923b"),
-                            CreatedAt = "2024.06.12",
+                            CreatedAt = "2024.06.15",
                             CreatedBy = "System",
                             ModuleName = "SchoolTrainingStatistics",
                             ModuleType = 2,

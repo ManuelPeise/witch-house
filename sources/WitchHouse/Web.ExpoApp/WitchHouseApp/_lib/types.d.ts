@@ -22,6 +22,15 @@ export type UserData = {
   userName: string;
   userRole: UserRoleEnum;
   language: 'en' | 'de';
+  profileImage: string;
+};
+
+export type UserDataStorageModel = {
+  userId: string;
+  familyGuid: string;
+  userName: string;
+  userRole: UserRoleEnum;
+  language: 'en' | 'de';
 };
 
 export type MobileLoginResult = {

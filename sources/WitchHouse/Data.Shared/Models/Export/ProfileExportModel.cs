@@ -9,5 +9,6 @@
         public string UserName { get; set; } = string.Empty;
         public string? DateOfBirth { get; set; }
         public string Culture { get; set; } = string.Empty;
+        public string? ProfileImage { get; set; }
     }
 }

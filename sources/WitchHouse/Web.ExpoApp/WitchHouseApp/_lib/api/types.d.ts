@@ -35,3 +35,8 @@ export type ChartData = {
   labels: string[];
   dataSets: ChartDataSet[];
 };
+
+export type ProfileImageUploadModel = {
+  userId: string;
+  profileImage: string;
+};

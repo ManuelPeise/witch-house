@@ -12,6 +12,7 @@ namespace Data.Shared.Models.Export
         public string UserName { get; set; } = string.Empty;
         public string Jwt { get; set; } = string.Empty;
         public string RefreshToken { get; set; } = string.Empty;
+        public string? ProfileImage { get; set; }
         public ModuleConfiguration UserModules { get; set; } = new ModuleConfiguration();
     }
 
@@ -30,6 +31,7 @@ namespace Data.Shared.Models.Export
         public UserRoleEnum UserRole { get; set; }
         public string Language { get; set; } = "en";
         public string UserName { get; set; } = string.Empty;
+        public string? ProfileImage { get; set; }
     }
 
     public class JwtData

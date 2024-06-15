@@ -12,7 +12,15 @@
     },
     "name": "WitchHouseApp",
     "orientation": "portrait",
-    "plugins": ["expo-secure-store"],
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ],
     "slug": "WitchHouseApp",
     "splash": {
       "backgroundColor": "#ffffff",

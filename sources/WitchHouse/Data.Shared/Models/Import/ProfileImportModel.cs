@@ -14,4 +14,11 @@ namespace Data.Shared.Models.Import
         public string? DateOfBirth { get; set; }
         public string Culture { get; set; } = string.Empty;
     }
+
+    public class ProfileImageUploadModel
+    {
+        public Guid UserId { get; set; }
+        public string? ProfileImage { get; set; }
+    }
+
 }

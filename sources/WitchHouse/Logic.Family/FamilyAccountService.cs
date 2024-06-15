@@ -348,6 +348,34 @@ namespace Logic.Family
             }
         }
 
+        public async Task UploadProfileImage(ProfileImageUploadModel model)
+        {
+            try
+            {
+                var account = await _accountUnitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
+
+                if (account == null)
+                {
+                    throw new Exception($"Could not upload image for [{model.ProfileImage}]");
+                }
+
+                account.ProfileImage = model.ProfileImage;
+
+                await _accountUnitOfWork.AccountRepository.Update(account);
+
+                await _accountUnitOfWork.SaveChanges();
+            }
+            catch (Exception exception)
+            {
+                await _logRepository.AddLogMessage(new LogMessageEntity
+                {
+                    Message = exception.Message,
+                    Stacktrace = exception.StackTrace ?? "",
+                    TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
+                    Trigger = nameof(FamilyAccountService),
+                });
+            }
+        }
 
     }
 }

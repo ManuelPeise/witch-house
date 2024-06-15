@@ -14,4 +14,7 @@ export const endPoints = {
     saveTrainingResult: 'TrainingResultService/SaveUnitResult',
     saveTrainingResults: 'TrainingResultService/SaveUnitResults',
   },
+  account: {
+    imageUpload: 'ProfileService/UploadProfileImage',
+  },
 };

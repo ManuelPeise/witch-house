@@ -7,14 +7,21 @@ import { ColorEnum } from '../../_lib/enums/ColorEnum';
 import { useI18n } from '../../_hooks/useI18n';
 import AppDrawerItem from './AppDrawerItem';
 import { NavigationTypeEnum } from '../../_lib/enums/NavigationTypeEnum';
+import ProfileImageInput from '../../_components/_inputs/ProfileImageInput';
+import { useApi } from '../../_hooks/useApi';
+import { UserData } from '../../_lib/types';
+import { ProfileImageUploadModel } from '../../_lib/api/types';
+import { endPoints } from '../../_lib/api/apiConfiguration';
 
 interface IProps {
   containerProps: DrawerContentComponentProps;
 }
+const base64Prefix = 'data:image/png;base64,';
 
 const AppDrawer: React.FC<IProps> = (props) => {
   const { userData } = useAuth();
   const { getResource } = useI18n();
+  const { sendPostRequest } = useApi<UserData>();
 
   const routeNames = React.useMemo(() => {
     return props.containerProps.state.routeNames;
@@ -45,17 +52,32 @@ const AppDrawer: React.FC<IProps> = (props) => {
     ];
   }, []);
 
+  const onSaveImage = React.useCallback(
+    async (img: string) => {
+      const model: ProfileImageUploadModel = {
+        userId: userData.userId,
+        profileImage: `${base64Prefix}${img}`,
+      };
+
+      await sendPostRequest(endPoints.account.imageUpload, model);
+    },
+    [userData, sendPostRequest]
+  );
+
   return (
     <View style={styles.drawer}>
       <DrawerContentScrollView
         {...props.containerProps}
         contentContainerStyle={{ flex: 1, display: 'flex', justifyContent: 'space-between' }}
       >
-        <ImageBackground source={witchHouse} style={styles.imgBackground}>
+        <View style={styles.background}>
+          <View style={styles.userImgContainer}>
+            <ProfileImageInput variant="round" size={100} disabled={false} quality={1} onSaveImage={onSaveImage} />
+          </View>
           <Text style={styles.userName}>
             {getResource('common:labelLoggedInAs').replace('{UserName}', userData?.userName)}
           </Text>
-        </ImageBackground>
+        </View>
         <View style={styles.drawerMenu}>
           {routeNames.map((route, index) => {
             if (routesToDisplay.includes(route as NavigationTypeEnum)) {
@@ -86,13 +108,21 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'space-around',
   },
-  imgBackground: {
+  background: {
     display: 'flex',
     alignContent: 'center',
     justifyContent: 'flex-end',
     marginTop: -30,
     height: 250,
     width: '100%',
+  },
+  userImgContainer: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: 5,
+    opacity: 0.7,
   },
   userName: {
     padding: 20,

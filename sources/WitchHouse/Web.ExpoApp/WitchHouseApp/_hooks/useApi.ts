@@ -38,6 +38,7 @@ export const useApi = <TModel>(): ApiResult<TModel> => {
         axiosClient.defaults.headers.common['Authorization'] = `bearer ${auth.jwtToken}`;
 
         await axiosClient.post(serviceUrl, JSON.stringify(requestModel)).then(async (res) => {
+          console.log('API Status', res.status);
           if (res.status === 200) {
             result = true;
           }

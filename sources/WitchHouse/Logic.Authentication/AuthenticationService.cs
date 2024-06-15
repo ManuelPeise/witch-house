@@ -62,6 +62,7 @@ namespace Logic.Authentication
                             Jwt = jwt,
                             RefreshToken = refreshToken,
                             UserRole = accountEntity.Role,
+                            ProfileImage = accountEntity.ProfileImage,
                         };
                     }
                 }
@@ -161,7 +162,8 @@ namespace Logic.Authentication
                                     FamilyGuid = accountEntity.FamilyGuid,
                                     UserName = accountEntity.UserName,
                                     Language = accountEntity.Culture,
-                                     UserRole = accountEntity.Role,
+                                    UserRole = accountEntity.Role,
+                                    ProfileImage = accountEntity.ProfileImage,
                                 },
                                 ModuleConfiguration = moduleConfig,
                                 TrainingModuleSettings = trainingSettings

@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import { AppSettings, AuthState, LoginRequest, LoginResult, MobileLoginResult, UserData } from '../_lib/types';
+import { AppSettings, AuthState, LoginRequest, MobileLoginResult, UserData, UserDataStorageModel } from '../_lib/types';
 import axiosClient from '../_lib/api/axiosClient';
 import { JwtData, ResponseMessage } from '../_lib/api/types';
 import { endPoints } from '../_lib/api/apiConfiguration';
@@ -8,6 +8,7 @@ import { SecureStoreKeyEnum } from '../_lib/enums/SecureStoreKeyEnum';
 import { useDataSync } from '../_hooks/useDataSync';
 import { useStorage } from '../_hooks/useStorage';
 import { AsyncStorageKeyEnum } from '../_lib/enums/AsyncStorageKeyEnum';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const AuthContext = React.createContext<AuthState>({} as AuthState);
 
@@ -70,39 +71,49 @@ const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
     silentLogin();
   }, []);
 
-  const onLogin = React.useCallback(async (data: LoginRequest) => {
-    setIsLoading(true);
+  const storeUserData = React.useCallback(async (responseData: MobileLoginResult) => {
+    const userDataStorageModel: UserDataStorageModel = {
+      userId: responseData.userData.userId,
+      familyGuid: responseData.userData.familyGuid,
+      userName: responseData.userData.userName,
+      userRole: responseData.userData.userRole,
+      language: responseData.userData.language,
+    };
 
-    try {
-      await axiosClient.post(endPoints.auth.login, JSON.stringify(data)).then(async (res) => {
-        if (res.status === 200) {
-          const responseData: ResponseMessage<MobileLoginResult> = res.data;
-
-          if (responseData.success && responseData.data) {
-            setUserData(responseData.data.userData);
-
-            SecureStore.setItem(SecureStoreKeyEnum.UserData, JSON.stringify(responseData.data.userData));
-            SecureStore.setItem(SecureStoreKeyEnum.Jwt, JSON.stringify(responseData.data.jwtData));
-            SecureStore.setItem(
-              SecureStoreKeyEnum.ModuleConfiguration,
-              JSON.stringify(responseData.data.moduleConfiguration)
-            );
-            SecureStore.setItem(
-              SecureStoreKeyEnum.TrainingModuleSettings,
-              JSON.stringify(responseData.data.trainingModuleSettings)
-            );
-
-            axiosClient.defaults.headers.common['Authorization'] = `bearer ${responseData.data.jwtData.jwtToken}`;
-            setIsAuthenticated(true);
-          }
-        }
-      });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setIsLoading(false);
-    }
+    SecureStore.setItem(SecureStoreKeyEnum.UserData, JSON.stringify(userDataStorageModel));
+    await AsyncStorage.setItem(AsyncStorageKeyEnum.ProfileImage, responseData.userData.profileImage);
+    SecureStore.setItem(SecureStoreKeyEnum.Jwt, JSON.stringify(responseData.jwtData));
+    SecureStore.setItem(SecureStoreKeyEnum.ModuleConfiguration, JSON.stringify(responseData.moduleConfiguration));
+    SecureStore.setItem(SecureStoreKeyEnum.TrainingModuleSettings, JSON.stringify(responseData.trainingModuleSettings));
   }, []);
+
+  const onLogin = React.useCallback(
+    async (data: LoginRequest) => {
+      setIsLoading(true);
+
+      try {
+        await axiosClient.post(endPoints.auth.login, JSON.stringify(data)).then(async (res) => {
+          if (res.status === 200) {
+            const responseData: ResponseMessage<MobileLoginResult> = res.data;
+
+            if (responseData.success && responseData.data) {
+              setUserData(responseData.data.userData);
+
+              await storeUserData(responseData.data);
+
+              axiosClient.defaults.headers.common['Authorization'] = `bearer ${responseData.data.jwtData.jwtToken}`;
+              setIsAuthenticated(true);
+            }
+          }
+        });
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [storeUserData]
+  );
 
   const onLogout = React.useCallback(async () => {
     await SecureStore.deleteItemAsync(SecureStoreKeyEnum.UserData);

@@ -18,6 +18,7 @@ namespace Data.Shared.Entities
         public string? Token { get; set; }
         public string? RefreshToken { get; set; }
         public bool IsActive { get; set; } = false;
+        public string? ProfileImage { get; set; }
 
         public ProfileExportModel ToExportModel()
         {
@@ -30,6 +31,7 @@ namespace Data.Shared.Entities
                 UserName = UserName,
                 Culture = Culture,
                 DateOfBirth = string.IsNullOrWhiteSpace(DateOfBirth) ? null : DateTime.Parse(DateOfBirth).ToString("yyyy/MM/dd"),
+                ProfileImage = ProfileImage,
             };
         }
 
