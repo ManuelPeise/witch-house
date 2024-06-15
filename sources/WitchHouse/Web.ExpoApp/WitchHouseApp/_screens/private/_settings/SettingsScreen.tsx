@@ -8,28 +8,15 @@ import { AsyncStorageKeyEnum } from '../../../_lib/enums/AsyncStorageKeyEnum';
 import SettingsItem from './SettingsItem';
 import { useI18n } from '../../../_hooks/useI18n';
 import SwitchWithLabel from '../../../_components/_inputs/SwitchWithLabel';
-import SubmitButton from '../../../_components/_inputs/SubmitButton';
-import { FontSizeEnum } from '../../../_lib/enums/FontSizeEnum';
-import { useDataSync } from '../../../_hooks/useDataSync';
-import { ColorEnum } from '../../../_lib/enums/ColorEnum';
-import { useAuth } from '../../../_hooks/useAuth';
-import LoadingOverLay from '../../../_components/_loading/LoadingOverlay';
-import { BorderRadiusEnum } from '../../../_lib/enums/BorderRadiusEnum';
 
 const SettingsScreen: React.FC = () => {
   const { getResource } = useI18n();
   const { model, storeItem } = useStorage<AppSettings>(AsyncStorageKeyEnum.AppSettings);
-  const { userData } = useAuth();
-  const { isLoading } = useDataSync();
 
   const onDataSyncChanged = React.useCallback(async (checked: boolean) => {
     const appSettings = { ...model, syncData: checked };
     await storeItem(appSettings);
   }, []);
-
-  const syncData = React.useCallback(async () => {
-    //  await executeDataSync(userData.userId);
-  }, [userData]);
 
   if (model == null) {
     return null;
@@ -44,21 +31,8 @@ const SettingsScreen: React.FC = () => {
             checked={model?.syncData ?? false}
             onChange={onDataSyncChanged}
           />
-          <View style={styles.buttonWrapper}>
-            <SubmitButton
-              disabled={!model.syncData}
-              label={getResource('common:labelExecuteDataSync')}
-              fontSize={FontSizeEnum.md}
-              borderColor={ColorEnum.Blue}
-              borderRadius={BorderRadiusEnum.Medium}
-              onPress={syncData}
-              backGround="blue"
-              color={ColorEnum.White}
-            />
-          </View>
         </SettingsItem>
       </View>
-      {isLoading && <LoadingOverLay color={ColorEnum.Blue} size="large" scale={4} />}
     </PrivatePageWrapper>
   );
 };

@@ -1,45 +1,75 @@
 import React, { PropsWithChildren } from 'react';
-import { AuthState, LoginRequest, LoginResult, MobileLoginResult, UserData } from '../_lib/types';
+import { AppSettings, AuthState, LoginRequest, LoginResult, MobileLoginResult, UserData } from '../_lib/types';
 import axiosClient from '../_lib/api/axiosClient';
 import { JwtData, ResponseMessage } from '../_lib/api/types';
 import { endPoints } from '../_lib/api/apiConfiguration';
-import { checkApiIsAvailable } from '../_lib/api/apiUtils';
 import * as SecureStore from 'expo-secure-store';
 import { SecureStoreKeyEnum } from '../_lib/enums/SecureStoreKeyEnum';
 import { useDataSync } from '../_hooks/useDataSync';
+import { useStorage } from '../_hooks/useStorage';
+import { AsyncStorageKeyEnum } from '../_lib/enums/AsyncStorageKeyEnum';
 
 export const AuthContext = React.createContext<AuthState>({} as AuthState);
 
+const fiveMinuteInterval = 300000;
+
 const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
   const { children } = props;
-  const { apiIsAvailable, setApiIsAvailable } = useDataSync();
+  const appSettingsStorage = useStorage<AppSettings>(AsyncStorageKeyEnum.AppSettings);
   const [userData, setUserData] = React.useState<UserData | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
 
-  React.useEffect(() => {
-    checkApiIsAvailable(setApiIsAvailable);
+  const { executeDataSync, syncAppData } = useDataSync();
+
+  const LoadSyncData = React.useCallback(() => {
+    var jwtJson = SecureStore.getItem(SecureStoreKeyEnum.Jwt) ?? null;
+    var userDataJson = SecureStore.getItem(SecureStoreKeyEnum.UserData) ?? null;
+
+    if (jwtJson != null && jwtJson.length && userDataJson != null && userDataJson.length) {
+      const jwtData: JwtData = JSON.parse(jwtJson);
+      const userData: UserData = JSON.parse(userDataJson);
+
+      return { userData: userData, jwt: jwtData.jwtToken };
+    }
+
+    return { userData: null, jwt: null };
   }, []);
 
-  // const loadLoginResultFromStorage = React.useCallback((): MobileLoginResult | null => {
-  //   const resultJson = SecureStore.getItem(SecureStoreKeyEnum.LoginResult);
+  const silentLogin = React.useCallback(async () => {
+    setIsLoading(true);
+    const syncDataModel = LoadSyncData();
 
-  //   if (resultJson == null) {
-  //     return null;
-  //   }
-  //   const model: MobileLoginResult = JSON.parse(resultJson);
+    if (syncDataModel?.userData != null && syncDataModel?.jwt != null) {
+      const model = await syncAppData(syncDataModel.userData, syncDataModel.jwt);
 
-  //   return model ?? null;
-  // }, []);
+      if (model != null) {
+        const userDataUpdate = { ...syncDataModel.userData, ...model.userData };
+        setUserData(userDataUpdate);
+        setIsAuthenticated(userDataUpdate !== undefined);
+      }
+    }
+    setIsLoading(false);
+  }, [syncAppData]);
 
-  // React.useEffect(() => {
-  //   var result = loadLoginResultFromStorage();
+  // interval for sync data
+  React.useEffect(() => {
+    const syncDataModel = LoadSyncData();
+    if (appSettingsStorage.model?.syncData) {
+      if (isAuthenticated === true && syncDataModel?.jwt != null && syncDataModel?.userData != null) {
+        const interval = setInterval(async () => {
+          await executeDataSync(syncDataModel.userData, syncDataModel.jwt);
+        }, fiveMinuteInterval);
 
-  //   if (result != null) {
-  //     setLoginResult(result);
-  //     setIsAuthenticated(true);
-  //   }
-  // }, []);
+        return () => clearInterval(interval);
+      }
+    }
+  }, [isAuthenticated, appSettingsStorage?.model]);
+
+  // try load data from storage
+  React.useEffect(() => {
+    silentLogin();
+  }, []);
 
   const onLogin = React.useCallback(async (data: LoginRequest) => {
     setIsLoading(true);
@@ -85,7 +115,7 @@ const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
     setIsAuthenticated(false);
   }, []);
 
-  const model: AuthState = { isLoading, isAuthenticated, apiIsAvailable, userData, onLogin, onLogout };
+  const model: AuthState = { isLoading, isAuthenticated, userData, onLogin, onLogout };
 
   return <AuthContext.Provider value={model}>{children}</AuthContext.Provider>;
 };

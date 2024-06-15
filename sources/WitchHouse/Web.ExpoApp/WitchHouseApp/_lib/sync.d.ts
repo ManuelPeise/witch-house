@@ -1,3 +1,6 @@
+import { UserRoleEnum } from './enums/UserRoleEnum';
+import { ModuleConfiguration } from './types';
+
 export type UserDataSync = {
   userGuid: string;
   firstName: string;
@@ -37,9 +40,12 @@ export type SchoolModuleSync = {
 
 export type DataSyncModel = {
   userData: UserDataSync;
-  schoolModules: SchoolModuleSync[];
+  moduleConfiguration: ModuleConfiguration;
+  schoolModulesSettings: ModuleSettings[];
 };
 
 export type DataSyncImportModel = {
   userId: string;
+  familyId: string;
+  roleId: UserRoleEnum;
 };

@@ -52,7 +52,6 @@ export type LoginResult = {
 export type AuthState = {
   isLoading: boolean;
   isAuthenticated: boolean;
-  apiIsAvailable: boolean;
   userData: UserData;
   onLogin: (data: LoginRequest) => Promise<void>;
   onLogout: () => Promise<void>;

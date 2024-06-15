@@ -28,7 +28,7 @@ namespace Logic.Sync
 
                 model.UserData = await GetUserData(importModel.UserId);
                 model.ModuleConfiguration = await GetModuleConfiguration(importModel.UserId, importModel.FamilyId, importModel.RoleId);
-                model.SchoolModules = await GetSchoolModuleSettings(importModel.UserId);
+                model.SchoolModulesSettings = await GetSchoolModuleSettings(importModel.UserId);
                 
                 return model;
 

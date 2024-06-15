@@ -6,8 +6,6 @@ import { useAuth } from '../../_hooks/useAuth';
 import { ColorEnum } from '../../_lib/enums/ColorEnum';
 import { useI18n } from '../../_hooks/useI18n';
 import AppDrawerItem from './AppDrawerItem';
-import LoadingOverLay from '../../_components/_loading/LoadingOverlay';
-import { useDataSync } from '../../_hooks/useDataSync';
 import { NavigationTypeEnum } from '../../_lib/enums/NavigationTypeEnum';
 
 interface IProps {
@@ -17,7 +15,6 @@ interface IProps {
 const AppDrawer: React.FC<IProps> = (props) => {
   const { userData } = useAuth();
   const { getResource } = useI18n();
-  const { isLoading } = useDataSync();
 
   const routeNames = React.useMemo(() => {
     return props.containerProps.state.routeNames;
@@ -75,7 +72,6 @@ const AppDrawer: React.FC<IProps> = (props) => {
           })}
         </View>
       </DrawerContentScrollView>
-      {isLoading && <LoadingOverLay scale={4} size="large" color={ColorEnum.Blue} />}
     </View>
   );
 };

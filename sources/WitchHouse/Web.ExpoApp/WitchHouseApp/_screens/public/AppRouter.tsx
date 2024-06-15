@@ -4,9 +4,9 @@ import { useAuth } from '../../_hooks/useAuth';
 import PrivateStack from '../../_stacks/PrivateStack';
 
 const AppRouter: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
-  return isAuthenticated ? <PrivateStack /> : <AuthStack />;
+  return isAuthenticated ? <PrivateStack /> : <AuthStack isLoading={isLoading} />;
 };
 
 export default AppRouter;

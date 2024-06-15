@@ -6,7 +6,7 @@ namespace Data.Shared.Models.Sync
     {
         public UserDataSync UserData { get; set; } = new UserDataSync();
         public ModuleConfiguration ModuleConfiguration { get; set; } = new ModuleConfiguration();
-        public List<ModuleSettings> SchoolModules { get; set; } = new List<ModuleSettings>();
+        public List<ModuleSettings> SchoolModulesSettings { get; set; } = new List<ModuleSettings>();
 
     }
 
