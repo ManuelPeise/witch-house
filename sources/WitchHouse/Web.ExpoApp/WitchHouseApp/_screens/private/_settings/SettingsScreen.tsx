@@ -19,8 +19,8 @@ import { BorderRadiusEnum } from '../../../_lib/enums/BorderRadiusEnum';
 const SettingsScreen: React.FC = () => {
   const { getResource } = useI18n();
   const { model, storeItem } = useStorage<AppSettings>(AsyncStorageKeyEnum.AppSettings);
-  const { loginResult } = useAuth();
-  const { isLoading, executeDataSync } = useDataSync();
+  const { userData } = useAuth();
+  const { isLoading } = useDataSync();
 
   const onDataSyncChanged = React.useCallback(async (checked: boolean) => {
     const appSettings = { ...model, syncData: checked };
@@ -28,8 +28,8 @@ const SettingsScreen: React.FC = () => {
   }, []);
 
   const syncData = React.useCallback(async () => {
-    await executeDataSync(loginResult.userId);
-  }, [loginResult, executeDataSync]);
+    //  await executeDataSync(userData.userId);
+  }, [userData]);
 
   if (model == null) {
     return null;

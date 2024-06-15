@@ -10,7 +10,7 @@ namespace Data.Shared.Models.Export
 
     public class UnitResultStatisticEntry
     {
-        public DateTime TimeStamp { get; set; }
+        public string? TimeStamp { get; set; }
         public int Success { get; set; }
         public int Failed { get; set; }
     }

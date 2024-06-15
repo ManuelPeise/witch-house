@@ -1,5 +1,4 @@
 ﻿using Data.Shared.Entities;
-using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
@@ -10,12 +9,10 @@ namespace Logic.Administration
     public class FamilyAdministration : LogicBase
     {
         private readonly IAccountUnitOfWork _unitOfWork;
-        private readonly CurrentUser _currentUser;
-
-        public FamilyAdministration(IAccountUnitOfWork unitOfWork, CurrentUser currentUser) : base()
+        
+        public FamilyAdministration(IAccountUnitOfWork unitOfWork) : base()
         {
             _unitOfWork = unitOfWork;
-            _currentUser = currentUser;
         }
 
         public async Task<List<UserDataExportModel>> GetFamilyUsers(Guid? familyId)
@@ -52,7 +49,7 @@ namespace Logic.Administration
                     Trigger = nameof(FamilyAdministration),
                 });
 
-                await _unitOfWork.SaveChanges(_currentUser);
+                await _unitOfWork.SaveChanges();
 
                 return new List<UserDataExportModel>();
             }

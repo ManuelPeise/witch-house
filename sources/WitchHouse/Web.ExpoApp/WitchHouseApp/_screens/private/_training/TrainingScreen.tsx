@@ -6,6 +6,7 @@ import { SchoolModuleSync } from '../../../_lib/sync';
 import TrainingOverview from './TrainingOverview';
 import PrivatePageWrapper from '../../../_components/_wrappers/PrivatePageWrapper';
 import school from '../../../img/schoolBg.jpg';
+
 const TrainingScreen: React.FC = () => {
   const { model } = useStorage<SchoolModuleSync[]>(AsyncStorageKeyEnum.SchoolModules);
 

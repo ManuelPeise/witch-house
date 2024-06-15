@@ -1,7 +1,6 @@
 ﻿using Data.Shared.Models.Export.SideMenu;
 using Logic.Administration;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Shared;
 
@@ -10,7 +9,7 @@ namespace Service.Api.ApiControllers.Administration
     [Authorize]
     public class SideMenuServiceController: ApiControllerBase
     {
-        public SideMenuServiceController(IHttpContextAccessor contextAccessor): base(contextAccessor)   
+        public SideMenuServiceController(): base()   
         {
             
         }

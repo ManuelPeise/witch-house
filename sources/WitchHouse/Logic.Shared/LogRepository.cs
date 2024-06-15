@@ -9,10 +9,13 @@ namespace Logic.Shared
     {
         private bool disposedValue;
         private readonly DatabaseContext _context;
+        private readonly IUserDataClaimsAccessor _claimsAccessor;
+        public IUserDataClaimsAccessor ClaimsAccessor => _claimsAccessor?? new UserDataClaimsAccessor();
 
-        public LogRepository(DatabaseContext context)
+        public LogRepository(DatabaseContext context, IUserDataClaimsAccessor claimsAccessor)
         {
             _context = context;
+            _claimsAccessor = claimsAccessor;
         }
 
         public async Task AddLogMessage(LogMessageEntity logMessage)

@@ -1,8 +1,6 @@
 import React from 'react';
 import { ApiOptions, ApiResult, JwtData } from '../_lib/api/types';
 import * as SecureStore from 'expo-secure-store';
-import { AsyncStorageKeyEnum } from '../_lib/enums/AsyncStorageKeyEnum';
-import { LoginResult } from '../_lib/types';
 import axiosClient from '../_lib/api/axiosClient';
 import { SecureStoreKeyEnum } from '../_lib/enums/SecureStoreKeyEnum';
 
@@ -10,7 +8,25 @@ export const useApi = <TModel>(): ApiResult<TModel> => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [data, setData] = React.useState<TModel | null>(null);
 
-  const get = React.useCallback(async (options: ApiOptions) => {}, []);
+  const get = React.useCallback(async (serviceUrl: string) => {
+    try {
+      setIsLoading(true);
+      const auth: JwtData = await JSON.parse(await SecureStore.getItemAsync(SecureStoreKeyEnum.Jwt));
+      if (auth.jwtToken) {
+        axiosClient.defaults.headers.common['Authorization'] = `bearer ${auth.jwtToken}`;
+
+        await axiosClient.get(serviceUrl).then(async (res) => {
+          if (res.status === 200) {
+            setData(res.data);
+          }
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const post = React.useCallback(async (options: ApiOptions, model: any) => {}, []);
 

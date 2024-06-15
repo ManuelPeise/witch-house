@@ -1,16 +1,12 @@
 ﻿using Data.Shared.Models.Export;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Shared.Models.Sync
 {
     public class DataSyncExportModel
     {
         public UserDataSync UserData { get; set; } = new UserDataSync();
-        public List<SchoolModuleSync> SchoolModules { get; set; } = new List<SchoolModuleSync>();
+        public ModuleConfiguration ModuleConfiguration { get; set; } = new ModuleConfiguration();
+        public List<ModuleSettings> SchoolModules { get; set; } = new List<ModuleSettings>();
 
     }
 

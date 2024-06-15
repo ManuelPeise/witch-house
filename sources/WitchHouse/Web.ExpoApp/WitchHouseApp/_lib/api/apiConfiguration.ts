@@ -10,7 +10,7 @@ export const endPoints = {
     syncAppData: 'DataSync/SyncAppData',
   },
   training: {
-    getTrainingResultStatistics: 'TrainingResultService/GetUnitResultStatistics',
+    getTrainingResultStatistics: 'TrainingResultService/GetLastUnitResultStatistics/{userId}',
     saveTrainingResult: 'TrainingResultService/SaveUnitResult',
     saveTrainingResults: 'TrainingResultService/SaveUnitResults',
   },

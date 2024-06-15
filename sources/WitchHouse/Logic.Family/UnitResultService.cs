@@ -1,6 +1,5 @@
 ﻿using Data.Database;
 using Data.Shared.Entities;
-using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
 using Logic.Shared;
@@ -12,6 +11,7 @@ namespace Logic.Family
     {
         private readonly DatabaseContext _context;
         private readonly ILogRepository _logRepository;
+        
         private bool disposedValue;
 
         public UnitResultService(ILogRepository logRepository, DatabaseContext context)
@@ -20,13 +20,18 @@ namespace Logic.Family
             _logRepository = logRepository;
         }
 
-        public async Task<List<UnitResultStaticticModel>?> GetUnitStatistic(UnitResultStatisticRequest request, CurrentUser currentUser)
+        public async Task<List<UnitResultStaticticModel>?> GetLastUnitStatistics(string userId)
         {
             try
             {
+                if(!Guid.TryParse(userId, out var userGuid))
+                {
+                    throw new Exception("Could not parse submitted string to userGuid!");
+                }
+
                 using (var unitOfWork = new UnitResultUnitOfWork(_logRepository, _context))
                 {
-                    var entries = await unitOfWork.GetUnitResults(request.UserId, request.From, request.To);
+                    var entries = await unitOfWork.GetLastUnitResults(userGuid);
 
                     var statistics = (from entry in entries
                                       group entry by new { UnitType = entry.UnitType } into unitTypeStatisticGroup
@@ -35,10 +40,10 @@ namespace Logic.Family
                                           UnitType = unitTypeStatisticGroup.Key.UnitType,
                                           Entries = (from entry in unitTypeStatisticGroup
                                                      where entry.TimeStamp != null
-                                                     group entry by DateTime.Parse(entry.TimeStamp).Date into unitStatisticGroup
+                                                     group entry by DateTime.Parse(entry.CreatedAt).Date into unitStatisticGroup
                                                      select new UnitResultStatisticEntry
                                                      {
-                                                         TimeStamp = unitStatisticGroup.Key,
+                                                         TimeStamp = unitStatisticGroup.Key.ToString("dd-MM"),
                                                          Success = unitStatisticGroup.Sum(x => x.Success),
                                                          Failed = unitStatisticGroup.Sum(x => x.Failed)
                                                      }).OrderBy(x => x.TimeStamp).ToList()
@@ -49,9 +54,11 @@ namespace Logic.Family
             }
             catch (Exception exception)
             {
+               
+
                 await _logRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = currentUser.FamilyGuid ?? null,
+                    FamilyGuid = _logRepository.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
@@ -62,15 +69,15 @@ namespace Logic.Family
             }
         }
 
-        public async Task SaveUnitResult(UnitResultImportModel importModel, CurrentUser currentUser)
+        public async Task SaveUnitResult(UnitResultImportModel importModel)
         {
             try
             {
                 using (var unitOfWork = new UnitResultUnitOfWork(_logRepository, _context))
                 {
-                    await unitOfWork.SaveUnitResult(importModel, currentUser);
+                    await unitOfWork.SaveUnitResult(importModel);
 
-                    await unitOfWork.SaveChanges(currentUser);
+                    await unitOfWork.SaveChanges();
                 }
 
             }
@@ -78,7 +85,7 @@ namespace Logic.Family
             {
                 await _logRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = currentUser.FamilyGuid ?? null,
+                    FamilyGuid = _logRepository.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
@@ -87,15 +94,15 @@ namespace Logic.Family
             }
         }
 
-        public async Task SaveUnitResults(List<UnitResultImportModel> importModels, CurrentUser currentUser)
+        public async Task SaveUnitResults(List<UnitResultImportModel> importModels)
         {
             try
             {
                 using (var unitOfWork = new UnitResultUnitOfWork(_logRepository, _context))
                 {
-                    await unitOfWork.SaveUnitResults(importModels, currentUser);
+                    await unitOfWork.SaveUnitResults(importModels);
 
-                    await unitOfWork.SaveChanges(currentUser);
+                    await unitOfWork.SaveChanges();
                 }
 
             }
@@ -103,7 +110,7 @@ namespace Logic.Family
             {
                 await _logRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = currentUser.FamilyGuid ?? null,
+                    FamilyGuid = _logRepository.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),

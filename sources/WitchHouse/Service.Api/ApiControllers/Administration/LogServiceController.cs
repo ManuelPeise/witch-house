@@ -15,7 +15,7 @@ namespace Service.Api.ApiControllers.Administration
         private readonly ILogRepository _logRepository;
         private readonly DatabaseContext _databaseContext;
 
-        public LogServiceController(ILogRepository logRepository, DatabaseContext context, IHttpContextAccessor contextAccessor): base(contextAccessor)
+        public LogServiceController(ILogRepository logRepository, DatabaseContext context): base()
         {
             _logRepository = logRepository;
             _databaseContext = context;
@@ -24,9 +24,7 @@ namespace Service.Api.ApiControllers.Administration
         [HttpGet(Name = "GetLogMessages")]
         public async Task<IEnumerable<LogMessageEntity>> GetLogMessages()
         {
-            var currentUser = GetCurrentUser();
-
-            var service = new LogService(_databaseContext, _logRepository, currentUser);
+            var service = new LogService(_databaseContext, _logRepository);
 
             return await service.LoadLogMessages();
         }
@@ -34,9 +32,7 @@ namespace Service.Api.ApiControllers.Administration
         [HttpPost(Name ="DeleteLogMessages")]
         public async Task DeleteLogMessages([FromBody] int[] messageIds)
         {
-            var currentUser = GetCurrentUser();
-
-            var service = new LogService(_databaseContext, _logRepository, currentUser);
+            var service = new LogService(_databaseContext, _logRepository);
 
             await service.DeleteLogmessages(messageIds);
         }

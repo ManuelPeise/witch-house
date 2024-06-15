@@ -15,7 +15,7 @@ interface IProps {
 }
 
 const AppDrawer: React.FC<IProps> = (props) => {
-  const { loginResult } = useAuth();
+  const { userData } = useAuth();
   const { getResource } = useI18n();
   const { isLoading } = useDataSync();
 
@@ -32,13 +32,20 @@ const AppDrawer: React.FC<IProps> = (props) => {
           return getResource('common:menuItemTraining');
         case NavigationTypeEnum.Settings:
           return getResource('common:menuItemSettings');
+        case NavigationTypeEnum.UnitStatistics:
+          return getResource('common:menuItemUnitStatistics');
       }
     },
     [getResource]
   );
 
   const routesToDisplay = React.useMemo(() => {
-    return [NavigationTypeEnum.Home, NavigationTypeEnum.TrainingOverview, NavigationTypeEnum.Settings];
+    return [
+      NavigationTypeEnum.Home,
+      NavigationTypeEnum.TrainingOverview,
+      NavigationTypeEnum.UnitStatistics,
+      NavigationTypeEnum.Settings,
+    ];
   }, []);
 
   return (
@@ -49,7 +56,7 @@ const AppDrawer: React.FC<IProps> = (props) => {
       >
         <ImageBackground source={witchHouse} style={styles.imgBackground}>
           <Text style={styles.userName}>
-            {getResource('common:labelLoggedInAs').replace('{UserName}', loginResult?.userName)}
+            {getResource('common:labelLoggedInAs').replace('{UserName}', userData?.userName)}
           </Text>
         </ImageBackground>
         <View style={styles.drawerMenu}>
@@ -67,11 +74,6 @@ const AppDrawer: React.FC<IProps> = (props) => {
             }
           })}
         </View>
-        {/* <View style={styles.footer}>
-          <Pressable onPress={onLogout}>
-            <Text style={{ textAlign: 'center' }}>{getResource('common:labelLogout')}</Text>
-          </Pressable>
-        </View> */}
       </DrawerContentScrollView>
       {isLoading && <LoadingOverLay scale={4} size="large" color={ColorEnum.Blue} />}
     </View>

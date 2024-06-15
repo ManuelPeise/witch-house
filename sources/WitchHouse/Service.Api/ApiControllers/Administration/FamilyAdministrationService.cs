@@ -1,11 +1,9 @@
-﻿using Data.Shared.Models.Account;
-using Data.Shared.Models.Export;
+﻿using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
 using Logic.Administration;
 using Logic.Family;
 using Logic.Shared.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Shared;
 
@@ -17,18 +15,17 @@ namespace Service.Api.ApiControllers.Administration
 
         private readonly IAccountUnitOfWork _accountUnitOfWork;
         private readonly IModuleConfigurationService _moduleService;
-        private readonly CurrentUser _currentUser;
-        public FamilyAdministrationService(IAccountUnitOfWork accountUnitOfWork, IModuleConfigurationService moduleService, IHttpContextAccessor httpContextAccessor): base(httpContextAccessor)
+        
+        public FamilyAdministrationService(IAccountUnitOfWork accountUnitOfWork, IModuleConfigurationService moduleService): base()
         {
             _accountUnitOfWork = accountUnitOfWork;
             _moduleService = moduleService;
-            _currentUser = GetCurrentUser();
         }
 
         [HttpGet(Name = "GetFamilyUsers")]
         public async Task<List<UserDataExportModel>> GetFamilyUsers([FromQuery] Guid familyGuid)
         {
-            var service = new FamilyAdministration(_accountUnitOfWork, _currentUser);
+            var service = new FamilyAdministration(_accountUnitOfWork);
 
             return await service.GetFamilyUsers(familyGuid);
         }
@@ -36,7 +33,7 @@ namespace Service.Api.ApiControllers.Administration
         [HttpPost(Name = "AddFamilyUser")]
         public async Task AddFamilyUser([FromBody] FamilyMemberImportModel model)
         {
-            var service = new FamilyAccountService(_accountUnitOfWork, _moduleService, _currentUser);
+            var service = new FamilyAccountService(_accountUnitOfWork, _moduleService);
 
             await service.AssignAccountToFamily(model);
         }
@@ -44,7 +41,7 @@ namespace Service.Api.ApiControllers.Administration
         [HttpPost(Name = "UpdateFamilyMember")]
         public async Task UpdateFamilyMember([FromBody] UserUpdateImportModel model)
         {
-            var service = new FamilyAccountService(_accountUnitOfWork, _moduleService, _currentUser);
+            var service = new FamilyAccountService(_accountUnitOfWork, _moduleService);
           
             await service.UpdateUser(model);
         }

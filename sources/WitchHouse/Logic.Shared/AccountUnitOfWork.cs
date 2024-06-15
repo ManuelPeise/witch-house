@@ -16,20 +16,22 @@ namespace Logic.Shared
         private IGenericRepository<AccountEntity>? _accountRepository;
         private IGenericRepository<ModuleEntity>? _moduleRepository;
         private IGenericRepository<UserModuleEntity>? _userModuleRepository;
-
-        public AccountUnitOfWork(DatabaseContext databaseContext)
+        private readonly IUserDataClaimsAccessor _claimsAccessor;
+        public AccountUnitOfWork(DatabaseContext databaseContext, IUserDataClaimsAccessor claimsAccessor)
         {
             _databaseContext = databaseContext;
+            _claimsAccessor = claimsAccessor;
         }
 
-        public ILogRepository LogRepository => _logRepository ?? new LogRepository(_databaseContext);
+        public ILogRepository LogRepository => _logRepository ?? new LogRepository(_databaseContext, _claimsAccessor?? new UserDataClaimsAccessor());
         public IGenericRepository<FamilyEntity> FamilyRepository => _familyRepository ?? new GenericRepository<FamilyEntity>(_databaseContext);
         public IGenericRepository<AccountEntity> AccountRepository => _accountRepository ?? new GenericRepository<AccountEntity>(_databaseContext);
         public IGenericRepository<ModuleEntity> ModuleRepository => _moduleRepository ?? new GenericRepository<ModuleEntity>(_databaseContext);
         public IGenericRepository<UserModuleEntity> UserModuleRepository => _userModuleRepository ?? new GenericRepository<UserModuleEntity>(_databaseContext);
         public DatabaseContext DatabaseContext { get => _databaseContext; }
+        public IUserDataClaimsAccessor ClaimsAccessor => _claimsAccessor?? new UserDataClaimsAccessor();
 
-        public async Task SaveChanges(CurrentUser? currentUser = null)
+        public async Task SaveChanges()
         {
             var modifiedEntries = DatabaseContext.ChangeTracker.Entries()
                .Where(x => x.State == EntityState.Modified ||
@@ -41,13 +43,13 @@ namespace Logic.Shared
                 {
                     if (entry.State == EntityState.Added)
                     {
-                        ((AEntityBase)entry.Entity).CreatedBy = currentUser?.UserName ?? "System";
+                        ((AEntityBase)entry.Entity).CreatedBy = ClaimsAccessor.GetClaimsValue<string>(UserIdentityClaims.UserName) ?? "System";
                         ((AEntityBase)entry.Entity).CreatedAt = DateTime.Now.ToString(Constants.LogMessageDateFormat);
 
                     }
                     else if (entry.State == EntityState.Modified)
                     {
-                        ((AEntityBase)entry.Entity).UpdatedBy = currentUser?.UserName ?? "System";
+                        ((AEntityBase)entry.Entity).UpdatedBy = ClaimsAccessor.GetClaimsValue<string>(UserIdentityClaims.UserName) ?? "System";
                         ((AEntityBase)entry.Entity).UpdatedAt = DateTime.Now.ToString(Constants.LogMessageDateFormat);
                     }
                 }

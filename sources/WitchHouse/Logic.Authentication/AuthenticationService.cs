@@ -8,16 +8,18 @@ using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Logic.Authentication
 {
     public class AuthenticationService : LogicBase
     {
         private readonly IAccountUnitOfWork _accountUnitOfWork;
-        public AuthenticationService(IAccountUnitOfWork accountUnitOfWork) : base()
+        private readonly IModuleConfigurationService _moduleService;
+
+        public AuthenticationService(IAccountUnitOfWork accountUnitOfWork, IModuleConfigurationService moduleService) : base()
         {
             _accountUnitOfWork = accountUnitOfWork;
+            _moduleService = moduleService;
         }
 
         public async Task<LoginResult> LogIn(IConfiguration config, AccountLoginModel loginModel)
@@ -87,7 +89,7 @@ namespace Logic.Authentication
             }
         }
 
-        public async Task<ResponseMessage<LoginResult>> MobileLoginRequest(IConfiguration config, MobileLoginRequestModel requestModel)
+        public async Task<ResponseMessage<MobileLoginResult>> MobileLoginRequest(IConfiguration config, MobileLoginRequestModel requestModel)
         {
             try
             {
@@ -108,7 +110,7 @@ namespace Logic.Authentication
 
                     if (appModules.FirstOrDefault() == null || !appModules.First().IsActive)
                     {
-                        return new ResponseMessage<LoginResult>
+                        return new ResponseMessage<MobileLoginResult>
                         {
                             Success = false,
                             StatusCode = 401,
@@ -130,27 +132,45 @@ namespace Logic.Authentication
 
                         await _accountUnitOfWork.SaveChanges();
 
-                        return new ResponseMessage<LoginResult>
+                        var moduleConfig = await _moduleService.LoadUserModuleConfiguration(
+                            new UserModuleRequestModel
+                            {
+                                UserGuid = accountEntity.Id,
+                                FamilyGuid = (Guid)accountEntity.FamilyGuid,
+                                RoleId = accountEntity.Role
+                            });
+
+                        var trainingSettings = await _moduleService.LoadSchoolModuleSettings(accountEntity.Id);
+
+                        return new ResponseMessage<MobileLoginResult>
                         {
 
                             Success = true,
                             StatusCode = 200,
                             MessageKey = "common:labelLoginSuccess",
-                            Data = new LoginResult
+                            Data = new MobileLoginResult
                             {
-                                UserId = accountEntity.Id,
-                                FamilyGuid = accountEntity.FamilyGuid,
-                                UserName = accountEntity.UserName,
-                                Language = accountEntity.Culture,
-                                Jwt = jwt,
-                                RefreshToken = refreshToken,
-                                UserRole = accountEntity.Role,
+                                JwtData = new JwtData
+                                {
+                                    JwtToken = jwt,
+                                    RefreshToken = refreshToken,
+                                }, 
+                                UserData = new UserData
+                                {
+                                    UserId = accountEntity.Id,
+                                    FamilyGuid = accountEntity.FamilyGuid,
+                                    UserName = accountEntity.UserName,
+                                    Language = accountEntity.Culture,
+                                     UserRole = accountEntity.Role,
+                                },
+                                ModuleConfiguration = moduleConfig,
+                                TrainingModuleSettings = trainingSettings
                             }
                         };
                     }
                 }
 
-                return new ResponseMessage<LoginResult>
+                return new ResponseMessage<MobileLoginResult>
                 {
                     Success = false,
                     StatusCode = 401,
@@ -169,7 +189,7 @@ namespace Logic.Authentication
                     Trigger = nameof(AuthenticationService)
                 });
 
-                return new ResponseMessage<LoginResult>
+                return new ResponseMessage<MobileLoginResult>
                 {
                     Success = false,
                     StatusCode = 401,
@@ -183,11 +203,13 @@ namespace Logic.Authentication
         {
             return new List<Claim>
             {
-                    new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
-                    new Claim(ClaimTypes.Name, account.UserName),
-                    new Claim(ClaimTypes.Role, Enum.GetName(account.Role)),
-                    new Claim("FamilyGuid", account.FamilyGuid.ToString()),
-                    // new Claim(ClaimTypes.UserData, JsonConvert.SerializeObject(account)),
+                    new Claim(UserIdentityClaims.UserId, account.Id.ToString()),
+                    new Claim(UserIdentityClaims.FamilyId, account.FamilyGuid.ToString()??""),
+                    new Claim(UserIdentityClaims.UserName, account.UserName),
+                    new Claim(UserIdentityClaims.FirstName, account.FirstName??""),
+                    new Claim(UserIdentityClaims.LastName, account.LastName??""),
+                    new Claim(UserIdentityClaims.UserRole, Enum.GetName(account.Role)??""),
+                    // TODO Add Modules
             };
         }
     }

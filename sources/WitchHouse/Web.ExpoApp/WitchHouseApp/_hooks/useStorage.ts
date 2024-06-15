@@ -19,7 +19,6 @@ export const useStorage = <TModel>(key: AsyncStorageKeyEnum) => {
 
   const storeItem = React.useCallback(
     async (data: TModel) => {
-      console.log(model);
       await AsyncStorage.setItem(key, JSON.stringify(data)).then(async () => {
         await loadDataFromStorage();
       });

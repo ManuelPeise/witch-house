@@ -1,7 +1,9 @@
+import { ColorEnum } from '../enums/ColorEnum';
+
 export type ApiResult<TModel> = {
   isLoading: boolean;
   data: TModel | null;
-  get: (options: ApiOptions) => Promise<void>;
+  get: (serviceUrl: string) => Promise<void>;
   post: (options: ApiOptions, model: TModel) => Promise<void>;
   sendPostRequest: (serviceUrl: string, requestModel: any) => Promise<Boolean>;
 };
@@ -22,4 +24,14 @@ export type ResponseMessage<TModel> = {
 export type JwtData = {
   jwtToken: string;
   refreshToken: string;
+};
+
+export type ChartDataSet = {
+  data: number[];
+  color: (opacity: number) => string;
+};
+
+export type ChartData = {
+  labels: string[];
+  dataSets: ChartDataSet[];
 };

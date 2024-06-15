@@ -5,6 +5,7 @@ using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
 using Logic.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Linq.Expressions;
 
 namespace Logic.Shared
@@ -23,6 +24,21 @@ namespace Logic.Shared
             _logRepository = logRepository;
             _context = context;
             _unitResultRepo = new GenericRepository<UnitResultEntity>(context);
+        }
+
+        public async Task<List<UnitResultEntity>> GetLastUnitResults(Guid userId)
+        {
+            var results = await _unitResultRepo.GetByAsync(x => x.UserId == userId);
+
+            if (!results.ToList().Any())
+            {
+                return new List<UnitResultEntity>();
+            }
+
+            var currentDate = DateTime.UtcNow;
+            return results.Where(x => x.TimeStamp != null && 
+                GetParsedDate(x.CreatedAt) >= currentDate.AddDays(-15) &&
+                GetParsedDate(x.CreatedAt) <= currentDate.AddDays(1)).ToList();
         }
 
         public async Task<List<UnitResultEntity>> GetUnitResults(Guid userId, DateTime from, DateTime to)
@@ -49,7 +65,7 @@ namespace Logic.Shared
             await SaveChanges(currentUser);
         }
 
-        public async Task SaveUnitResult(UnitResultImportModel importModel, CurrentUser? currentUser = null)
+        public async Task SaveUnitResult(UnitResultImportModel importModel)
         {
             var entity = importModel.ToEntity();
 
@@ -81,6 +97,24 @@ namespace Logic.Shared
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        private DateTime GetParsedDate(string timeStamp)
+        {
+            var allowedFormats = new List<string>
+            {
+                "yyyy-MM-dd HH:mm",
+                "yyyy-MM-dd",
+                "yyyy-M-dd",
+                "yyyy-MM-d"
+            };
+
+            if(DateTime.TryParseExact(timeStamp, allowedFormats.ToArray(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+            {
+                return date;
+            }
+
+            return DateTime.MinValue;
         }
 
         protected virtual void Dispose(bool disposing)

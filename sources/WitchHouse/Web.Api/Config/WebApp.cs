@@ -61,6 +61,7 @@ namespace Web.Api.Config
             builder.Services.AddScoped<ISettingsService, SettingsService>();
             builder.Services.AddScoped<ISyncHandler, DataSyncHandler>();
             builder.Services.AddScoped<IUnitResultService, UnitResultService>();
+            builder.Services.AddScoped<IUserDataClaimsAccessor, UserDataClaimsAccessor>();
         }
 
         public static void ConfigureServices(WebApplicationBuilder builder)
@@ -92,6 +93,12 @@ namespace Web.Api.Config
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.Use(async (context, next) =>
+            {
+                Thread.CurrentPrincipal = context.User;
+                await next(context);
+            });
 
             app.MapControllers();
 

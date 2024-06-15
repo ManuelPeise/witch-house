@@ -11,6 +11,7 @@ import TrainingScreen from '../_screens/private/_training/TrainingScreen';
 import SettingsScreen from '../_screens/private/_settings/SettingsScreen';
 import TrainingPage from '../_screens/private/_training/TrainingPage';
 import { UnitTypeEnum } from '../_lib/enums/UnitTypeEnum';
+import UnitStatisticScreen from '../_screens/private/_statistics/UnitStatisticScreen';
 
 export type TrainingRouteParam = {
   rule: UnitTypeEnum;
@@ -21,6 +22,7 @@ export type RootParamList = {
   trainingOverview: undefined;
   settings: undefined;
   schoolTraining: { rule: UnitTypeEnum };
+  unitStatistics: undefined;
 };
 
 const Drawer = createDrawerNavigator<RootParamList>();
@@ -47,22 +49,27 @@ const PrivateStack: React.FC = () => {
       <Drawer.Screen
         name={NavigationTypeEnum.Home}
         component={HomeScreen}
-        options={{ headerShown: true, title: getResource('common:headerHome') }}
+        options={{ headerShown: true, title: getResource('common:headerHome'), unmountOnBlur: true }}
       />
       <Drawer.Screen
         name={NavigationTypeEnum.TrainingOverview}
         component={TrainingScreen}
-        options={{ headerShown: true, title: getResource('common:headerTraining') }}
+        options={{ headerShown: true, title: getResource('common:headerTraining'), unmountOnBlur: true }}
+      />
+      <Drawer.Screen
+        name={NavigationTypeEnum.UnitStatistics}
+        component={UnitStatisticScreen}
+        options={{ headerShown: true, title: getResource('common:headerUnitStatistics'), unmountOnBlur: true }}
       />
       <Drawer.Screen
         name={NavigationTypeEnum.Settings}
         component={SettingsScreen}
-        options={{ headerShown: true, title: getResource('common:headerSettings') }}
+        options={{ headerShown: true, title: getResource('common:headerSettings'), unmountOnBlur: true }}
       />
       <Drawer.Screen
         name={NavigationTypeEnum.SchoolTraining}
         component={TrainingPage}
-        options={{ headerShown: true, title: getResource('common:headerSchoolTraining') }}
+        options={{ headerShown: true, title: getResource('common:headerSchoolTraining'), unmountOnBlur: true }}
       />
     </Drawer.Navigator>
   );

@@ -1,14 +1,8 @@
 ﻿using Data.Shared.Models.Account;
-using Data.Shared.Models.Export;
-using Data.Shared.Models.Import;
-using Data.Shared.Models.Response;
-using Logic.Authentication;
 using Logic.Family;
 using Logic.Shared.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Shared;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Service.Api.ApiControllers.Account
 {
@@ -16,19 +10,18 @@ namespace Service.Api.ApiControllers.Account
     {
         private readonly IAccountUnitOfWork _accountUnitOfWork;
         private readonly IModuleConfigurationService _moduleConfigurationService;
-        private readonly CurrentUser _currentUser;
+      
 
-        public AccountServiceController(IAccountUnitOfWork accountUnitOfWork, IModuleConfigurationService moduleConfigurationService, IHttpContextAccessor contextAccessor):base(contextAccessor) 
+        public AccountServiceController(IAccountUnitOfWork accountUnitOfWork, IModuleConfigurationService moduleConfigurationService):base() 
         {
             _accountUnitOfWork = accountUnitOfWork;
-            _moduleConfigurationService = moduleConfigurationService;
-            _currentUser = GetCurrentUser();
+            _moduleConfigurationService = moduleConfigurationService; 
         }
 
         [HttpGet(Name = "CheckUserName")]
         public async Task<bool> CheckUserName([FromQuery] string userName)
         {
-            var service = new FamilyAccountService(_accountUnitOfWork, _moduleConfigurationService, _currentUser);
+            var service = new FamilyAccountService(_accountUnitOfWork, _moduleConfigurationService);
 
             return await service.CheckUserName(userName);
         }
@@ -36,7 +29,7 @@ namespace Service.Api.ApiControllers.Account
         [HttpPost(Name = "RegisterFamily")]
         public async Task<bool> RegisterFamily([FromBody] AccountImportModel importModel)
         {
-            var service = new FamilyAccountService(_accountUnitOfWork, _moduleConfigurationService, _currentUser);
+            var service = new FamilyAccountService(_accountUnitOfWork, _moduleConfigurationService);
 
             return await service.CreateFamilyAccount(importModel);
         }

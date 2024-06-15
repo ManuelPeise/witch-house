@@ -28,7 +28,7 @@ const TrainingPage: React.FC = () => {
   const { navigate } = useNavigation();
   const { params } = useRoute<RouteProp<RootParamList>>();
   const { model } = useStorage<SchoolModuleSync[]>(AsyncStorageKeyEnum.SchoolModules);
-  const { loginResult } = useAuth();
+  const { userData } = useAuth();
   const trainingResultStorage = useStorage<TrainingResultModel[]>(AsyncStorageKeyEnum.TrainingResults);
   const { sendPostRequest } = useApi<TrainingResultExportModel>();
 
@@ -132,7 +132,7 @@ const TrainingPage: React.FC = () => {
     const date: Date = new Date();
 
     const trainingResult: TrainingResultExportModel = {
-      userId: loginResult.userId,
+      userId: userData.userId,
       unitType: routeParam.rule,
       success: result.success,
       failed: result.failed,
@@ -143,8 +143,8 @@ const TrainingPage: React.FC = () => {
       if (!res) {
         const resultToAdd: TrainingResultModel = {
           unitKey: training.unitType,
-          userId: loginResult.userId,
-          familyId: loginResult.familyGuid,
+          userId: userData.userId,
+          familyId: userData.familyGuid,
           timeStamp: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`,
           success: result.success,
           failed: result.failed,
@@ -155,7 +155,7 @@ const TrainingPage: React.FC = () => {
         await trainingResultStorage.storeItem(existingTrainingResults);
       }
     });
-  }, [loginResult, trainingResultStorage, getResultValues, sendPostRequest]);
+  }, [userData, trainingResultStorage, getResultValues, sendPostRequest]);
 
   const handleFinishTraining = React.useCallback(async () => {
     setTraining({ ...training, isRunning: false, isFinished: true });

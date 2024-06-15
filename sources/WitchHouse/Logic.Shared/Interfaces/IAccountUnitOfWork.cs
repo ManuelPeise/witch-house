@@ -1,6 +1,5 @@
 ﻿using Data.Database;
 using Data.Shared.Entities;
-using Data.Shared.Models.Account;
 
 namespace Logic.Shared.Interfaces
 {
@@ -8,11 +7,12 @@ namespace Logic.Shared.Interfaces
     {
         DatabaseContext DatabaseContext { get; }
         ILogRepository LogRepository { get; }
+        IUserDataClaimsAccessor ClaimsAccessor { get; }
         IGenericRepository<FamilyEntity> FamilyRepository { get; }
         IGenericRepository<AccountEntity> AccountRepository { get; }
         IGenericRepository<ModuleEntity> ModuleRepository { get; }
         IGenericRepository<UserModuleEntity> UserModuleRepository { get; }
-        Task SaveChanges(CurrentUser? currentUser = null);
+        Task SaveChanges();
 
     }
 }

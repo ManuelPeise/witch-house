@@ -1,12 +1,10 @@
-﻿using Data.Database;
-using Data.Shared.Entities;
+﻿using Data.Shared.Entities;
 using Data.Shared.Enums;
 using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
-using Newtonsoft.Json;
 
 namespace Logic.Family
 {
@@ -16,15 +14,13 @@ namespace Logic.Family
         private readonly IAccountUnitOfWork _accountUnitOfWork;
         private readonly IModuleConfigurationService _moduleService;
         private readonly ISettingsService _settingsService;
-        private readonly CurrentUser _currentUser;
 
-        public FamilyAccountService(IAccountUnitOfWork accountUnitOfWork, IModuleConfigurationService moduleService, CurrentUser currentUser) : base()
+        public FamilyAccountService(IAccountUnitOfWork accountUnitOfWork, IModuleConfigurationService moduleService) : base()
         {
             _accountUnitOfWork = accountUnitOfWork;
-            _logRepository = new LogRepository(accountUnitOfWork.DatabaseContext);
+            _logRepository = new LogRepository(accountUnitOfWork.DatabaseContext, accountUnitOfWork.ClaimsAccessor);
             _settingsService = new SettingsService(accountUnitOfWork.DatabaseContext);
             _moduleService = moduleService;
-            _currentUser = currentUser;
         }
 
         public async Task<bool> CreateFamilyAccount(AccountImportModel accountImportModel)
@@ -67,7 +63,7 @@ namespace Logic.Family
 
                 if (result != null)
                 {
-                    await _moduleService.CreateModules(_currentUser, accountGuid, true);
+                    await _moduleService.CreateModules(accountGuid, true);
 
                     var modules = await _moduleService.GetUserModules(accountGuid, ModuleTypeEnum.SchoolTraining);
 
@@ -76,7 +72,7 @@ namespace Logic.Family
                         await _settingsService.CreateSchoolTrainingSettings(module);
                     }
 
-                    await _accountUnitOfWork.SaveChanges(_currentUser);
+                    await _accountUnitOfWork.SaveChanges();
 
                     return true;
                 }
@@ -135,7 +131,7 @@ namespace Logic.Family
 
                 if (result != null)
                 {
-                    await _moduleService.CreateModules(_currentUser, accountGuid, false);
+                    await _moduleService.CreateModules(accountGuid, false);
 
                     await _accountUnitOfWork.SaveChanges();
 

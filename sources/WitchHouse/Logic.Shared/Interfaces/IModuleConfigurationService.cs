@@ -7,11 +7,11 @@ namespace Logic.Shared.Interfaces
 {
     public interface IModuleConfigurationService: IDisposable
     {
-        Task<ModuleConfiguration> LoadUserModuleConfiguration(UserModuleRequestModel requestModel, CurrentUser currentUser);
+        Task<ModuleConfiguration> LoadUserModuleConfiguration(UserModuleRequestModel requestModel);
         Task<List<UserModule>> GetUserModules(Guid userId, ModuleTypeEnum moduleType);
-        Task CreateModules(CurrentUser currentUser, Guid userId, bool isActive);
-        Task UpdateModule(UserModule module, CurrentUser currentUser);
-        Task<List<ModuleSettings>> LoadActiveSchoolModuleSettings(Guid userId, CurrentUser currentUser);
-        Task UpdateSchoolModuleSettings(ModuleSettings settings, CurrentUser currentUser);
+        Task CreateModules(Guid userId, bool isActive);
+        Task UpdateModule(UserModule module);
+        Task<List<ModuleSettings>> LoadSchoolModuleSettings(Guid userId, bool? isActive = null);
+        Task UpdateSchoolModuleSettings(ModuleSettings settings);
     }
 }

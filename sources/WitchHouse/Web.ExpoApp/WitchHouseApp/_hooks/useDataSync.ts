@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import * as SecureStore from 'expo-secure-store';
 import axiosClient from '../_lib/api/axiosClient';
@@ -6,31 +5,19 @@ import { JwtData } from '../_lib/api/types';
 import { SecureStoreKeyEnum } from '../_lib/enums/SecureStoreKeyEnum';
 import { endPoints } from '../_lib/api/apiConfiguration';
 import { checkApiIsAvailable } from '../_lib/api/apiUtils';
-import { AsyncStorageKeyEnum } from '../_lib/enums/AsyncStorageKeyEnum';
-import { DataSyncImportModel, DataSyncModel, SchoolModuleSync, UserDataSync } from '../_lib/sync';
-import { LoginResult } from '../_lib/types';
+import { DataSyncImportModel, DataSyncModel } from '../_lib/sync';
 
 export const useDataSync = () => {
   const [apiIsAvailable, setApiIsAvailable] = React.useState<boolean>(false);
   const [syncedData, setSyncedData] = React.useState<DataSyncModel | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const saveSyncedData = React.useCallback(async () => {
-    if (syncedData != null) {
-      await AsyncStorage.setItem(AsyncStorageKeyEnum.UserData, JSON.stringify(syncedData.userData));
-      await AsyncStorage.setItem(AsyncStorageKeyEnum.SchoolModules, JSON.stringify(syncedData.schoolModules));
-    }
-  }, [syncedData]);
-
   React.useEffect(() => {
     checkApiIsAvailable(setApiIsAvailable);
   }, []);
 
-  React.useEffect(() => {
-    saveSyncedData();
-  }, [syncedData]);
-
   // TODO refactor to sync unitSettings and unitResults
+
   const syncAppData = React.useCallback(async (userGuid: string) => {
     const model: DataSyncImportModel = { userId: userGuid };
     const tokenDataJson = SecureStore.getItem(SecureStoreKeyEnum.Jwt) ?? null;
@@ -57,23 +44,10 @@ export const useDataSync = () => {
     }
   }, []);
 
-  const saveLoginResult = React.useCallback(async (data: LoginResult) => {
-    await AsyncStorage.setItem(AsyncStorageKeyEnum.LoginResult, JSON.stringify(data));
-  }, []);
-
-  const executeDataSync = React.useCallback(
-    async (userId: string) => {
-      await syncAppData(userId);
-    },
-    [syncAppData]
-  );
-
   return {
     isLoading,
     data: syncedData,
     apiIsAvailable,
     setApiIsAvailable,
-    executeDataSync,
-    saveLoginResult,
   };
 };

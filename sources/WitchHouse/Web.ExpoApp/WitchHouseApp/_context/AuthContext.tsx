@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import { AuthState, LoginRequest, LoginResult } from '../_lib/types';
+import { AuthState, LoginRequest, LoginResult, MobileLoginResult, UserData } from '../_lib/types';
 import axiosClient from '../_lib/api/axiosClient';
 import { JwtData, ResponseMessage } from '../_lib/api/types';
 import { endPoints } from '../_lib/api/apiConfiguration';
@@ -12,8 +12,8 @@ export const AuthContext = React.createContext<AuthState>({} as AuthState);
 
 const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
   const { children } = props;
-  const { apiIsAvailable, setApiIsAvailable, saveLoginResult } = useDataSync();
-  const [loginResult, setLoginResult] = React.useState<LoginResult | null>(null);
+  const { apiIsAvailable, setApiIsAvailable } = useDataSync();
+  const [userData, setUserData] = React.useState<UserData | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
 
@@ -21,25 +21,25 @@ const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
     checkApiIsAvailable(setApiIsAvailable);
   }, []);
 
-  const loadLoginResultFromStorage = React.useCallback((): LoginResult | null => {
-    const resultJson = SecureStore.getItem(SecureStoreKeyEnum.LoginResult);
+  // const loadLoginResultFromStorage = React.useCallback((): MobileLoginResult | null => {
+  //   const resultJson = SecureStore.getItem(SecureStoreKeyEnum.LoginResult);
 
-    if (resultJson == null) {
-      return null;
-    }
-    const model: LoginResult = JSON.parse(resultJson);
+  //   if (resultJson == null) {
+  //     return null;
+  //   }
+  //   const model: MobileLoginResult = JSON.parse(resultJson);
 
-    return model ?? null;
-  }, []);
+  //   return model ?? null;
+  // }, []);
 
-  React.useEffect(() => {
-    var result = loadLoginResultFromStorage();
+  // React.useEffect(() => {
+  //   var result = loadLoginResultFromStorage();
 
-    if (result != null) {
-      setLoginResult(result);
-      setIsAuthenticated(true);
-    }
-  }, []);
+  //   if (result != null) {
+  //     setLoginResult(result);
+  //     setIsAuthenticated(true);
+  //   }
+  // }, []);
 
   const onLogin = React.useCallback(async (data: LoginRequest) => {
     setIsLoading(true);
@@ -47,22 +47,23 @@ const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
     try {
       await axiosClient.post(endPoints.auth.login, JSON.stringify(data)).then(async (res) => {
         if (res.status === 200) {
-          const responseData: ResponseMessage<LoginResult> = res.data;
+          const responseData: ResponseMessage<MobileLoginResult> = res.data;
 
           if (responseData.success && responseData.data) {
-            setLoginResult(responseData.data);
+            setUserData(responseData.data.userData);
 
-            const tokenData: JwtData = {
-              jwtToken: responseData.data.jwt,
-              refreshToken: responseData.data.refreshToken,
-            };
+            SecureStore.setItem(SecureStoreKeyEnum.UserData, JSON.stringify(responseData.data.userData));
+            SecureStore.setItem(SecureStoreKeyEnum.Jwt, JSON.stringify(responseData.data.jwtData));
+            SecureStore.setItem(
+              SecureStoreKeyEnum.ModuleConfiguration,
+              JSON.stringify(responseData.data.moduleConfiguration)
+            );
+            SecureStore.setItem(
+              SecureStoreKeyEnum.TrainingModuleSettings,
+              JSON.stringify(responseData.data.trainingModuleSettings)
+            );
 
-            SecureStore.setItem(SecureStoreKeyEnum.LoginResult, JSON.stringify(responseData.data));
-            SecureStore.setItem(SecureStoreKeyEnum.Jwt, JSON.stringify(tokenData));
-
-            await saveLoginResult(responseData.data);
-
-            axiosClient.defaults.headers.common['Authorization'] = `bearer ${responseData.data.jwt}`;
+            axiosClient.defaults.headers.common['Authorization'] = `bearer ${responseData.data.jwtData.jwtToken}`;
             setIsAuthenticated(true);
           }
         }
@@ -75,13 +76,16 @@ const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
   }, []);
 
   const onLogout = React.useCallback(async () => {
-    await SecureStore.deleteItemAsync(SecureStoreKeyEnum.LoginResult);
+    await SecureStore.deleteItemAsync(SecureStoreKeyEnum.UserData);
     await SecureStore.deleteItemAsync(SecureStoreKeyEnum.Jwt);
-    setLoginResult(null);
+    await SecureStore.deleteItemAsync(SecureStoreKeyEnum.ModuleConfiguration);
+    await SecureStore.deleteItemAsync(SecureStoreKeyEnum.TrainingModuleSettings);
+
+    setUserData(null);
     setIsAuthenticated(false);
   }, []);
 
-  const model: AuthState = { isLoading, isAuthenticated, apiIsAvailable, loginResult, onLogin, onLogout };
+  const model: AuthState = { isLoading, isAuthenticated, apiIsAvailable, userData, onLogin, onLogout };
 
   return <AuthContext.Provider value={model}>{children}</AuthContext.Provider>;
 };

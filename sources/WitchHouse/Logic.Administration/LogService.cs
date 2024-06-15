@@ -1,6 +1,5 @@
 ﻿using Data.Database;
 using Data.Shared.Entities;
-using Data.Shared.Models.Account;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +10,11 @@ namespace Logic.Administration
     {
         private readonly ILogRepository _logRepository;
         private readonly DatabaseContext _databaseContext;
-        private readonly CurrentUser _currentUser;
-
-        public LogService(DatabaseContext context, ILogRepository logRepository, CurrentUser currentUser) : base()
+        
+        public LogService(DatabaseContext context, ILogRepository logRepository) : base()
         {
             _databaseContext = context;
             _logRepository = logRepository;
-            _currentUser = currentUser;
         }
 
         public async Task<List<LogMessageEntity>> LoadLogMessages()
@@ -30,10 +27,9 @@ namespace Logic.Administration
             }
             catch (Exception exception)
             {
-
                 await _logRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = _currentUser.FamilyGuid,
+                    FamilyGuid = _logRepository.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     Trigger = nameof(LogService),
@@ -44,6 +40,7 @@ namespace Logic.Administration
 
             }
         }
+        
         public async Task DeleteLogmessages(int[] ids)
         {
             try
@@ -57,7 +54,7 @@ namespace Logic.Administration
             {
                 await _logRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = _currentUser.FamilyGuid,
+                    FamilyGuid = _logRepository.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     Trigger = nameof(LogService),
@@ -71,20 +68,20 @@ namespace Logic.Administration
             var modifiedEntries = _databaseContext.ChangeTracker.Entries()
                .Where(x => x.State == EntityState.Modified ||
                x.State == EntityState.Added);
-
+            
             foreach (var entry in modifiedEntries)
             {
                 if (entry != null)
                 {
                     if (entry.State == EntityState.Added)
                     {
-                        ((AEntityBase)entry.Entity).CreatedBy = _currentUser.UserName ?? "System";
+                        ((AEntityBase)entry.Entity).CreatedBy = _logRepository.ClaimsAccessor.GetClaimsValue<string>(UserIdentityClaims.UserName) ?? "System";
                         ((AEntityBase)entry.Entity).CreatedAt = DateTime.Now.ToString(Constants.LogMessageDateFormat);
 
                     }
                     else if (entry.State == EntityState.Modified)
                     {
-                        ((AEntityBase)entry.Entity).UpdatedBy = _currentUser.UserName ?? "System";
+                        ((AEntityBase)entry.Entity).UpdatedBy = _logRepository.ClaimsAccessor.GetClaimsValue<string>(UserIdentityClaims.UserName) ?? "System";
                         ((AEntityBase)entry.Entity).UpdatedAt = DateTime.Now.ToString(Constants.LogMessageDateFormat);
                     }
                 }

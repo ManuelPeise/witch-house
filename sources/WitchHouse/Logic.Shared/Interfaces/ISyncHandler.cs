@@ -5,6 +5,6 @@ namespace Logic.Shared.Interfaces
 {
     public interface ISyncHandler: IDisposable
     {
-        Task<DataSyncExportModel?> ExecuteSync(DataSyncImportModel importModel, CurrentUser currentUser);
+        Task<DataSyncExportModel?> ExecuteSync(DataSyncImportModel importModel);
     }
 }

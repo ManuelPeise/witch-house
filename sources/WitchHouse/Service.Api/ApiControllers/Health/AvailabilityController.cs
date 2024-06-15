@@ -6,7 +6,7 @@ namespace Service.Api.ApiControllers.Health
 {
     public class AvailabilityController : ApiControllerBase
     {
-        public AvailabilityController(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
+        public AvailabilityController() : base()
         {
 
         }

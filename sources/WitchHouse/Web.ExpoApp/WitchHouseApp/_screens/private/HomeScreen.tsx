@@ -1,14 +1,14 @@
 import React from 'react';
-import { Text, View } from 'react-native';
-import IconButton from '../../_components/_inputs/IconButton';
+import { StyleSheet, View } from 'react-native';
 
 const HomeScreen: React.FC = () => {
-  return (
-    <View>
-      <Text>Home</Text>
-      <IconButton size={50} padding={2} icon="home" onPress={async () => {}} />
-    </View>
-  );
+  return <View style={styles.container}></View>;
 };
 
+const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+    height: '100%',
+  },
+});
 export default HomeScreen;

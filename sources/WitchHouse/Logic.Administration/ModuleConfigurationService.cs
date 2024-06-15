@@ -1,6 +1,5 @@
 ﻿using Data.Shared.Entities;
 using Data.Shared.Enums;
-using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
 using Logic.Shared;
@@ -22,15 +21,16 @@ namespace Logic.Administration
             _settingsService = settingsService;
         }
 
-        public async Task CreateModules(CurrentUser currentUser, Guid userId, bool isActive)
+        public async Task CreateModules(Guid userId, bool isActive)
         {
             try
             {
+                
                 var modules = await _accountUnitOfWork.ModuleRepository.GetAllAsync();
 
                 foreach (var module in modules)
                 {
-                    await CreateUserModules(module, userId, module.ModuleType, currentUser, isActive);
+                    await CreateUserModules(module, userId, module.ModuleType, isActive);
                 }
             }
             catch (Exception exception)
@@ -38,7 +38,7 @@ namespace Logic.Administration
 
                 await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = currentUser.FamilyGuid,
+                    FamilyGuid = _accountUnitOfWork.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
@@ -64,13 +64,18 @@ namespace Logic.Administration
             }
         }
 
-        public async Task<List<ModuleSettings>> LoadActiveSchoolModuleSettings(Guid userId, CurrentUser currentUser)
+        public async Task<List<ModuleSettings>> LoadSchoolModuleSettings(Guid userId, bool? isActive = null)
         {
             var settings = new List<ModuleSettings>();
-
+           
             try
             {
-                var modules = await _accountUnitOfWork.UserModuleRepository.GetByAsync(x => x.UserId == userId && x.IsActive);
+                var modules = await _accountUnitOfWork.UserModuleRepository.GetByAsync(x => x.UserId == userId);
+
+                if(isActive != null)
+                {
+                    modules = modules.Where(x => x.IsActive == isActive);
+                }
 
                 foreach (var module in modules.ToList())
                 {
@@ -95,7 +100,7 @@ namespace Logic.Administration
             {
                 await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = currentUser.FamilyGuid,
+                    FamilyGuid = _accountUnitOfWork.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
@@ -107,8 +112,7 @@ namespace Logic.Administration
         }
 
         public async Task<ModuleConfiguration> LoadUserModuleConfiguration(
-            UserModuleRequestModel requestModel,
-            CurrentUser currentUser)
+            UserModuleRequestModel requestModel)
         {
             var config = new ModuleConfiguration
             {
@@ -122,7 +126,7 @@ namespace Logic.Administration
 
                 foreach (var module in modules)
                 {
-                    var entity = await GetUserModuleEntityAsync(module, requestModel, module.ModuleType, currentUser);
+                    var entity = await GetUserModuleEntityAsync(module, requestModel, module.ModuleType);
 
                     if (entity != null)
                     {
@@ -138,7 +142,7 @@ namespace Logic.Administration
 
                 await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = requestModel.FamilyGuid,
+                    FamilyGuid = _accountUnitOfWork.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
@@ -149,7 +153,7 @@ namespace Logic.Administration
             }
         }
 
-        public async Task UpdateModule(UserModule module, CurrentUser currentUser)
+        public async Task UpdateModule(UserModule module)
         {
             try
             {
@@ -171,13 +175,14 @@ namespace Logic.Administration
                     await _settingsService.CreateSchoolTrainingSettings(module);
                 }
 
-                await _accountUnitOfWork.SaveChanges(currentUser);
+                await _accountUnitOfWork.SaveChanges();
 
             }
             catch (Exception exception)
             {
                 await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
+                    FamilyGuid = _accountUnitOfWork.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
@@ -186,7 +191,7 @@ namespace Logic.Administration
             }
         }
 
-        public async Task UpdateSchoolModuleSettings(ModuleSettings settings, CurrentUser currentUser)
+        public async Task UpdateSchoolModuleSettings(ModuleSettings settings)
         {
             try
             {
@@ -200,13 +205,13 @@ namespace Logic.Administration
 
                     await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                     {
-                        FamilyGuid = currentUser.FamilyGuid,
+                        FamilyGuid = _accountUnitOfWork.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                         Message = $"Settings for [{settings.UserId} - {Enum.GetName(typeof(ModuleSettingsTypeEnum), settings.ModuleSettingsType)}] upadated with success!",
                         Stacktrace = "",
                         Trigger = nameof(ModuleConfigurationService),
                         TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
                         CreatedAt = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
-                        CreatedBy = currentUser.UserName ?? "System"
+                        CreatedBy = _accountUnitOfWork.ClaimsAccessor.GetClaimsValue<string>(UserIdentityClaims.UserName) ?? "System"
                     });
                 }
 
@@ -215,7 +220,7 @@ namespace Logic.Administration
             {
                 await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = currentUser.FamilyGuid,
+                    FamilyGuid = _accountUnitOfWork.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
@@ -224,7 +229,7 @@ namespace Logic.Administration
             }
         }
 
-        private async Task CreateUserModules(ModuleEntity module, Guid userId, ModuleTypeEnum moduleType, CurrentUser currentUser, bool isActive)
+        private async Task CreateUserModules(ModuleEntity module, Guid userId, ModuleTypeEnum moduleType, bool isActive)
         {
             try
             {
@@ -244,7 +249,7 @@ namespace Logic.Administration
 
                     await _accountUnitOfWork.UserModuleRepository.AddAsync(moduleEntity);
 
-                    await _accountUnitOfWork.SaveChanges(currentUser);
+                    await _accountUnitOfWork.SaveChanges();
                 }
 
                 if (entities.Any() && entities.Count() < 1)
@@ -262,8 +267,7 @@ namespace Logic.Administration
         private async Task<UserModuleEntity?> GetUserModuleEntityAsync(
             ModuleEntity module,
             UserModuleRequestModel requestModel,
-            ModuleTypeEnum moduleType,
-            CurrentUser currentUser)
+            ModuleTypeEnum moduleType)
         {
             try
             {

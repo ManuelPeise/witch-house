@@ -12,7 +12,7 @@ namespace Service.Api.ApiControllers.Sync
     {
         private readonly ISyncHandler _syncHandler;
 
-        public DataSyncController(IHttpContextAccessor contextAccessor, ISyncHandler syncHandler) : base(contextAccessor)
+        public DataSyncController(ISyncHandler syncHandler) : base()
         {
             _syncHandler = syncHandler;
         }
@@ -20,7 +20,7 @@ namespace Service.Api.ApiControllers.Sync
         [HttpPost(Name = "SyncAppData")]
         public async Task<DataSyncExportModel?> SyncAppData([FromBody] DataSyncImportModel model)
         {
-            return await _syncHandler.ExecuteSync(model, base.GetCurrentUser());
+            return await _syncHandler.ExecuteSync(model);
         }
     }
 }
