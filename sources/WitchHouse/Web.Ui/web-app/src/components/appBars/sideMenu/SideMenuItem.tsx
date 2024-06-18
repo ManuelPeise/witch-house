@@ -9,14 +9,14 @@ import { UserRoleEnum } from '../../../lib/enums/UserRoleEnum';
 interface IProps {
   node: MenuNode;
   selectedItem: number;
-  userRole: UserRoleEnum;
+  userRoles: UserRoleEnum[];
   onExpandItem: (id: number) => void;
   handleResetMenuSelection: () => void;
   onClose: (cb?: () => void) => void;
 }
 
 const SideMenuItem: React.FC<IProps> = (props) => {
-  const { node, selectedItem, userRole, onExpandItem, onClose, handleResetMenuSelection } = props;
+  const { node, selectedItem, userRoles, onExpandItem, onClose, handleResetMenuSelection } = props;
   const { getResource } = useI18n();
   const navigate = useNavigate();
 
@@ -26,6 +26,15 @@ const SideMenuItem: React.FC<IProps> = (props) => {
       onClose(handleResetMenuSelection);
     },
     [navigate, onClose, handleResetMenuSelection]
+  );
+
+  const canAccess = React.useCallback(
+    (requiredRoles: UserRoleEnum[]) => {
+      const matchingRoles = requiredRoles.filter((role) => userRoles.includes(role));
+
+      return matchingRoles?.length > 0;
+    },
+    [userRoles]
   );
 
   return (
@@ -38,7 +47,7 @@ const SideMenuItem: React.FC<IProps> = (props) => {
       {selectedItem === node.id && (
         <List className="sub-item-list" disablePadding>
           {node.subMenuNodes.map((sub, index) => {
-            return sub.userRoles.includes(userRole) ? (
+            return canAccess(sub.userRoles) ? (
               <ListItemButton
                 className="side-menu-sub-item-button"
                 key={index}

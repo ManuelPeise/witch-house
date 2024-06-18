@@ -16,7 +16,7 @@ import LinkButton from '../../../components/buttons/LinkButton';
 const initialModel: AccountImportModel = {
   family: {
     familyName: '',
-    city: '',
+    familyFullName: '',
   },
   userAccount: {
     firstName: '',
@@ -54,9 +54,6 @@ const RegisterPage: React.FC = () => {
 
   const canSave = React.useMemo(() => {
     return (
-      model.family.familyName?.length > 3 &&
-      model.family.city?.length &&
-      model?.family?.city.length > 3 &&
       model.userAccount.firstName?.length > 3 &&
       model.userAccount.lastName?.length > 3 &&
       isValidUserName &&
@@ -64,13 +61,6 @@ const RegisterPage: React.FC = () => {
       model.userAccount.secret?.length > 7
     );
   }, [model, isValidUserName]);
-
-  const handleFamilyChanged = React.useCallback(
-    (key: string, value: string) => {
-      setModel({ ...model, family: { ...model.family, [key]: value } });
-    },
-    [model]
-  );
 
   const handleAccountChanged = React.useCallback(
     (key: string, value: string) => {
@@ -86,6 +76,8 @@ const RegisterPage: React.FC = () => {
   );
 
   const handleRegister = React.useCallback(async () => {
+    model.family.familyName = model.userAccount.lastName;
+    model.family.familyFullName = `${model.userAccount.firstName} ${model.userAccount.lastName}`;
     const result = await onRegister(JSON.stringify(model));
 
     if (result) {
@@ -109,15 +101,6 @@ const RegisterPage: React.FC = () => {
           <FormItemWrapper marginVertical={10}>
             <TextInput
               fullWidth
-              property="familyName"
-              label={getResource('common:labelFamily')}
-              value={model.family.familyName}
-              onChange={handleFamilyChanged}
-            />
-          </FormItemWrapper>
-          <FormItemWrapper marginVertical={10}>
-            <TextInput
-              fullWidth
               property="firstName"
               label={getResource('common:labelFirstName')}
               value={model.userAccount.firstName}
@@ -131,15 +114,6 @@ const RegisterPage: React.FC = () => {
               label={getResource('common:labelLastName')}
               value={model.userAccount.lastName}
               onChange={handleAccountChanged}
-            />
-          </FormItemWrapper>
-          <FormItemWrapper marginVertical={10}>
-            <TextInput
-              fullWidth
-              property="city"
-              label={getResource('common:labelCity')}
-              value={model?.family?.city ?? ''}
-              onChange={handleFamilyChanged}
             />
           </FormItemWrapper>
           <FormItemWrapper marginVertical={10}>

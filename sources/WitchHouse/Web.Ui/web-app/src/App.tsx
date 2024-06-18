@@ -13,9 +13,9 @@ const App: React.FC = () => {
   return (
     <div>
       <div>{process.env.REACT_APP_Name}</div>
-      {loginResult && loginResult.success && (
+      {loginResult && (
         <div>
-          <div>{'JWT:' + loginResult.jwt}</div>
+          <div>{'JWT:' + loginResult.jwtData.jwtToken}</div>
           <div>{'AuthHeader: - ' + axiosClient.defaults.headers.common['Authorization']}</div>
           <button onClick={onLogout}>Logout</button>
         </div>

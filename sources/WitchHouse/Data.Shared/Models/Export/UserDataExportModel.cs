@@ -10,6 +10,6 @@ namespace Data.Shared.Models.Export
         public string? LastName { get; set; }
         public string UserName { get; set; } = string.Empty;
         public bool IsActive { get; set; }
-        public UserRoleEnum Role { get; set; }
+        public List<UserRoleEnum>? Roles { get; set; }
     }
 }

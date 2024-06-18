@@ -2,30 +2,7 @@ import React, { PropsWithChildren, createContext, useContext } from 'react';
 import axiosClient from './api/axiosClient';
 import { endpoints } from './api/apiConfiguration';
 import { useI18n } from '../hooks/useI18n';
-import { UserRoleEnum } from './enums/UserRoleEnum';
-
-type LoginData = {
-  userName: string;
-  secret: string;
-};
-
-export type LoginResult = {
-  success: boolean;
-  userId: string;
-  familyGuid: string;
-  userName: string;
-  language: 'en' | 'de';
-  jwt: string;
-  refreshToken: string;
-  userRole: UserRoleEnum;
-};
-
-export type AuthResult = {
-  loginResult: LoginResult | null;
-  onLogin: (loginData: LoginData) => Promise<void>;
-  onLogout: () => void;
-  onRegister: (json: string) => Promise<boolean>;
-};
+import { AuthResult, LoginData, LoginResult, ResponseMessage } from './api/types';
 
 const AuthContext = createContext<AuthResult>({} as AuthResult);
 
@@ -38,14 +15,14 @@ const AuthenticationContext: React.FC<PropsWithChildren> = (props) => {
     async (loginData: LoginData) => {
       await axiosClient.post(endpoints.login, loginData).then((res) => {
         if (res.status === 200) {
-          const result: LoginResult = res.data;
+          const result: ResponseMessage<LoginResult> = res.data;
 
-          if (result && result.jwt) {
-            axiosClient.defaults.headers.common['Authorization'] = `bearer ${result.jwt}`;
+          if (result && result.data.jwtData.jwtToken) {
+            axiosClient.defaults.headers.common['Authorization'] = `bearer ${result.data.jwtData.jwtToken}`;
 
-            setLoginResult(result);
+            setLoginResult(result.data);
 
-            changeLanguage(result.language ?? 'en');
+            changeLanguage(result.data.userData.language ?? 'en');
           }
         }
       });

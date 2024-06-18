@@ -29,12 +29,12 @@ namespace Logic.Administration
                                 UserRoles = AdminRoles,
                                 TargetPath = "administration/family"
                             },
-                            //new SubMenuNode
-                            //{
-                            //    ResourceKey = "menuItemUserAdministration",
-                            //    UserRoles = AdminRole,
-                            //    TargetPath = "administration/users"
-                            //},
+                            new SubMenuNode
+                            {
+                                ResourceKey = "menuItemUserAdministration",
+                                UserRoles = AdminRole,
+                                TargetPath = "administration/users"
+                            },
                             new SubMenuNode
                             {
                                 ResourceKey = "menuItemLog",

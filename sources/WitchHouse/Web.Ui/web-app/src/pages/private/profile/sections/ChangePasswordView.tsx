@@ -38,7 +38,7 @@ const ChangePasswordView: React.FC<IProps> = (props) => {
     if (loginResult != null) {
       await passwordApi.post(
         endpoints.account.passwordCheck,
-        JSON.stringify({ userId: loginResult.userId, password: passwordSettings.currentPassword })
+        JSON.stringify({ userId: loginResult.userData.userId, password: passwordSettings.currentPassword })
       );
     }
   }, [passwordSettings, passwordApi, loginResult]);
@@ -68,7 +68,7 @@ const ChangePasswordView: React.FC<IProps> = (props) => {
     if (loginResult != null) {
       await passwordUpdateApi.post(
         endpoints.account.updatePassword,
-        JSON.stringify({ userId: loginResult.userId, password: passwordSettings.newPassword })
+        JSON.stringify({ userId: loginResult.userData.userId, password: passwordSettings.newPassword })
       );
     }
   }, [loginResult, passwordSettings, passwordUpdateApi]);

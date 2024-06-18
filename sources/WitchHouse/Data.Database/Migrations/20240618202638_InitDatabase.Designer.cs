@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240618134548_InitDatabase")]
+    [Migration("20240618202638_InitDatabase")]
     partial class InitDatabase
     {
         /// <inheritdoc />
@@ -144,9 +144,9 @@ namespace Data.Database.Migrations
                             Id = new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"),
                             CreatedAt = "2024-06-18",
                             CreatedBy = "System",
-                            EncodedPassword = "UEBzc3dvcmQ3ZDRiMGNhYy1iMjdlLTQzNjYtOGI2Yi1hZDg5YzNjNWZiNmY=",
+                            EncodedPassword = "UEBzc3dvcmQzOTliNmY1MS03YjlkLTQ3ZDgtODMwNy03YzU2MDkzNjllZWI=",
                             MobilePin = 1234,
-                            Salt = new Guid("7d4b0cac-b27e-4366-8b6b-ad89c3c5fb6f"),
+                            Salt = new Guid("399b6f51-7b9d-47d8-8307-7c5609369eeb"),
                             UpdatedAt = "2024-06-18",
                             UpdatedBy = "System"
                         });
@@ -158,16 +158,15 @@ namespace Data.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("CreatedAt")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FamilyFullName")
                         .HasColumnType("longtext");
 
                     b.Property<string>("FamilyName")
@@ -280,7 +279,7 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c601b781-6d81-4f0e-aae1-02838feb753a"),
+                            Id = new Guid("eaba7815-abbb-4b56-886a-501e4c2ca835"),
                             AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
                             CreatedAt = "2024-06-18",
                             CreatedBy = "System",
@@ -292,7 +291,7 @@ namespace Data.Database.Migrations
                         },
                         new
                         {
-                            Id = new Guid("f034995c-7347-4435-8f22-99d1ffa721b9"),
+                            Id = new Guid("ee7c264a-fd6f-4fd8-bdfa-f7a41fecec4d"),
                             AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
                             CreatedAt = "2024-06-18",
                             CreatedBy = "System",
@@ -344,7 +343,7 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("2f0d2e15-ec36-4dac-a18a-57aad4504312"),
+                            Id = new Guid("86bfb9cc-e3ab-4e02-90ae-0bd0ed58f2be"),
                             AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
                             CreatedAt = "2024-06-18",
                             CreatedBy = "System",

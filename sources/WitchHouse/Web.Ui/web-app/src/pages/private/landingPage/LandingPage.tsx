@@ -6,7 +6,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <div>
-      <div>{'LandingPage: ' + loginResult?.userName}</div>
+      <div>{'LandingPage: ' + loginResult?.userData.userName}</div>
     </div>
   );
 };

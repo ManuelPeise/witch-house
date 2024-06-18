@@ -7,6 +7,7 @@ import { SideMenu } from './sideMenu';
 import SideMenuItem from './SideMenuItem';
 import SideMenuHeader from './SideMenuHeader';
 import { useAuth } from '../../../lib/AuthContext';
+import { UserRoleEnum } from '../../../lib/enums/UserRoleEnum';
 
 const drawerWidth = 380;
 interface IProps {
@@ -38,6 +39,15 @@ const SideMenuDrawer: React.FC<IProps> = (props) => {
     setExpanded(0);
   }, []);
 
+  const canAccess = React.useCallback(
+    (requiredRoles: UserRoleEnum[]) => {
+      const matchingRoles = requiredRoles.filter((role) => loginResult?.userData?.userRoles?.includes(role));
+
+      return matchingRoles?.length > 0;
+    },
+    [loginResult]
+  );
+
   if (!menuApi.data || loginResult == null) {
     return null;
   }
@@ -53,12 +63,12 @@ const SideMenuDrawer: React.FC<IProps> = (props) => {
       <Box sx={{ width: drawerWidth, height: '100%', backgroundColor: '#000' }} role="presentation">
         <List disablePadding>
           {menuApi.data.menuNodes?.map((node, index) => {
-            return node.userRoles.includes(loginResult.userRole) ? (
+            return canAccess(node.userRoles) ? (
               <SideMenuItem
                 key={index}
                 node={node}
                 selectedItem={expanded}
-                userRole={loginResult.userRole}
+                userRoles={loginResult.userData.userRoles}
                 onExpandItem={handleExpandedChanged}
                 onClose={onClose}
                 handleResetMenuSelection={handleResetMenuSelection}

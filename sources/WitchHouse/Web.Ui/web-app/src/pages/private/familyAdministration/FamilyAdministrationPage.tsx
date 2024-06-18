@@ -33,7 +33,7 @@ const FamilyAdministrationContainer: React.FC = () => {
 
   const getUserData = React.useCallback(async () => {
     if (loginResult != null) {
-      get(endpoints.administration.getFamilyUsers.replace('{id}', loginResult?.familyGuid ?? ''));
+      get(endpoints.administration.getFamilyUsers.replace('{id}', loginResult?.userData.familyGuid ?? ''));
     }
   }, [loginResult, get]);
 
@@ -182,7 +182,7 @@ const FamilyAdministrationPage: React.FC<IProps> = (props) => {
         <SectionLayout caption={getResource('administration:captionUserDetails')}>
           <UserDetailsForm
             userData={selectedUser}
-            disabled={loginResult.userId === selectedUser.userId}
+            disabled={loginResult.userData.userId === selectedUser.userId}
             onSave={onUpdateFamilyMember}
           />
         </SectionLayout>
@@ -195,7 +195,7 @@ const FamilyAdministrationPage: React.FC<IProps> = (props) => {
               familyGuid: selectedUser.familyGuid,
               roleId: selectedUser.role,
             }}
-            disabled={selectedUser.userId === loginResult.userId}
+            disabled={false}
           />
         </SectionLayout>
       )}
@@ -203,7 +203,7 @@ const FamilyAdministrationPage: React.FC<IProps> = (props) => {
         <SectionLayout caption={getResource('administration:captionSchoolModuleSettings')}>
           <ModuleSettingsAdministration
             selectedUser={selectedUser}
-            disabled={selectedUser.userId === loginResult.userId}
+            disabled={selectedUser.userId === loginResult.userData.userId}
           />
         </SectionLayout>
       )}

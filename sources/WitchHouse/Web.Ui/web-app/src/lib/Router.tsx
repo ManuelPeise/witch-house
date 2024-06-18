@@ -24,7 +24,7 @@ const Router: React.FC = () => {
   const { loginResult } = useAuth();
 
   var routes = React.useMemo(() => {
-    if (loginResult && loginResult?.success) {
+    if (loginResult && loginResult.jwtData.jwtToken) {
       return (
         <Routes>
           <Route path={RouteTypes.LandingPage} Component={PrivatePagePayout}>

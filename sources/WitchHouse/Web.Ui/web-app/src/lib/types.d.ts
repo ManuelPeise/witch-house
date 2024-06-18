@@ -53,6 +53,7 @@ export type RadioInputProps = {
   label: string;
   value: string;
 };
+
 export type RadioGroupProps = {
   property: string;
   hasDivider?: boolean;

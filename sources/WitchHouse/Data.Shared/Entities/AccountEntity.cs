@@ -41,13 +41,12 @@ namespace Data.Shared.Entities
         {
             return new UserDataExportModel
             {
-                //UserId = Id,
-                //FamilyGuid = FamilyGuid,
-                //FirstName = FirstName,
-                //LastName = LastName,
-                //UserName = UserName,
-                //Role = Role,
-                //IsActive = IsActive,
+                UserId = Id,
+                FamilyGuid = FamilyGuid,
+                FirstName = FirstName,
+                LastName = LastName,
+                UserName = UserName,
+                IsActive = IsActive,
             };
         }
     }

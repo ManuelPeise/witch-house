@@ -53,7 +53,7 @@ const AppHeaderBar: React.FC = () => {
               color="inherit"
             >
               <AccountCircle />
-              <FormLabel style={{ color: '#ffffff' }}>{loginResult?.userName}</FormLabel>
+              <FormLabel style={{ color: '#ffffff' }}>{loginResult?.userData.userName}</FormLabel>
             </IconButton>
           </Box>
         </Toolbar>

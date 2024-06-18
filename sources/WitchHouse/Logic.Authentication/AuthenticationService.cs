@@ -61,6 +61,8 @@ namespace Logic.Authentication
                         var modules = await _unitOfWork.ModuleRepository
                             .GetByAsync(x => x.AccountGuid == accountEntity.Id);
 
+                        var userRoles = await _unitOfWork.RoleRepository.GetByAsync(x => x.AccountGuid == accountEntity.Id);
+
                         return new ResponseMessage<LoginResult>
                         {
                             Success = true,
@@ -74,7 +76,7 @@ namespace Logic.Authentication
                                     FamilyGuid = accountEntity.FamilyGuid,
                                     UserName = accountEntity.UserName,
                                     Language = accountEntity.Culture,
-                                    UserRoles = (from role in accountEntity.UserRoles
+                                    UserRoles = (from role in userRoles
                                                  select role.RoleType).ToList(),
                                     ProfileImage = accountEntity.ProfileImage,
                                 },

@@ -8,7 +8,7 @@ export type LoginImportModel = {
 export type FamilyAccountImportModel = {
   familyGuid?: string;
   familyName: string;
-  city?: string;
+  familyFullName: string;
 };
 
 export type UserAccountImportModel = {

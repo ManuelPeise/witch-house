@@ -10,8 +10,8 @@ namespace Logic.Administration
     public class FamilyAdministrationService : IFamilyAdministrationService
     {
         private readonly IApplicationUnitOfWork _unitOfWork;
-        
-        public FamilyAdministrationService(IApplicationUnitOfWork unitOfWork) 
+
+        public FamilyAdministrationService(IApplicationUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -32,11 +32,21 @@ namespace Logic.Administration
                     throw new Exception($"Could not find users of [{familyId}]!");
                 }
 
-                var exportModels = (from e in entities
-                                    select e.ToUserDataExportModel()).ToList();
+                var exportModels = new List<UserDataExportModel>();
+
+                foreach (var entity in entities.ToList())
+                {
+                    var model = entity.ToUserDataExportModel();
+
+
+                    var userRoles = await _unitOfWork.RoleRepository.GetByAsync(x => x.AccountGuid == entity.Id);
+
+                    model.Roles = (from role in userRoles.ToList() select role.RoleType).ToList();
+
+                    exportModels.Add(model);
+                }
 
                 return exportModels;
-
             }
             catch (Exception exception)
             {

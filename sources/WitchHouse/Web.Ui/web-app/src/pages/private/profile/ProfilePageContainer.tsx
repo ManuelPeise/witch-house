@@ -32,7 +32,7 @@ const ProfilePageContainer: React.FC = () => {
 
   const loadProfileData = React.useCallback(async () => {
     if (loginResult != null) {
-      await profileDataApi.get(endpoints.getProfile.replace('{model}', loginResult?.userId));
+      await profileDataApi.get(endpoints.getProfile.replace('{model}', loginResult?.userData.userId));
     }
   }, [profileDataApi, loginResult]);
 

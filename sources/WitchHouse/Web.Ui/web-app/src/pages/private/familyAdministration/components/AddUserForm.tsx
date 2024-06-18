@@ -19,7 +19,7 @@ const AddUserForm: React.FC<IProps> = (props) => {
   const initialState: UserDataModel = React.useMemo(() => {
     return {
       userId: '',
-      familyGuid: loginResult?.familyGuid ?? '',
+      familyGuid: loginResult?.userData?.familyGuid ?? '',
       firstName: '',
       lastName: '',
       userName: '',

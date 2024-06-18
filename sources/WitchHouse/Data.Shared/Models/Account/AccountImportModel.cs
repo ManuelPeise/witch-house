@@ -13,8 +13,8 @@ namespace Data.Shared.Models.Account
     public class FamilyAccountImportModel
     {
         public Guid FamilyGuid { get; set; }
-        public string FamilyName { get; set; } = string.Empty;
-        public string? City { get; set; }
+        public string? FamilyName { get; set; }
+        public string? FamilyFullName { get; set; }
 
         public FamilyEntity ToEntity(Guid guid)
         {
@@ -22,7 +22,7 @@ namespace Data.Shared.Models.Account
             {
                 Id = guid,
                 FamilyName = FamilyName,
-                City = City,
+                FamilyFullName = FamilyFullName,
                 CreatedAt = DateTime.UtcNow.ToString("yyyy-MM-dd"),
                 CreatedBy = "System"
             };
@@ -68,7 +68,7 @@ namespace Data.Shared.Models.Account
                           Id = Guid.NewGuid(),
                           AccountGuid = id,
                           RoleType = role,
-                          RoleName = Enum.GetName(typeof(RoleEntity), role)
+                          RoleName = Enum.GetName(typeof(UserRoleEnum), role)
                       }
                 },
                 Modules = new List<ModuleEntity>
