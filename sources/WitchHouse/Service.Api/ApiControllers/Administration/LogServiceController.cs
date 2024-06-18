@@ -1,9 +1,7 @@
-﻿using Data.Database;
-using Data.Shared.Entities;
+﻿using Data.Shared.Entities;
 using Logic.Administration;
 using Logic.Shared.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Shared;
 
@@ -12,27 +10,25 @@ namespace Service.Api.ApiControllers.Administration
     [Authorize]
     public class LogServiceController : ApiControllerBase
     {
-        private readonly ILogRepository _logRepository;
-        private readonly DatabaseContext _databaseContext;
+        private readonly IApplicationUnitOfWork _applucationUnitOfWork;
 
-        public LogServiceController(ILogRepository logRepository, DatabaseContext context): base()
+        public LogServiceController(IApplicationUnitOfWork applucationUnitOfWork) : base()
         {
-            _logRepository = logRepository;
-            _databaseContext = context;
+            _applucationUnitOfWork = applucationUnitOfWork;
         }
 
         [HttpGet(Name = "GetLogMessages")]
-        public async Task<IEnumerable<LogMessageEntity>> GetLogMessages()
+        public async Task<IEnumerable<LogMessageEntity>> GetLogMessages(Guid? familyGuid)
         {
-            var service = new LogService(_databaseContext, _logRepository);
+            var service = new LogService(_applucationUnitOfWork);
 
-            return await service.LoadLogMessages();
+            return await service.LoadLogMessages(familyGuid);
         }
 
         [HttpPost(Name ="DeleteLogMessages")]
         public async Task DeleteLogMessages([FromBody] int[] messageIds)
         {
-            var service = new LogService(_databaseContext, _logRepository);
+            var service = new LogService(_applucationUnitOfWork);
 
             await service.DeleteLogmessages(messageIds);
         }

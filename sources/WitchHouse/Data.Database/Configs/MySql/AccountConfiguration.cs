@@ -1,35 +1,46 @@
 ﻿using Data.Shared.Entities;
+using Data.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 
-namespace Data.Database.SeedData
+
+namespace Data.Database.Configs.MySql
 {
-    public class AdminAccountSeed : IEntityTypeConfiguration<AccountEntity>
+    public class AccountConfiguration : IEntityTypeConfiguration<AccountEntity>
     {
         private readonly IConfiguration _configuration;
-
-        public AdminAccountSeed(IConfiguration config)
+        public AccountConfiguration(IConfiguration config)
         {
             _configuration = config;
         }
+
         public void Configure(EntityTypeBuilder<AccountEntity> builder)
         {
-            var salt = Guid.NewGuid().ToString();
+            var userGuid = new Guid(DefaultEntityGuids.DefaultAdminGuid);
+            var salt = Guid.NewGuid();
+            var createdAt = DateTime.Now.ToString("yyyy-MM-dd");
 
             builder.HasData(new AccountEntity
             {
-                Id = Guid.NewGuid(),
+                Id = userGuid,
+                FamilyGuid = null,
                 FirstName = "",
                 LastName = "",
                 UserName = _configuration["Admin:userName"],
-                Secret = GetEncodedSecret(_configuration["Admin:password"], salt),
-                Salt = salt,
-                CreatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
-                CreatedBy = "System",
+                DateOfBirth = null,
+                IsActive = true,
                 Culture = "en",
-                Role = Shared.Enums.UserRoleEnum.Admin,
+                ProfileImage = null,
+                CredentialGuid= new Guid(DefaultEntityGuids.AdminCredentialsGuid),
+                Modules = null,
+                UserRoles = null,
+                UnitResults = null,
+                CreatedAt = createdAt,
+                CreatedBy = "System",
+                UpdatedAt = createdAt,
+                UpdatedBy = "System",
             });
         }
 

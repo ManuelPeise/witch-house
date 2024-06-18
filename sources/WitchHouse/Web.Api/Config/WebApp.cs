@@ -1,6 +1,10 @@
 ﻿using Data.Database;
 using Logic.Administration;
+using Logic.Administration.Interfaces;
+using Logic.Authentication;
+using Logic.Authentication.Interfaces;
 using Logic.Family;
+using Logic.Family.Interfaces;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Logic.Sync;
@@ -30,6 +34,18 @@ namespace Web.Api.Config
                 opt.UseMySQL(connection);
 
             });
+
+            builder.Services.AddDbContext<SqliteDbContext>(opt =>
+            {
+                var connection = builder.Configuration.GetConnectionString("WitchHouseSqLiteContext");
+
+                if (connection == null)
+                {
+                    throw new Exception("Could not connect to database!");
+                }
+
+                opt.UseSqlite(connection);
+            });
         }
 
         public static void ConfigureJwt(WebApplicationBuilder builder)
@@ -56,12 +72,15 @@ namespace Web.Api.Config
         public static void ConfigureRepositories(WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<ILogRepository, LogRepository>();
-            builder.Services.AddScoped<IAccountUnitOfWork, AccountUnitOfWork>();
-            builder.Services.AddScoped<IModuleConfigurationService, ModuleConfigurationService>();
-            builder.Services.AddScoped<ISettingsService, SettingsService>();
-            builder.Services.AddScoped<ISyncHandler, DataSyncHandler>();
-            builder.Services.AddScoped<IUnitResultService, UnitResultService>();
             builder.Services.AddScoped<IUserDataClaimsAccessor, UserDataClaimsAccessor>();
+            builder.Services.AddScoped<IApplicationUnitOfWork, ApplicationUnitOfWork>();
+            builder.Services.AddScoped<IFamilyAccountService, FamilyAccountService>();
+            builder.Services.AddScoped<IFamilyAdministrationService, FamilyAdministrationService>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<IModuleConfigurationService, ModuleConfigurationService>();
+            builder.Services.AddScoped<IUnitResultService, UnitResultService>();
+            builder.Services.AddScoped<ISyncHandler, DataSyncHandler>();
+
         }
 
         public static void ConfigureServices(WebApplicationBuilder builder)

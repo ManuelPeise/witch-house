@@ -1,24 +1,26 @@
-﻿using Data.Shared.Enums;
-using Data.Shared.Models.Export;
+﻿using Data.Shared.Models.Export;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Shared.Entities
 {
     public class AccountEntity : AEntityBase
     {
         public Guid? FamilyGuid { get; set; }
+        [ForeignKey(nameof(FamilyGuid))]
+        public virtual FamilyEntity? Family { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string UserName { get; set; } = string.Empty;
         public string? DateOfBirth { get; set; }
-        public string Culture { get; set; } = string.Empty;
-        public UserRoleEnum Role { get; set; }
-        public string Salt { get; set; } = string.Empty;
-        public string Pin { get; set; } = string.Empty;
-        public string Secret { get; set; } = string.Empty;
-        public string? Token { get; set; }
-        public string? RefreshToken { get; set; }
-        public bool IsActive { get; set; } = false;
+        public bool IsActive { get; set; }
+        public string? Culture { get; set; }
         public string? ProfileImage { get; set; }
+        public Guid? CredentialGuid { get; set; }
+        [ForeignKey(nameof(CredentialGuid))]
+        public virtual CredentialEntity? Credentials { get; set; }
+        public virtual List<RoleEntity>? UserRoles { get; set; }
+        public virtual List<ModuleEntity>? Modules { get; set; }
+        public virtual List<UnitResultEntity>? UnitResults { get; set; }
 
         public ProfileExportModel ToExportModel()
         {
@@ -29,7 +31,7 @@ namespace Data.Shared.Entities
                 FirstName = FirstName,
                 LastName = LastName,
                 UserName = UserName,
-                Culture = Culture,
+                Culture = Culture ?? "en",
                 DateOfBirth = string.IsNullOrWhiteSpace(DateOfBirth) ? null : DateTime.Parse(DateOfBirth).ToString("yyyy/MM/dd"),
                 ProfileImage = ProfileImage,
             };
@@ -39,13 +41,13 @@ namespace Data.Shared.Entities
         {
             return new UserDataExportModel
             {
-                UserId = Id,
-                FamilyGuid = FamilyGuid,
-                FirstName = FirstName,
-                LastName = LastName,
-                UserName = UserName,
-                Role = Role,
-                IsActive = IsActive,
+                //UserId = Id,
+                //FamilyGuid = FamilyGuid,
+                //FirstName = FirstName,
+                //LastName = LastName,
+                //UserName = UserName,
+                //Role = Role,
+                //IsActive = IsActive,
             };
         }
     }

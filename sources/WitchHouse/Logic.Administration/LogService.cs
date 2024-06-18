@@ -6,30 +6,37 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Logic.Administration
 {
-    public class LogService : LogicBase
+    public class LogService 
     {
-        private readonly ILogRepository _logRepository;
-        private readonly DatabaseContext _databaseContext;
+        private readonly IApplicationUnitOfWork _applicationUnitOfWork;
         
-        public LogService(DatabaseContext context, ILogRepository logRepository) : base()
+        public LogService(IApplicationUnitOfWork applicationUnitOfWork) 
         {
-            _databaseContext = context;
-            _logRepository = logRepository;
+            _applicationUnitOfWork = applicationUnitOfWork;
         }
 
-        public async Task<List<LogMessageEntity>> LoadLogMessages()
+        public async Task<List<LogMessageEntity>> LoadLogMessages(Guid? familiGuid)
         {
             try
             {
-                var messages = await _logRepository.GetLogMessages(null, null);
+                IEnumerable<LogMessageEntity>? messages = null;
+
+                if (familiGuid == null) {
+
+                    messages = await _applicationUnitOfWork.LogRepository.GetLogMessages(null, null);
+
+                    return messages.ToList();
+                }
+
+                messages = await _applicationUnitOfWork.LogRepository.GetLogMessages((Guid)familiGuid);
 
                 return messages.ToList();
             }
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = _logRepository.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
+                    FamilyGuid = _applicationUnitOfWork.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     Trigger = nameof(LogService),
@@ -40,54 +47,27 @@ namespace Logic.Administration
 
             }
         }
-        
+
         public async Task DeleteLogmessages(int[] ids)
         {
             try
             {
-                await _logRepository.DeleteMessages(ids);
+                await _applicationUnitOfWork.LogRepository.DeleteMessages(ids);
 
-                await SaveChanges();
+                await _applicationUnitOfWork.SaveChanges();
 
             }
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = _logRepository.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
+                    FamilyGuid = _applicationUnitOfWork.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     Trigger = nameof(LogService),
                     TimeStamp = DateTime.Now.ToString(Constants.LogMessageDateFormat),
                 });
             }
-        }
-
-        private async Task SaveChanges()
-        {
-            var modifiedEntries = _databaseContext.ChangeTracker.Entries()
-               .Where(x => x.State == EntityState.Modified ||
-               x.State == EntityState.Added);
-            
-            foreach (var entry in modifiedEntries)
-            {
-                if (entry != null)
-                {
-                    if (entry.State == EntityState.Added)
-                    {
-                        ((AEntityBase)entry.Entity).CreatedBy = _logRepository.ClaimsAccessor.GetClaimsValue<string>(UserIdentityClaims.UserName) ?? "System";
-                        ((AEntityBase)entry.Entity).CreatedAt = DateTime.Now.ToString(Constants.LogMessageDateFormat);
-
-                    }
-                    else if (entry.State == EntityState.Modified)
-                    {
-                        ((AEntityBase)entry.Entity).UpdatedBy = _logRepository.ClaimsAccessor.GetClaimsValue<string>(UserIdentityClaims.UserName) ?? "System";
-                        ((AEntityBase)entry.Entity).UpdatedAt = DateTime.Now.ToString(Constants.LogMessageDateFormat);
-                    }
-                }
-            }
-
-            await _databaseContext.SaveChangesAsync();
         }
     }
 }

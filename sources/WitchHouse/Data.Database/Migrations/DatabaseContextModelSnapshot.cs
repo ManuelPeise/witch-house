@@ -33,8 +33,10 @@ namespace Data.Database.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<Guid?>("CredentialGuid")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Culture")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("DateOfBirth")
@@ -52,28 +54,7 @@ namespace Data.Database.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Pin")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("ProfileImage")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Salt")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Secret")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Token")
                         .HasColumnType("longtext");
 
                     b.Property<string>("UpdatedAt")
@@ -90,25 +71,81 @@ namespace Data.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CredentialGuid");
+
+                    b.HasIndex("FamilyGuid");
+
                     b.ToTable("AccountTable");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("11477051-b947-43d4-b7ef-0e3413081e93"),
-                            CreatedAt = "2024-06-15 15:50",
+                            Id = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
+                            CreatedAt = "2024-06-18",
                             CreatedBy = "System",
+                            CredentialGuid = new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"),
                             Culture = "en",
                             FirstName = "",
-                            IsActive = false,
+                            IsActive = true,
                             LastName = "",
-                            Pin = "",
-                            Role = 1,
-                            Salt = "c1364f1b-c12a-4625-96ec-18678383fbf6",
-                            Secret = "UEBzc3dvcmRjMTM2NGYxYi1jMTJhLTQ2MjUtOTZlYy0xODY3ODM4M2ZiZjY=",
-                            UpdatedAt = "",
-                            UpdatedBy = "",
+                            UpdatedAt = "2024-06-18",
+                            UpdatedBy = "System",
                             UserName = "System.Admin"
+                        });
+                });
+
+            modelBuilder.Entity("Data.Shared.Entities.CredentialEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("EncodedPassword")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("JwtToken")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("MobilePin")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("Salt")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CredentialsTable");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"),
+                            CreatedAt = "2024-06-18",
+                            CreatedBy = "System",
+                            EncodedPassword = "UEBzc3dvcmQ3ZDRiMGNhYy1iMjdlLTQzNjYtOGI2Yi1hZDg5YzNjNWZiNmY=",
+                            MobilePin = 1234,
+                            Salt = new Guid("7d4b0cac-b27e-4366-8b6b-ad89c3c5fb6f"),
+                            UpdatedAt = "2024-06-18",
+                            UpdatedBy = "System"
                         });
                 });
 
@@ -199,6 +236,9 @@ namespace Data.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("AccountGuid")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("CreatedAt")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -206,6 +246,9 @@ namespace Data.Database.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("ModuleName")
                         .IsRequired()
@@ -214,6 +257,9 @@ namespace Data.Database.Migrations
                     b.Property<int>("ModuleType")
                         .HasColumnType("int");
 
+                    b.Property<string>("SettingsJson")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("UpdatedAt")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -224,45 +270,44 @@ namespace Data.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccountGuid");
+
                     b.ToTable("Modules");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6f9aed6f-07cf-4dcf-8b9f-e5fd52b35ffc"),
-                            CreatedAt = "2024.06.15",
+                            Id = new Guid("c601b781-6d81-4f0e-aae1-02838feb753a"),
+                            AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
+                            CreatedAt = "2024-06-18",
                             CreatedBy = "System",
-                            ModuleName = "MobileApp",
-                            ModuleType = 0,
-                            UpdatedAt = "",
-                            UpdatedBy = ""
-                        },
-                        new
-                        {
-                            Id = new Guid("c62daaff-4f9b-4283-a1ea-1a9f42df2d99"),
-                            CreatedAt = "2024.06.15",
-                            CreatedBy = "System",
+                            IsActive = true,
                             ModuleName = "SchoolTraining",
                             ModuleType = 1,
-                            UpdatedAt = "",
-                            UpdatedBy = ""
+                            UpdatedAt = "2024-06-18",
+                            UpdatedBy = "System"
                         },
                         new
                         {
-                            Id = new Guid("cd472d2e-28c9-42b0-9cba-536b0ddb923b"),
-                            CreatedAt = "2024.06.15",
+                            Id = new Guid("f034995c-7347-4435-8f22-99d1ffa721b9"),
+                            AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
+                            CreatedAt = "2024-06-18",
                             CreatedBy = "System",
+                            IsActive = true,
                             ModuleName = "SchoolTrainingStatistics",
                             ModuleType = 2,
-                            UpdatedAt = "",
-                            UpdatedBy = ""
+                            UpdatedAt = "2024-06-18",
+                            UpdatedBy = "System"
                         });
                 });
 
-            modelBuilder.Entity("Data.Shared.Entities.SettingsEntity", b =>
+            modelBuilder.Entity("Data.Shared.Entities.RoleEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("AccountGuid")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("CreatedAt")
@@ -273,14 +318,10 @@ namespace Data.Database.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("ModuleType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SettingsJson")
-                        .IsRequired()
+                    b.Property<string>("RoleName")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("SettingsType")
+                    b.Property<int>("RoleType")
                         .HasColumnType("int");
 
                     b.Property<string>("UpdatedAt")
@@ -291,18 +332,33 @@ namespace Data.Database.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Settings");
+                    b.HasIndex("AccountGuid");
+
+                    b.ToTable("RolesTable");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("2f0d2e15-ec36-4dac-a18a-57aad4504312"),
+                            AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
+                            CreatedAt = "2024-06-18",
+                            CreatedBy = "System",
+                            RoleName = "Admin",
+                            RoleType = 1,
+                            UpdatedAt = "2024-06-18",
+                            UpdatedBy = "System"
+                        });
                 });
 
             modelBuilder.Entity("Data.Shared.Entities.UnitResultEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("AccountGuid")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("CreatedAt")
@@ -338,46 +394,65 @@ namespace Data.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccountGuid");
+
                     b.ToTable("UnitResults");
                 });
 
-            modelBuilder.Entity("Data.Shared.Entities.UserModuleEntity", b =>
+            modelBuilder.Entity("Data.Shared.Entities.AccountEntity", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                    b.HasOne("Data.Shared.Entities.CredentialEntity", "Credentials")
+                        .WithMany()
+                        .HasForeignKey("CredentialGuid");
 
-                    b.Property<string>("CreatedAt")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.HasOne("Data.Shared.Entities.FamilyEntity", "Family")
+                        .WithMany("Accounts")
+                        .HasForeignKey("FamilyGuid");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Navigation("Credentials");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
+                    b.Navigation("Family");
+                });
 
-                    b.Property<Guid>("ModuleId")
-                        .HasColumnType("char(36)");
+            modelBuilder.Entity("Data.Shared.Entities.ModuleEntity", b =>
+                {
+                    b.HasOne("Data.Shared.Entities.AccountEntity", "Account")
+                        .WithMany("Modules")
+                        .HasForeignKey("AccountGuid");
 
-                    b.Property<int>("ModuleType")
-                        .HasColumnType("int");
+                    b.Navigation("Account");
+                });
 
-                    b.Property<string>("UpdatedAt")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+            modelBuilder.Entity("Data.Shared.Entities.RoleEntity", b =>
+                {
+                    b.HasOne("Data.Shared.Entities.AccountEntity", "Account")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("AccountGuid");
 
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Navigation("Account");
+                });
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
+            modelBuilder.Entity("Data.Shared.Entities.UnitResultEntity", b =>
+                {
+                    b.HasOne("Data.Shared.Entities.AccountEntity", "Account")
+                        .WithMany("UnitResults")
+                        .HasForeignKey("AccountGuid");
 
-                    b.HasKey("Id");
+                    b.Navigation("Account");
+                });
 
-                    b.ToTable("UserModules");
+            modelBuilder.Entity("Data.Shared.Entities.AccountEntity", b =>
+                {
+                    b.Navigation("Modules");
+
+                    b.Navigation("UnitResults");
+
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("Data.Shared.Entities.FamilyEntity", b =>
+                {
+                    b.Navigation("Accounts");
                 });
 #pragma warning restore 612, 618
         }

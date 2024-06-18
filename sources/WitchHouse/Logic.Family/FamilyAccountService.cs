@@ -3,24 +3,20 @@ using Data.Shared.Enums;
 using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
+using Logic.Family.Interfaces;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
 
 namespace Logic.Family
 {
-    public class FamilyAccountService : LogicBase
+    public class FamilyAccountService : IFamilyAccountService
     {
-        private readonly ILogRepository _logRepository;
-        private readonly IAccountUnitOfWork _accountUnitOfWork;
-        private readonly IModuleConfigurationService _moduleService;
-        private readonly ISettingsService _settingsService;
+        private readonly IApplicationUnitOfWork _applicationUnitOfWork;
 
-        public FamilyAccountService(IAccountUnitOfWork accountUnitOfWork, IModuleConfigurationService moduleService) : base()
+        public FamilyAccountService(IApplicationUnitOfWork applicationUnitOfWork) : base()
         {
-            _accountUnitOfWork = accountUnitOfWork;
-            _logRepository = new LogRepository(accountUnitOfWork.DatabaseContext, accountUnitOfWork.ClaimsAccessor);
-            _settingsService = new SettingsService(accountUnitOfWork.DatabaseContext);
-            _moduleService = moduleService;
+            _applicationUnitOfWork = applicationUnitOfWork;
+
         }
 
         public async Task<bool> CreateFamilyAccount(AccountImportModel accountImportModel)
@@ -36,7 +32,7 @@ namespace Logic.Family
                     throw new Exception("Family entity could not be null!");
                 }
 
-                var result = await _accountUnitOfWork.FamilyRepository.AddAsync(familyEntity);
+                var result = await _applicationUnitOfWork.FamilyRepository.AddAsync(familyEntity);
 
                 if (result == null)
                 {
@@ -44,14 +40,13 @@ namespace Logic.Family
                 }
 
                 var accountGuid = Guid.NewGuid();
-                var salt = Guid.NewGuid().ToString();
+                var salt = Guid.NewGuid();
 
                 var accountEntity = accountImportModel.UserAccount.ToEntity(
                     accountGuid,
                     familyGuid,
                     salt,
-                    Helpers.GetEncodedSecret(accountImportModel.UserAccount.Secret, salt),
-                    familyEntity.City,
+                    Helpers.GetEncodedSecret(accountImportModel.UserAccount.Secret, salt.ToString()),
                     UserRoleEnum.LocalAdmin);
 
                 if (accountEntity == null)
@@ -59,32 +54,20 @@ namespace Logic.Family
                     throw new Exception("Account entity could not be null!");
                 }
 
-                result = await _accountUnitOfWork.AccountRepository.AddAsync(accountEntity);
+                result = await _applicationUnitOfWork.AccountRepository.AddAsync(accountEntity);
 
                 if (result != null)
                 {
-                    await _moduleService.CreateModules(accountGuid, true);
-
-                    var modules = await _moduleService.GetUserModules(accountGuid, ModuleTypeEnum.SchoolTraining);
-
-                    foreach (var module in modules)
-                    {
-                        await _settingsService.CreateSchoolTrainingSettings(module);
-                    }
-
-                    await _accountUnitOfWork.SaveChanges();
+                    await _applicationUnitOfWork.SaveChanges();
 
                     return true;
                 }
 
                 return false;
-
-
-
             }
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
@@ -96,54 +79,45 @@ namespace Logic.Family
             }
         }
 
-        public async Task AssignAccountToFamily(FamilyMemberImportModel accountImportModel)
+        public async Task AssignAccountToFamily(AccountImportModel accountImportModel)
         {
             try
             {
-                if (!Guid.TryParse(accountImportModel.FamilyGuid, out var familyGuid))
+                if (accountImportModel?.Family?.FamilyGuid == null)
                 {
                     return;
                 }
 
-                var familyEntity = await _accountUnitOfWork.FamilyRepository.GetFirstByIdAsync(familyGuid);
+                var familyEntity = await _applicationUnitOfWork.FamilyRepository.GetFirstByIdAsync(accountImportModel.Family.FamilyGuid);
 
                 if (familyEntity == null)
                 {
                     throw new Exception("Family entity could not be null!");
                 }
 
-                var salt = Guid.NewGuid().ToString();
+                var salt = Guid.NewGuid();
                 var accountGuid = Guid.NewGuid();
-                var accountEntity = new AccountEntity
+
+                var accountEntity = accountImportModel.UserAccount.ToFamilyMember(
+                    accountGuid, 
+                    accountImportModel.Family.FamilyGuid, 
+                    salt, 
+                    Helpers.GetEncodedSecret(accountImportModel.UserAccount.Secret, salt.ToString()),
+                    UserRoleEnum.User);
+               
+
+                var result = await _applicationUnitOfWork.AccountRepository.AddAsync(accountEntity);
+
+                if(result != null)
                 {
-                    Id = accountGuid,
-                    FamilyGuid = familyGuid,
-                    FirstName = accountImportModel.FirstName,
-                    LastName = accountImportModel.LastName,
-                    UserName = accountImportModel.UserName,
-                    Role = UserRoleEnum.User,
-                    Culture = "en",
-                    Secret = Helpers.GetEncodedSecret("P@ssword", salt),
-                    Salt = salt
-                };
-
-                var result = await _accountUnitOfWork.AccountRepository.AddAsync(accountEntity);
-
-                if (result != null)
-                {
-                    await _moduleService.CreateModules(accountGuid, false);
-
-                    await _accountUnitOfWork.SaveChanges();
-
-                    return;
+                    await _applicationUnitOfWork.SaveChanges();
                 }
-
+               
                 return;
-
             }
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
@@ -161,7 +135,7 @@ namespace Logic.Family
             {
                 if (Guid.TryParse(accountId, out var accountGuid))
                 {
-                    var accountEntity = await _accountUnitOfWork.AccountRepository.GetFirstByIdAsync(accountGuid);
+                    var accountEntity = await _applicationUnitOfWork.AccountRepository.GetFirstByIdAsync(accountGuid);
 
                     if (accountEntity == null)
                     {
@@ -178,7 +152,7 @@ namespace Logic.Family
             }
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
@@ -194,7 +168,7 @@ namespace Logic.Family
         {
             try
             {
-                var entity = await _accountUnitOfWork.AccountRepository.GetFirstByIdAsync(importModel.UserId);
+                var entity = await _applicationUnitOfWork.AccountRepository.GetFirstByIdAsync(importModel.UserId);
 
                 if (entity != null)
                 {
@@ -203,15 +177,15 @@ namespace Logic.Family
                     entity.DateOfBirth = importModel.DateOfBirth ?? "";
                     entity.Culture = importModel.Culture;
 
-                    await _accountUnitOfWork.AccountRepository.Update(entity);
+                    await _applicationUnitOfWork.AccountRepository.Update(entity);
 
-                    await _accountUnitOfWork.SaveChanges();
+                    await _applicationUnitOfWork.SaveChanges();
                 }
             }
 
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
@@ -225,7 +199,7 @@ namespace Logic.Family
         {
             try
             {
-                var allAccounts = await _accountUnitOfWork.AccountRepository.GetAllAsync();
+                var allAccounts = await _applicationUnitOfWork.AccountRepository.GetAllAsync();
 
                 if (allAccounts.Any())
                 {
@@ -238,7 +212,7 @@ namespace Logic.Family
             }
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
@@ -254,21 +228,28 @@ namespace Logic.Family
         {
             try
             {
-                var entity = await _accountUnitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
+                var entity = await _applicationUnitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
 
                 if (entity == null)
                 {
                     throw new Exception($"Could not check password of user: [{model.UserId}]!");
                 }
 
-                var securedPassword = Helpers.GetEncodedSecret(model.Password, entity.Salt);
+                var credentialsEntity = await _applicationUnitOfWork.CredentialsRepository.GetFirstByIdAsync((Guid)entity.CredentialGuid);
 
-                return securedPassword == entity.Secret;
+                if(credentialsEntity == null)
+                {
+                    return false;
+                }
+
+                var securedPassword = Helpers.GetEncodedSecret(model.Password, credentialsEntity.Salt.ToString());
+
+                return securedPassword == credentialsEntity.EncodedPassword;
 
             }
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
@@ -284,28 +265,35 @@ namespace Logic.Family
         {
             try
             {
-                var entity = await _accountUnitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
+                var entity = await _applicationUnitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
 
                 if (entity == null)
                 {
                     throw new Exception($"Could not update password of user: [{model.UserId}]!");
                 }
 
-                var salt = Guid.NewGuid().ToString();
-                var securedPassword = Helpers.GetEncodedSecret(model.Password, salt);
+                var credentialsEntity = await _applicationUnitOfWork.CredentialsRepository.GetFirstByIdAsync((Guid)entity.CredentialGuid);
 
-                entity.Salt = salt;
-                entity.Secret = securedPassword;
+                if (credentialsEntity == null)
+                {
+                    return false;
+                }
 
-                await _accountUnitOfWork.AccountRepository.Update(entity);
-                await _accountUnitOfWork.SaveChanges();
+                var salt = Guid.NewGuid();
+                var securedPassword = Helpers.GetEncodedSecret(model.Password, salt.ToString());
+
+                credentialsEntity.Salt = salt;
+                credentialsEntity.EncodedPassword = securedPassword;
+               
+                await _applicationUnitOfWork.CredentialsRepository.Update(credentialsEntity);
+                await _applicationUnitOfWork.SaveChanges();
 
                 return true;
 
             }
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
@@ -321,7 +309,7 @@ namespace Logic.Family
         {
             try
             {
-                var account = await _accountUnitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
+                var account = await _applicationUnitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
 
                 if (account == null)
                 {
@@ -329,16 +317,15 @@ namespace Logic.Family
                 }
 
                 account.IsActive = model.IsActive;
-                account.Role = (UserRoleEnum)Enum.Parse(typeof(UserRoleEnum), model.Role.ToString());
+               
+                await _applicationUnitOfWork.AccountRepository.Update(account);
 
-                await _accountUnitOfWork.AccountRepository.Update(account);
-
-                await _accountUnitOfWork.SaveChanges();
+                await _applicationUnitOfWork.SaveChanges();
 
             }
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
@@ -352,22 +339,22 @@ namespace Logic.Family
         {
             try
             {
-                var account = await _accountUnitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
+                var account = await _applicationUnitOfWork.AccountRepository.GetFirstByIdAsync(model.UserId);
 
                 if (account == null)
                 {
                     throw new Exception($"Could not upload image for [{model.ProfileImage}]");
                 }
 
-                account.ProfileImage = model.ProfileImage;
+                 account.ProfileImage = model.ProfileImage;
 
-                await _accountUnitOfWork.AccountRepository.Update(account);
+                await _applicationUnitOfWork.AccountRepository.Update(account);
 
-                await _accountUnitOfWork.SaveChanges();
+                await _applicationUnitOfWork.SaveChanges();
             }
             catch (Exception exception)
             {
-                await _logRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",

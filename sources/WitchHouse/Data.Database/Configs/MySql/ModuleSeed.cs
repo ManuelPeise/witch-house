@@ -3,38 +3,43 @@ using Data.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Data.Database.SeedData
+namespace Data.Database.Configs.MySql
 {
     public class ModuleSeed : IEntityTypeConfiguration<ModuleEntity>
     {
         public void Configure(EntityTypeBuilder<ModuleEntity> builder)
         {
+            var userGuid = new Guid(DefaultEntityGuids.DefaultAdminGuid);
+            var createdAt = DateTime.Now.ToString("yyyy-MM-dd");
+
 
             builder.HasData(new List<ModuleEntity>
             {
                 new ModuleEntity
                 {
-                    Id = new Guid("6f9aed6f-07cf-4dcf-8b9f-e5fd52b35ffc"),
-                    ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.MobileApp),
-                    ModuleType = ModuleTypeEnum.MobileApp,
-                    CreatedAt = DateTime.Now.ToString("yyyy.MM.dd"),
-                    CreatedBy = "System"
-                },
-                new ModuleEntity
-                {
-                    Id = new Guid("c62daaff-4f9b-4283-a1ea-1a9f42df2d99"),
+                    Id = Guid.NewGuid(),
                     ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.SchoolTraining),
                     ModuleType = ModuleTypeEnum.SchoolTraining,
-                    CreatedAt = DateTime.Now.ToString("yyyy.MM.dd"),
-                    CreatedBy = "System"
+                    AccountGuid = userGuid,
+                    IsActive = true,
+                    SettingsJson = null,
+                    CreatedAt = createdAt,
+                    CreatedBy = "System",
+                    UpdatedAt = createdAt,
+                    UpdatedBy = "System",
                 },
                 new ModuleEntity
                 {
-                    Id= new Guid("cd472d2e-28c9-42b0-9cba-536b0ddb923b"),
+                    Id = Guid.NewGuid(),
                     ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.SchoolTrainingStatistics),
                     ModuleType=ModuleTypeEnum.SchoolTrainingStatistics,
-                    CreatedAt = DateTime.Now.ToString("yyyy.MM.dd"),
-                    CreatedBy = "System"
+                    AccountGuid = userGuid,
+                    IsActive = true,
+                    SettingsJson = null,
+                    CreatedAt = createdAt,
+                    CreatedBy = "System",
+                    UpdatedAt = createdAt,
+                    UpdatedBy = "System",
                 }
             });
         }

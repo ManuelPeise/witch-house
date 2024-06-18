@@ -9,13 +9,10 @@ namespace Logic.Shared
     {
         private bool disposedValue;
         private readonly DatabaseContext _context;
-        private readonly IUserDataClaimsAccessor _claimsAccessor;
-        public IUserDataClaimsAccessor ClaimsAccessor => _claimsAccessor?? new UserDataClaimsAccessor();
-
-        public LogRepository(DatabaseContext context, IUserDataClaimsAccessor claimsAccessor)
+        
+        public LogRepository(DatabaseContext context)
         {
             _context = context;
-            _claimsAccessor = claimsAccessor;
         }
 
         public async Task AddLogMessage(LogMessageEntity logMessage)
@@ -39,6 +36,14 @@ namespace Logic.Shared
             var toDate = to ?? default(DateTime?);
 
             return await Task.FromResult(table.Where(msg => DateTime.Parse(msg.TimeStamp) >= from && DateTime.Parse(msg.TimeStamp) <= toDate));
+
+        }
+
+        public async Task<IEnumerable<LogMessageEntity>> GetLogMessages(Guid familyGuid)
+        {
+            var table = _context.Set<LogMessageEntity>();
+
+            return await Task.FromResult(table.Where(msg => msg.FamilyGuid == familyGuid));
 
         }
 

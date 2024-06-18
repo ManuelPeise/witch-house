@@ -25,9 +25,9 @@ namespace Service.Api.ApiControllers.Administration
         }
 
         [HttpGet(Name = "LoadModuleSchoolSettings")]
-        public async Task<List<ModuleSettings>> LoadModuleSchoolSettings([FromQuery] Guid userGuid)
+        public async Task<List<UserModule>> LoadModuleSchoolSettings([FromQuery] Guid userGuid)
         {
-            return await _moduleConfiguration.LoadSchoolModuleSettings(userGuid, true);
+            return await _moduleConfiguration.LoadSchoolModuleSettings(userGuid);
         }
 
         [HttpPost(Name = "UpdateModuleConfiguration")]

@@ -1,16 +1,17 @@
 ﻿using Data.Shared.Entities;
 using Data.Shared.Models.Export;
+using Logic.Administration.Interfaces;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
 using System.Data;
 
 namespace Logic.Administration
 {
-    public class FamilyAdministration : LogicBase
+    public class FamilyAdministrationService : IFamilyAdministrationService
     {
-        private readonly IAccountUnitOfWork _unitOfWork;
+        private readonly IApplicationUnitOfWork _unitOfWork;
         
-        public FamilyAdministration(IAccountUnitOfWork unitOfWork) : base()
+        public FamilyAdministrationService(IApplicationUnitOfWork unitOfWork) 
         {
             _unitOfWork = unitOfWork;
         }
@@ -31,7 +32,6 @@ namespace Logic.Administration
                     throw new Exception($"Could not find users of [{familyId}]!");
                 }
 
-
                 var exportModels = (from e in entities
                                     select e.ToUserDataExportModel()).ToList();
 
@@ -46,7 +46,7 @@ namespace Logic.Administration
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.Now.ToString(Constants.LogMessageDateFormat),
-                    Trigger = nameof(FamilyAdministration),
+                    Trigger = nameof(FamilyAdministrationService),
                 });
 
                 await _unitOfWork.SaveChanges();

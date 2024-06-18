@@ -4,6 +4,7 @@ namespace Data.Shared.Models.Export
 {
     public class ModuleSettings
     {
+        public Guid ModuleGuid { get; set; }
         public Guid UserId { get; set; }
         public ModuleTypeEnum ModuleType { get; set; }
         public ModuleSettingsTypeEnum ModuleSettingsType { get; set; }

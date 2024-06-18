@@ -11,7 +11,6 @@ namespace Logic.Shared.Interfaces
         IGenericRepository<FamilyEntity> FamilyRepository { get; }
         IGenericRepository<AccountEntity> AccountRepository { get; }
         IGenericRepository<ModuleEntity> ModuleRepository { get; }
-        IGenericRepository<UserModuleEntity> UserModuleRepository { get; }
         Task SaveChanges();
 
     }

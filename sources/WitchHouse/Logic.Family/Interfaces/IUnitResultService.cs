@@ -1,7 +1,7 @@
 ﻿using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
 
-namespace Logic.Shared.Interfaces
+namespace Logic.Family.Interfaces
 {
     public interface IUnitResultService: IDisposable
     {

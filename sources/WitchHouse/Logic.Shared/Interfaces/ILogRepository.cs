@@ -4,8 +4,8 @@ namespace Logic.Shared.Interfaces
 {
     public interface ILogRepository: IDisposable
     {
-        IUserDataClaimsAccessor ClaimsAccessor { get; }
         Task<IEnumerable<LogMessageEntity>> GetLogMessages(DateTime? from, DateTime? to);
+        Task<IEnumerable<LogMessageEntity>> GetLogMessages(Guid familyGuid);
         Task AddLogMessage(LogMessageEntity logMessage);
         Task DeleteMessage(int id);
         Task DeleteMessages(int[] ids);

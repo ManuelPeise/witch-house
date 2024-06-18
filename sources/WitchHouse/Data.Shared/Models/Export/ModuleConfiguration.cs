@@ -13,6 +13,7 @@ namespace Data.Shared.Models.Export
         public Guid UserId { get; set; }
         public Guid ModuleId { get; set; }
         public ModuleTypeEnum ModuleType { get; set; }
+        public string? ModuleSettings { get; set; }
         public bool IsActive { get; set; }
     }
 }

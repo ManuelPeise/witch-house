@@ -1,6 +1,6 @@
 ﻿using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
-using Logic.Shared.Interfaces;
+using Logic.Family.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Shared;
@@ -11,7 +11,6 @@ namespace Service.Api.ApiControllers.Training
     public class TrainingResultService : ApiControllerBase
     {
         private readonly IUnitResultService _unitResultService;
-
 
         public TrainingResultService(IUnitResultService unitResultService) : base()
         {

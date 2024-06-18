@@ -1,4 +1,5 @@
 ﻿using Data.Shared.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Shared.Entities
 {
@@ -9,5 +10,8 @@ namespace Data.Shared.Entities
         public int Success { get; set; }
         public int Failed { get; set; }
         public string? TimeStamp { get; set; }
+        public Guid? AccountGuid { get; set; }
+        [ForeignKey(nameof(AccountGuid))]
+        public AccountEntity? Account { get; set; } 
     }
 }

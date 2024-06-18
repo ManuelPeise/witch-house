@@ -10,11 +10,6 @@ namespace Logic.Authentication
 {
     public class JwtTokenGenerator
     {
-        public JwtTokenGenerator()
-        {
-
-        }
-
         public (string, string) GenerateToken(IConfiguration config, List<Claim> claims, int expireInDays)
         {
             return (GenerateJwtToken(config, claims, expireInDays), GenerateRefreshToken());

@@ -1,9 +1,9 @@
 ﻿using Data.Shared.Entities;
-using Data.Shared.Enums;
 using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
 using Data.Shared.Models.Response;
+using Logic.Authentication.Interfaces;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -11,22 +11,20 @@ using System.Security.Claims;
 
 namespace Logic.Authentication
 {
-    public class AuthenticationService : LogicBase
+    public class AuthenticationService : IAuthenticationService
     {
-        private readonly IAccountUnitOfWork _accountUnitOfWork;
-        private readonly IModuleConfigurationService _moduleService;
+        private readonly IApplicationUnitOfWork _unitOfWork;
 
-        public AuthenticationService(IAccountUnitOfWork accountUnitOfWork, IModuleConfigurationService moduleService) : base()
+        public AuthenticationService(IApplicationUnitOfWork unitOfWork) : base()
         {
-            _accountUnitOfWork = accountUnitOfWork;
-            _moduleService = moduleService;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<LoginResult> LogIn(IConfiguration config, AccountLoginModel loginModel)
+        public async Task<ResponseMessage<LoginResult>> LogIn(IConfiguration config, AccountLoginModel loginModel)
         {
             try
             {
-                var accounts = await _accountUnitOfWork.AccountRepository.GetByAsync(acc => acc.UserName.ToLower() == loginModel.UserName.ToLower());
+                var accounts = await _unitOfWork.AccountRepository.GetByAsync(acc => acc.UserName.ToLower() == loginModel.UserName.ToLower());
 
                 if (accounts.Count() > 1)
                 {
@@ -35,47 +33,83 @@ namespace Logic.Authentication
 
                 var accountEntity = accounts.FirstOrDefault();
 
-                if (accountEntity != null)
+                if (accountEntity != null && accountEntity.CredentialGuid != null)
                 {
-                    var encodedPassword = Helpers.GetEncodedSecret(loginModel.Secret, accountEntity.Salt);
+                    var credentialsEntity = await _unitOfWork.CredentialsRepository.GetFirstByIdAsync((Guid)accountEntity.CredentialGuid);
 
-                    if (encodedPassword == accountEntity.Secret)
+                    if (credentialsEntity == null)
+                    {
+                        throw new Exception("Credentials entity not found!");
+                    }
+
+                    var encodedPassword = Helpers.GetEncodedSecret(loginModel.Secret, credentialsEntity.Salt.ToString());
+
+                    if (encodedPassword == credentialsEntity.EncodedPassword)
                     {
                         var tokenGenerator = new JwtTokenGenerator();
 
-                        var (jwt, refreshToken) = tokenGenerator.GenerateToken(config, LoadUserClaims(accountEntity), 100);
+                        var (jwt, refreshToken) = tokenGenerator
+                            .GenerateToken(config, LoadUserClaims(accountEntity), 100);
 
-                        accountEntity.Token = jwt;
-                        accountEntity.RefreshToken = refreshToken;
+                        credentialsEntity.JwtToken = jwt;
+                        credentialsEntity.RefreshToken = refreshToken;
 
-                        await _accountUnitOfWork.AccountRepository.Update(accountEntity);
+                        await _unitOfWork.AccountRepository.Update(accountEntity);
 
-                        await _accountUnitOfWork.SaveChanges();
+                        await _unitOfWork.SaveChanges();
 
-                        return new LoginResult
+                        var modules = await _unitOfWork.ModuleRepository
+                            .GetByAsync(x => x.AccountGuid == accountEntity.Id);
+
+                        return new ResponseMessage<LoginResult>
                         {
                             Success = true,
-                            UserId = accountEntity.Id,
-                            FamilyGuid = accountEntity.FamilyGuid,
-                            UserName = accountEntity.UserName,
-                            Language = accountEntity.Culture,
-                            Jwt = jwt,
-                            RefreshToken = refreshToken,
-                            UserRole = accountEntity.Role,
-                            ProfileImage = accountEntity.ProfileImage,
+                            StatusCode = 200,
+                            MessageKey = "",
+                            Data = new LoginResult
+                            {
+                                UserData = new UserData
+                                {
+                                    UserId = accountEntity.Id,
+                                    FamilyGuid = accountEntity.FamilyGuid,
+                                    UserName = accountEntity.UserName,
+                                    Language = accountEntity.Culture,
+                                    UserRoles = (from role in accountEntity.UserRoles
+                                                 select role.RoleType).ToList(),
+                                    ProfileImage = accountEntity.ProfileImage,
+                                },
+                                JwtData = new JwtData
+                                {
+                                    JwtToken = jwt,
+                                    RefreshToken = refreshToken,
+                                },
+                                Modules = (from module in modules
+                                           select new UserModule
+                                           {
+                                               UserId = accountEntity.Id,
+                                               ModuleId = module.Id,
+                                               ModuleType = module.ModuleType,
+                                               ModuleSettings = module.SettingsJson,
+                                               IsActive = module.IsActive,
+                                           }).ToList()
+
+                            }
                         };
                     }
                 }
 
-                return new LoginResult
+                return new ResponseMessage<LoginResult>
                 {
                     Success = false,
+                    StatusCode = 200,
+                    MessageKey = "labelLoginFailed",
+                    Data = null
                 };
 
             }
             catch (Exception exception)
             {
-                await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
+                await _unitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
@@ -83,9 +117,12 @@ namespace Logic.Authentication
                     Trigger = nameof(AuthenticationService)
                 });
 
-                return new LoginResult
+                return new ResponseMessage<LoginResult>
                 {
                     Success = false,
+                    StatusCode = 401,
+                    MessageKey = "common:labelCheckLoginData",
+                    Data = null
                 };
             }
         }
@@ -94,7 +131,7 @@ namespace Logic.Authentication
         {
             try
             {
-                var accounts = await _accountUnitOfWork.AccountRepository.GetByAsync(acc => acc.UserName.ToLower() == requestModel.UserName.ToLower());
+                var accounts = await _unitOfWork.AccountRepository.GetByAsync(acc => acc.UserName.ToLower() == requestModel.UserName.ToLower());
 
                 if (accounts.Count() > 1)
                 {
@@ -103,45 +140,29 @@ namespace Logic.Authentication
 
                 var accountEntity = accounts.FirstOrDefault();
 
-                if (accountEntity != null)
+                if (accountEntity != null && accountEntity.CredentialGuid != null)
                 {
-                    var encodedPassword = Helpers.GetEncodedSecret(requestModel.Password, accountEntity.Salt);
+                    var credentialsEntity = await _unitOfWork.CredentialsRepository.GetFirstByIdAsync((Guid)accountEntity.CredentialGuid);
 
-                    var appModules = await _accountUnitOfWork.UserModuleRepository.GetByAsync(x => x.UserId == accountEntity.Id && x.ModuleType == ModuleTypeEnum.MobileApp);
-
-                    if (appModules.FirstOrDefault() == null || !appModules.First().IsActive)
+                    if (credentialsEntity == null)
                     {
-                        return new ResponseMessage<MobileLoginResult>
-                        {
-                            Success = false,
-                            StatusCode = 401,
-                            MessageKey = "common:labelAccessDenied",
-                            Data = null
-                        };
+                        throw new Exception("Credentials entity not found!");
                     }
 
-                    if (encodedPassword == accountEntity.Secret)
+                    var encodedPassword = Helpers.GetEncodedSecret(requestModel.Password, credentialsEntity.Salt.ToString());
+
+                    if (encodedPassword == credentialsEntity.EncodedPassword)
                     {
                         var tokenGenerator = new JwtTokenGenerator();
 
                         var (jwt, refreshToken) = tokenGenerator.GenerateToken(config, LoadUserClaims(accountEntity), 100);
 
-                        accountEntity.Token = jwt;
-                        accountEntity.RefreshToken = refreshToken;
+                        credentialsEntity.JwtToken = jwt;
+                        credentialsEntity.RefreshToken = refreshToken;
 
-                        await _accountUnitOfWork.AccountRepository.Update(accountEntity);
+                        await _unitOfWork.AccountRepository.Update(accountEntity);
 
-                        await _accountUnitOfWork.SaveChanges();
-
-                        var moduleConfig = await _moduleService.LoadUserModuleConfiguration(
-                            new UserModuleRequestModel
-                            {
-                                UserGuid = accountEntity.Id,
-                                FamilyGuid = (Guid)accountEntity.FamilyGuid,
-                                RoleId = accountEntity.Role
-                            });
-
-                        var trainingSettings = await _moduleService.LoadSchoolModuleSettings(accountEntity.Id);
+                        await _unitOfWork.SaveChanges();
 
                         return new ResponseMessage<MobileLoginResult>
                         {
@@ -155,21 +176,21 @@ namespace Logic.Authentication
                                 {
                                     JwtToken = jwt,
                                     RefreshToken = refreshToken,
-                                }, 
+                                },
                                 UserData = new UserData
                                 {
                                     UserId = accountEntity.Id,
                                     FamilyGuid = accountEntity.FamilyGuid,
                                     UserName = accountEntity.UserName,
                                     Language = accountEntity.Culture,
-                                    UserRole = accountEntity.Role,
+                                    UserRoles = (from role in accountEntity.UserRoles
+                                                 select role.RoleType).ToList(),
                                     ProfileImage = accountEntity.ProfileImage,
                                 },
-                                ModuleConfiguration = moduleConfig,
-                                TrainingModuleSettings = trainingSettings
                             }
                         };
                     }
+
                 }
 
                 return new ResponseMessage<MobileLoginResult>
@@ -183,7 +204,7 @@ namespace Logic.Authentication
             }
             catch (Exception exception)
             {
-                await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
+                await _unitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
@@ -210,7 +231,7 @@ namespace Logic.Authentication
                     new Claim(UserIdentityClaims.UserName, account.UserName),
                     new Claim(UserIdentityClaims.FirstName, account.FirstName??""),
                     new Claim(UserIdentityClaims.LastName, account.LastName??""),
-                    new Claim(UserIdentityClaims.UserRole, Enum.GetName(account.Role)??""),
+                    // new Claim(UserIdentityClaims.UserRole, Enum.GetName(account.Role)??""),
                     // TODO Add Modules
             };
         }

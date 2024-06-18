@@ -1,5 +1,4 @@
 ﻿using Data.Shared.Enums;
-using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
 
@@ -8,10 +7,9 @@ namespace Logic.Shared.Interfaces
     public interface IModuleConfigurationService: IDisposable
     {
         Task<ModuleConfiguration> LoadUserModuleConfiguration(UserModuleRequestModel requestModel);
-        Task<List<UserModule>> GetUserModules(Guid userId, ModuleTypeEnum moduleType);
-        Task CreateModules(Guid userId, bool isActive);
+        Task<List<UserModule>> GetUserModules(Guid accountGuid, ModuleTypeEnum moduleType);
         Task UpdateModule(UserModule module);
-        Task<List<ModuleSettings>> LoadSchoolModuleSettings(Guid userId, bool? isActive = null);
+        Task<List<UserModule>> LoadSchoolModuleSettings(Guid accountGuid);
         Task UpdateSchoolModuleSettings(ModuleSettings settings);
     }
 }

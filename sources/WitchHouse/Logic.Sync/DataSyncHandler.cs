@@ -10,39 +10,39 @@ namespace Logic.Sync
 {
     public class DataSyncHandler: ISyncHandler
     {
-        private readonly IAccountUnitOfWork _accountUnitOfWork;
-        private readonly IModuleConfigurationService _moduleService;
+        private readonly IApplicationUnitOfWork _applicationUnitOfWork;
+        private readonly IModuleConfigurationService _moduleConfigurationService;
         private bool disposedValue;
 
-        public DataSyncHandler(IAccountUnitOfWork accountUnitOfWork, IModuleConfigurationService moduleService)
+        public DataSyncHandler(IApplicationUnitOfWork applicationUnitOfWork, IModuleConfigurationService moduleConfigurationService)
         {
-            _accountUnitOfWork = accountUnitOfWork;
-            _moduleService = moduleService;
+            _applicationUnitOfWork = applicationUnitOfWork;
+            _moduleConfigurationService = moduleConfigurationService;
         }
 
         public async Task<DataSyncExportModel?> ExecuteSync(DataSyncImportModel importModel)
         {
             try
             {
-                var model = new DataSyncExportModel();
+                //var model = new DataSyncExportModel();
 
-                model.UserData = await GetUserData(importModel.UserId);
-                model.ModuleConfiguration = await GetModuleConfiguration(importModel.UserId, importModel.FamilyId, importModel.RoleId);
-                model.SchoolModulesSettings = await GetSchoolModuleSettings(importModel.UserId);
+                //model.UserData = await GetUserData(importModel.UserId);
+                //model.ModuleConfiguration = await GetModuleConfiguration(importModel.UserId, importModel.FamilyId, importModel.RoleId);
+                //model.SchoolModulesSettings = await GetSchoolModuleSettings(importModel.UserId);
                 
-                return model;
+                return null;
 
             }
             catch (Exception exception)
             {
-                await _accountUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
+                await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
                 {
-                    FamilyGuid = _accountUnitOfWork.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
+                    FamilyGuid = _applicationUnitOfWork.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
                     Message = exception.Message,
                     Stacktrace = exception.StackTrace ?? "",
                     TimeStamp = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat),
                     Trigger = nameof(DataSyncHandler),
-                    CreatedBy = _accountUnitOfWork.ClaimsAccessor.GetClaimsValue<string>(UserIdentityClaims.UserName) ?? "System",
+                    CreatedBy = _applicationUnitOfWork.ClaimsAccessor.GetClaimsValue<string>(UserIdentityClaims.UserName) ?? "System",
                     CreatedAt = DateTime.UtcNow.ToString(Constants.LogMessageDateFormat)
                 });
 
@@ -52,7 +52,7 @@ namespace Logic.Sync
 
         private async Task<UserDataSync> GetUserData(Guid userId)
         {
-            var userEntity = await _accountUnitOfWork.AccountRepository.GetFirstByIdAsync(userId);
+            var userEntity = await _applicationUnitOfWork.AccountRepository.GetFirstByIdAsync(userId);
 
             if (userEntity == null)
             {
@@ -71,7 +71,7 @@ namespace Logic.Sync
 
         private async Task<ModuleConfiguration> GetModuleConfiguration(Guid userId, Guid familyId, UserRoleEnum roleId)
         {
-            return await _moduleService.LoadUserModuleConfiguration(new UserModuleRequestModel
+            return await _moduleConfigurationService.LoadUserModuleConfiguration(new UserModuleRequestModel
             {
                 UserGuid = userId,
                 FamilyGuid = familyId,
@@ -80,9 +80,9 @@ namespace Logic.Sync
 
         }
         
-        private async Task<List<ModuleSettings>> GetSchoolModuleSettings(Guid userId)
+        private async Task<List<UserModule>> GetSchoolModuleSettings(Guid userId)
         {
-            return await _moduleService.LoadSchoolModuleSettings(userId);
+            return await _moduleConfigurationService.LoadSchoolModuleSettings(userId);
         }
         
         protected virtual void Dispose(bool disposing)
@@ -91,8 +91,8 @@ namespace Logic.Sync
             {
                 if (disposing)
                 {
-                    _accountUnitOfWork.Dispose();
-                  _moduleService.Dispose();
+                    _applicationUnitOfWork.Dispose();
+                    _moduleConfigurationService.Dispose();
                 }
 
                 disposedValue = true;
