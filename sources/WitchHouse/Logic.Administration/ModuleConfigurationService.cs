@@ -2,6 +2,7 @@
 using Data.Shared.Enums;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
+using Data.Shared.Models.Response;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Newtonsoft.Json;
@@ -31,6 +32,7 @@ namespace Logic.Administration
                         {
                             ModuleId = module.Id,
                             UserId = accountGuid,
+                            ModuleSettingsType = module.ModuleSettingsType,
                             ModuleType = module.ModuleType,
                             ModuleSettings = module.SettingsJson,
                             IsActive = module.IsActive,
@@ -43,12 +45,36 @@ namespace Logic.Administration
             }
         }
 
-        public async Task<List<UserModule>> LoadSchoolModuleSettings(Guid accountGuid)
+        public async Task<ResponseMessage<SchoolModule>> LoadSchoolModule(Guid accountGuid)
         {
             try
             {
-                return await GetUserModules(accountGuid, ModuleTypeEnum.SchoolTraining);
+                var modules = await _applicationUnitOfWork.ModuleRepository.GetByAsync(
+                   x => x.AccountGuid == accountGuid && x.ModuleType == ModuleTypeEnum.SchoolTraining);
 
+                if (!modules.Any())
+                {
+                    throw new Exception($"Could not load school training module for user [{accountGuid}]");
+                }
+
+                var selectedModule = modules.First();
+
+                return new ResponseMessage<SchoolModule>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    MessageKey = "",
+                    Data = new SchoolModule
+                    {
+                        ModuleId = selectedModule.Id,
+                        UserId = accountGuid,
+                        ModuleSettingsType = selectedModule.ModuleSettingsType,
+                        ModuleType = selectedModule.ModuleType,
+                        Settings = !string.IsNullOrWhiteSpace(selectedModule.SettingsJson) ? JsonConvert.DeserializeObject<SchoolSettings>(selectedModule.SettingsJson): null,
+                        IsActive = selectedModule.IsActive,
+
+                    }
+                };
             }
             catch (Exception exception)
             {
@@ -61,7 +87,13 @@ namespace Logic.Administration
                     Trigger = nameof(ModuleConfigurationService),
                 });
 
-                return new List<UserModule>();
+                return new ResponseMessage<SchoolModule>
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    MessageKey = "labelCouldNotLoadSchooltrainingModule",
+                    Data = null
+                };
             }
         }
 
@@ -81,6 +113,7 @@ namespace Logic.Administration
                                {
                                    ModuleId = module.Id,
                                    UserId = requestModel.UserGuid,
+                                   ModuleSettingsType = module.ModuleSettingsType,
                                    ModuleType = module.ModuleType,
                                    ModuleSettings = module.SettingsJson,
                                    IsActive = module.IsActive,

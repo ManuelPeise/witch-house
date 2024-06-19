@@ -1,6 +1,7 @@
 ﻿using Data.Shared.Enums;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
+using Data.Shared.Models.Response;
 
 namespace Logic.Shared.Interfaces
 {
@@ -9,7 +10,7 @@ namespace Logic.Shared.Interfaces
         Task<ModuleConfiguration> LoadUserModuleConfiguration(UserModuleRequestModel requestModel);
         Task<List<UserModule>> GetUserModules(Guid accountGuid, ModuleTypeEnum moduleType);
         Task UpdateModule(UserModule module);
-        Task<List<UserModule>> LoadSchoolModuleSettings(Guid accountGuid);
+        Task<ResponseMessage<SchoolModule>> LoadSchoolModule(Guid accountGuid);
         Task UpdateSchoolModuleSettings(ModuleSettings settings);
     }
 }

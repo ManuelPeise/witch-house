@@ -23,7 +23,7 @@ const AddUserForm: React.FC<IProps> = (props) => {
       firstName: '',
       lastName: '',
       userName: '',
-      role: UserRoleEnum.User,
+      roles: [UserRoleEnum.User],
       isActive: false,
       moduleSettings: [],
     };

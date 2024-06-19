@@ -79,7 +79,6 @@ namespace Data.Shared.Models.Account
                         AccountGuid = id,
                         ModuleType = ModuleTypeEnum.SchoolTraining,
                         ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.SchoolTraining),
-                        SettingsJson = null,
                         IsActive = true,
                     },
                     new ModuleEntity
@@ -88,7 +87,6 @@ namespace Data.Shared.Models.Account
                         AccountGuid = id,
                         ModuleType = ModuleTypeEnum.SchoolTrainingStatistics,
                         ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.SchoolTrainingStatistics),
-                        SettingsJson = null,
                         IsActive = true,
                     }
                 },
@@ -130,7 +128,7 @@ namespace Data.Shared.Models.Account
                           Id = Guid.NewGuid(),
                           AccountGuid = id,
                           RoleType = role,
-                          RoleName = Enum.GetName(typeof(RoleEntity), role)
+                          RoleName = Enum.GetName(typeof(UserRoleEnum), role)
                       }
                 },
                 Modules = new List<ModuleEntity>
@@ -141,7 +139,6 @@ namespace Data.Shared.Models.Account
                         AccountGuid = id,
                         ModuleType = ModuleTypeEnum.SchoolTraining,
                         ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.SchoolTraining),
-                        SettingsJson = null,
                         IsActive = false,
                     },
                     new ModuleEntity
@@ -150,7 +147,6 @@ namespace Data.Shared.Models.Account
                         AccountGuid = id,
                         ModuleType = ModuleTypeEnum.SchoolTrainingStatistics,
                         ModuleName = Enum.GetName(typeof(ModuleTypeEnum), ModuleTypeEnum.SchoolTrainingStatistics),
-                        SettingsJson = null,
                         IsActive = false,
                     }
                 },

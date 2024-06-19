@@ -1,3 +1,5 @@
+import { SchoolSettings } from '../../pages/private/familyAdministration/types';
+import { ModuleSettingsTypeEnum } from '../enums/ModuleSettingsTypeEnum';
 import { ModuleTypeEnum } from '../enums/ModuleTypeEnum';
 import { UserRoleEnum } from '../enums/UserRoleEnum';
 
@@ -38,8 +40,9 @@ export type JwtData = {
 export type UserModule = {
   userId: string;
   moduleId: string;
+  moduleSettingsType: ModuleSettingsTypeEnum;
   moduleType: ModuleTypeEnum;
-  moduleSettings: string;
+  moduleSettings: SchoolSettings | null;
   isActive: boolean;
 };
 

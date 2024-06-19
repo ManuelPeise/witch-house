@@ -1,5 +1,7 @@
 ﻿using Data.Shared.Entities;
+using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
+using Data.Shared.Models.Response;
 using Logic.Administration.Interfaces;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
@@ -65,5 +67,70 @@ namespace Logic.Administration
             }
         }
 
+        public async Task<ResponseMessage<UserDataModel>> GetUserData(Guid accountGuid)
+        {
+            try
+            {
+                var account = await _unitOfWork.AccountRepository.GetFirstByIdAsync(accountGuid);
+
+                if (account == null)
+                {
+                    await _unitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
+                    {
+                        Message = $"Could not load userData for [{accountGuid}]"
+                    });
+
+                    return new ResponseMessage<UserDataModel>
+                    {
+                        Success = false,
+                        MessageKey = "labelLoadUserDataFailed",
+                        StatusCode = 200,
+                        Data = null
+                    };
+                }
+
+                var userRoles = await _unitOfWork.RoleRepository.GetByAsync(x => x.AccountGuid == accountGuid);
+
+                return new ResponseMessage<UserDataModel>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    MessageKey = "",
+                    Data = new UserDataModel
+                    {
+                        UserId = accountGuid,
+                        FamilyGuid = account.FamilyGuid,
+                        FirstName = account.FirstName,
+                        LastName = account.LastName,
+                        UserName = account.UserName,
+                        Culture = account.Culture,
+                        DateOfBirth = account.DateOfBirth,
+                        IsActive = account.IsActive,
+                        UserRoles = (from role in userRoles.ToList()
+                                     select (int)role.RoleType).ToList(),
+
+                    }
+                };
+            }
+            catch (Exception exception)
+            {
+                await _unitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
+                {
+                    FamilyGuid = _unitOfWork.ClaimsAccessor.GetClaimsValue<Guid>(UserIdentityClaims.FamilyId),
+                    Message = exception.Message,
+                    Stacktrace = exception.StackTrace ?? "",
+                    TimeStamp = DateTime.Now.ToString(Constants.LogMessageDateFormat),
+                    Trigger = nameof(FamilyAdministrationService),
+                });
+
+                return new ResponseMessage<UserDataModel>
+                {
+                    Success = false,
+                    MessageKey = "labelLoadUserDataFailed",
+                    StatusCode = 200,
+                    Data = null
+                };
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ using Data.Shared.Models.Import;
 using Logic.Family.Interfaces;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
+using Newtonsoft.Json;
 
 namespace Logic.Family
 {
@@ -85,7 +86,7 @@ namespace Logic.Family
             {
                 if (accountImportModel?.Family?.FamilyGuid == null)
                 {
-                    return;
+                    throw new Exception("Could not assign user to Family.");
                 }
 
                 var familyEntity = await _applicationUnitOfWork.FamilyRepository.GetFirstByIdAsync(accountImportModel.Family.FamilyGuid);
@@ -99,20 +100,19 @@ namespace Logic.Family
                 var accountGuid = Guid.NewGuid();
 
                 var accountEntity = accountImportModel.UserAccount.ToFamilyMember(
-                    accountGuid, 
-                    accountImportModel.Family.FamilyGuid, 
-                    salt, 
-                    Helpers.GetEncodedSecret(accountImportModel.UserAccount.Secret, salt.ToString()),
+                    accountGuid,
+                    accountImportModel.Family.FamilyGuid,
+                    salt,
+                    Helpers.GetEncodedSecret("P@ssword", salt.ToString()),
                     UserRoleEnum.User);
-               
 
                 var result = await _applicationUnitOfWork.AccountRepository.AddAsync(accountEntity);
 
-                if(result != null)
+                if (result != null)
                 {
                     await _applicationUnitOfWork.SaveChanges();
                 }
-               
+
                 return;
             }
             catch (Exception exception)
@@ -237,7 +237,7 @@ namespace Logic.Family
 
                 var credentialsEntity = await _applicationUnitOfWork.CredentialsRepository.GetFirstByIdAsync((Guid)entity.CredentialGuid);
 
-                if(credentialsEntity == null)
+                if (credentialsEntity == null)
                 {
                     return false;
                 }
@@ -284,7 +284,7 @@ namespace Logic.Family
 
                 credentialsEntity.Salt = salt;
                 credentialsEntity.EncodedPassword = securedPassword;
-               
+
                 await _applicationUnitOfWork.CredentialsRepository.Update(credentialsEntity);
                 await _applicationUnitOfWork.SaveChanges();
 
@@ -317,7 +317,35 @@ namespace Logic.Family
                 }
 
                 account.IsActive = model.IsActive;
-               
+
+                var roles = await _applicationUnitOfWork.RoleRepository.GetByAsync(x => x.AccountGuid == account.Id);
+
+                var roleCopy = roles.ToList();
+
+                var rolesToAdd = model.Roles.Where(x => !roleCopy.Select(r => (int)r.RoleType).Contains(x));
+
+                // delete roles
+                foreach (var role in roleCopy)
+                {
+                    if (!model.Roles.Contains((int)role.RoleType))
+                    {
+                        _applicationUnitOfWork.RoleRepository.Delete(role.Id);
+                    }
+                }
+
+                foreach (var role in rolesToAdd)
+                {
+                    var roleType = (UserRoleEnum)role;
+
+                    await _applicationUnitOfWork.RoleRepository.AddAsync(new RoleEntity
+                    {
+                        Id = Guid.NewGuid(),
+                        AccountGuid = account.Id,
+                        RoleType = roleType,
+                        RoleName = Enum.GetName(typeof(UserRoleEnum), roleType)
+                    });
+                }
+
                 await _applicationUnitOfWork.AccountRepository.Update(account);
 
                 await _applicationUnitOfWork.SaveChanges();
@@ -346,7 +374,7 @@ namespace Logic.Family
                     throw new Exception($"Could not upload image for [{model.ProfileImage}]");
                 }
 
-                 account.ProfileImage = model.ProfileImage;
+                account.ProfileImage = model.ProfileImage;
 
                 await _applicationUnitOfWork.AccountRepository.Update(account);
 
@@ -364,5 +392,26 @@ namespace Logic.Family
             }
         }
 
+        private string GetDefaultSettings(ModuleTypeEnum moduleType)
+        {
+            switch (moduleType)
+            {
+                case ModuleTypeEnum.SchoolTraining:
+                    var settings = new SchoolSettings
+                    {
+                        AllowAddition = false,
+                        AllowSubtraction = false,
+                        AllowMultiply = false,
+                        AllowDivide = false,
+                        AllowDoubling = false,
+                        MinValue = 0,
+                        MaxValue = 0,
+                        MaxWordLength = 0,
+                    };
+                    return JsonConvert.SerializeObject(settings);
+                case ModuleTypeEnum.SchoolTrainingStatistics:
+                default: return string.Empty;
+            }
+        }
     }
 }

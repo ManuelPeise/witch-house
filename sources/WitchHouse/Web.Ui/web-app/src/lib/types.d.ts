@@ -51,14 +51,14 @@ export type CheckboxProps = {
 export type RadioInputProps = {
   disabled: boolean;
   label: string;
-  value: string;
+  value: number;
 };
 
 export type RadioGroupProps = {
   property: string;
   hasDivider?: boolean;
   groupLabel: string;
-  value: any;
+  value: number[];
   radioProps: RadioInputProps[];
-  onChange: (key: string, value: any) => void;
+  onChange: (key: string, value: boolean) => void;
 };

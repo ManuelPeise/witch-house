@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240618202638_InitDatabase")]
+    [Migration("20240619071056_InitDatabase")]
     partial class InitDatabase
     {
         /// <inheritdoc />
@@ -84,14 +84,14 @@ namespace Data.Database.Migrations
                         new
                         {
                             Id = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
-                            CreatedAt = "2024-06-18",
+                            CreatedAt = "2024-06-19",
                             CreatedBy = "System",
                             CredentialGuid = new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"),
                             Culture = "en",
                             FirstName = "",
                             IsActive = true,
                             LastName = "",
-                            UpdatedAt = "2024-06-18",
+                            UpdatedAt = "2024-06-19",
                             UpdatedBy = "System",
                             UserName = "System.Admin"
                         });
@@ -142,12 +142,12 @@ namespace Data.Database.Migrations
                         new
                         {
                             Id = new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"),
-                            CreatedAt = "2024-06-18",
+                            CreatedAt = "2024-06-19",
                             CreatedBy = "System",
-                            EncodedPassword = "UEBzc3dvcmQzOTliNmY1MS03YjlkLTQ3ZDgtODMwNy03YzU2MDkzNjllZWI=",
+                            EncodedPassword = "UEBzc3dvcmRhNmJkNjRkMS02MDU1LTRmNGQtOTc2MC1iOTI0MjU5YzExMWY=",
                             MobilePin = 1234,
-                            Salt = new Guid("399b6f51-7b9d-47d8-8307-7c5609369eeb"),
-                            UpdatedAt = "2024-06-18",
+                            Salt = new Guid("a6bd64d1-6055-4f4d-9760-b924259c111f"),
+                            UpdatedAt = "2024-06-19",
                             UpdatedBy = "System"
                         });
                 });
@@ -256,6 +256,9 @@ namespace Data.Database.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("ModuleSettingsType")
+                        .HasColumnType("int");
+
                     b.Property<int>("ModuleType")
                         .HasColumnType("int");
 
@@ -279,26 +282,28 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("eaba7815-abbb-4b56-886a-501e4c2ca835"),
+                            Id = new Guid("dfdc4fe8-3c5f-4cfb-84e4-96a96cf54a90"),
                             AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
-                            CreatedAt = "2024-06-18",
+                            CreatedAt = "2024-06-19",
                             CreatedBy = "System",
                             IsActive = true,
                             ModuleName = "SchoolTraining",
+                            ModuleSettingsType = 0,
                             ModuleType = 1,
-                            UpdatedAt = "2024-06-18",
+                            UpdatedAt = "2024-06-19",
                             UpdatedBy = "System"
                         },
                         new
                         {
-                            Id = new Guid("ee7c264a-fd6f-4fd8-bdfa-f7a41fecec4d"),
+                            Id = new Guid("e8e61aec-6348-4b79-bf2d-4440e2c6eab5"),
                             AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
-                            CreatedAt = "2024-06-18",
+                            CreatedAt = "2024-06-19",
                             CreatedBy = "System",
                             IsActive = true,
                             ModuleName = "SchoolTrainingStatistics",
+                            ModuleSettingsType = 0,
                             ModuleType = 2,
-                            UpdatedAt = "2024-06-18",
+                            UpdatedAt = "2024-06-19",
                             UpdatedBy = "System"
                         });
                 });
@@ -343,13 +348,13 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("86bfb9cc-e3ab-4e02-90ae-0bd0ed58f2be"),
+                            Id = new Guid("cb9c80ec-4be7-414f-9f4c-61b34eb9358f"),
                             AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
-                            CreatedAt = "2024-06-18",
+                            CreatedAt = "2024-06-19",
                             CreatedBy = "System",
                             RoleName = "Admin",
                             RoleType = 1,
-                            UpdatedAt = "2024-06-18",
+                            UpdatedAt = "2024-06-19",
                             UpdatedBy = "System"
                         });
                 });

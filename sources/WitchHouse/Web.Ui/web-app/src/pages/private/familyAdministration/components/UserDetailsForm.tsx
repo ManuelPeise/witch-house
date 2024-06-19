@@ -1,79 +1,134 @@
 import { List, ListItem } from '@mui/material';
 import React from 'react';
-import { UserDataModel } from '../types';
 import { useI18n } from '../../../../hooks/useI18n';
 import TextInputListItem from '../../../../components/inputs/TextInputListItem';
 import ListItemSwitch from '../../../../components/inputs/ListItemSwitch';
-import RadioGroupListItem from '../../../../components/inputs/RadioGroupListItem';
+import CheckBoxGroupListItem from '../../../../components/inputs/CheckBoxGroupListItem';
 import { UserRoleEnum } from '../../../../lib/enums/UserRoleEnum';
 import SubmitButton from '../../../../components/buttons/SubmitButton';
+import { useApi } from '../../../../hooks/useApi';
+import { UserAdministrationDataModel, UserAdministrationUpdateImportModel } from '../../../../lib/types/user';
+import { endpoints } from '../../../../lib/api/apiConfiguration';
+import { ResponseMessage } from '../../../../lib/api/types';
 
 interface IProps {
-  userData: UserDataModel;
+  userId: string;
   disabled: boolean;
-  onSave: (data: UserDataModel) => Promise<void>;
 }
 
 const UserDetailsForm: React.FC<IProps> = (props) => {
-  const { userData, disabled, onSave } = props;
-
+  const { userId, disabled } = props;
   const { getResource } = useI18n();
+  const { data, isLoading, get, post } = useApi<ResponseMessage<UserAdministrationDataModel>>();
+  const [userData, setUserData] = React.useState<UserAdministrationDataModel | null>(null);
 
-  const [data, setData] = React.useState<UserDataModel>(userData);
+  const loadUserData = React.useCallback(async () => {
+    await get(endpoints.administration.loadFamilyUserData.replace('{guid}', userId));
+  }, [userId, get]);
 
   React.useEffect(() => {
-    setData(userData);
-  }, [userData]);
+    loadUserData();
+  }, [loadUserData]);
+
+  React.useEffect(() => {
+    if (data != null) {
+      setUserData(data.data);
+    }
+  }, [data]);
+
+  const handleRoleChange = React.useCallback(
+    (key: string, value: boolean) => {
+      if (userData != null) {
+        const roles = userData?.userRoles.slice() ?? [];
+        const role = parseInt(key);
+        if (value === true) {
+          roles.push(role);
+        } else {
+          roles.splice(
+            roles.findIndex((x) => x === role),
+            1
+          );
+        }
+
+        setUserData({ ...userData, userRoles: roles });
+      }
+    },
+    [userData]
+  );
 
   const handleChange = React.useCallback(
     (key: string, value: any) => {
-      setData({ ...data, [key]: value });
+      if (userData != null) {
+        setUserData({ ...userData, [key]: value });
+      }
     },
-    [data]
+    [userData]
   );
 
   const handleCancel = React.useCallback(async () => {
-    setData(userData);
-  }, [userData]);
+    if (data?.data != null) {
+      setUserData(data?.data);
+    }
+  }, [data]);
 
   const handleSave = React.useCallback(async () => {
-    await onSave(data);
-  }, [data, onSave]);
+    if (userData != null) {
+      const model: UserAdministrationUpdateImportModel = {
+        userId: userData.userId,
+        roles: userData.userRoles,
+        isActive: userData.isActive,
+      };
+
+      await post(endpoints.administration.updateFamilyMember, JSON.stringify(model)).then(async () => {
+        await loadUserData();
+      });
+    }
+  }, [userData, post, loadUserData]);
+
+  const userRolesEqual = React.useMemo(() => {
+    const isEqual = JSON.stringify(data?.data.userRoles) === JSON.stringify(userData?.userRoles);
+
+    return isEqual;
+  }, [data, userData]);
 
   const isModified = React.useMemo(() => {
-    return JSON.stringify(userData) !== JSON.stringify(data);
-  }, [userData, data]);
+    const modified = JSON.stringify(userData) !== JSON.stringify(data?.data) || !userRolesEqual;
+
+    return modified;
+  }, [userData, data, userRolesEqual]);
+
+  if (isLoading || userData == null) {
+    return null;
+  }
 
   return (
     <List disablePadding>
       <ListItemSwitch
-        hasDivider
-        marginBottom={1}
+        marginBottom={0}
         property="isActive"
         disabled={disabled}
-        checked={data.isActive}
+        checked={userData.isActive}
         label={getResource('common:labelIsActive')}
         onChange={handleChange}
       />
-
       <TextInputListItem
         textFieldProps={{
           property: 'userId',
           fullWidth: true,
           disabled: true,
           label: getResource('common:labelUserId'),
-          value: data.userId,
+          value: userData.userId,
           onChange: handleChange,
         }}
       />
-      {data.familyGuid && (
+      {userData.familyGuid && (
         <TextInputListItem
           textFieldProps={{
             property: 'familyGuid',
             fullWidth: true,
             disabled: true,
             label: getResource('common:labelFamilyId'),
-            value: data.familyGuid,
+            value: userData.familyGuid,
             onChange: handleChange,
           }}
         />
@@ -84,7 +139,7 @@ const UserDetailsForm: React.FC<IProps> = (props) => {
           fullWidth: true,
           disabled: true,
           label: getResource('common:labelFirstName'),
-          value: data.firstName,
+          value: userData.firstName,
           onChange: handleChange,
         }}
       />
@@ -94,43 +149,41 @@ const UserDetailsForm: React.FC<IProps> = (props) => {
           fullWidth: true,
           disabled: true,
           label: getResource('common:labelLastName'),
-          value: data.lastName,
+          value: userData.lastName,
           onChange: handleChange,
         }}
       />
       <TextInputListItem
-        hasDivider
         textFieldProps={{
           property: 'userName',
           marginBottom: 1,
           fullWidth: true,
           disabled: true,
           label: getResource('common:labelUserName'),
-          value: data.userName,
+          value: userData.userName,
           onChange: handleChange,
         }}
       />
-      <RadioGroupListItem
-        hasDivider
+      <CheckBoxGroupListItem
         marginTop={1}
         marginBottom={1}
         groupLabel="UserRole"
-        value={data.role}
+        value={userData.userRoles}
         property="role"
         radioProps={[
-          { label: getResource('common:labelAdmin'), value: UserRoleEnum.Admin.toString(), disabled: true },
+          { label: getResource('common:labelAdmin'), value: UserRoleEnum.Admin, disabled: true },
           {
             label: getResource('common:labelLocalAdmin'),
-            value: UserRoleEnum.LocalAdmin.toString(),
+            value: UserRoleEnum.LocalAdmin,
             disabled: disabled,
           },
           {
             label: getResource('common:labelUser'),
-            value: UserRoleEnum.User.toString(),
+            value: UserRoleEnum.User,
             disabled: disabled,
           },
         ]}
-        onChange={handleChange}
+        onChange={handleRoleChange}
       />
       <ListItem sx={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '2rem', marginTop: '3rem' }}>
         <SubmitButton

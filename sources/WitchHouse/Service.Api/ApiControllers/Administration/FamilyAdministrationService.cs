@@ -1,6 +1,7 @@
 ﻿using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
+using Data.Shared.Models.Response;
 using Logic.Administration.Interfaces;
 using Logic.Family.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,7 @@ using Service.Shared;
 
 namespace Service.Api.ApiControllers.Administration
 {
-    [Authorize]
+   // [Authorize]
     public class FamilyAdministrationService : ApiControllerBase
     {
 
@@ -27,6 +28,12 @@ namespace Service.Api.ApiControllers.Administration
         public async Task<List<UserDataExportModel>> GetFamilyUsers([FromQuery] Guid familyGuid)
         {
             return await _familyAdministrationService.GetFamilyUsers(familyGuid);
+        }
+
+        [HttpGet(Name = "LoadFamilyUserData")]
+        public async Task<ResponseMessage<UserDataModel>> LoadFamilyUserData([FromQuery] Guid accountGuid)
+        {
+            return await _familyAdministrationService.GetUserData(accountGuid);
         }
 
         [HttpPost(Name = "AddFamilyUser")]

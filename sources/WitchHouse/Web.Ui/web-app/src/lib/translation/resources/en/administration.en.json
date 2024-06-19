@@ -12,14 +12,14 @@
   "labelAddFamilyMember": "Add New Family Member",
   "labelAddition": "Addition",
   "labelDivide": "Divide",
+  "labelDoubling": "Doubling",
   "labelFamilyMembers": "Family Members",
   "labelMaxLetterCount": "Max Letters",
   "labelMaxValue": "Max Value",
   "labelMinValue": "Min Value",
+  "labelMobileApp": "Mobile App",
   "labelMultiply": "Multiply",
   "labelSchoolTraining": "School Training",
   "labelSchoolTrainingStatistics": "School Training Statistics",
-  "labelSubtraction": "Subtract",
-  "labelMobileApp": "Mobile App",
-  "labelDoubling": "Doubling"
+  "labelSubtraction": "Subtract"
 }

@@ -1,4 +1,5 @@
 ﻿using Data.Shared.Enums;
+using System.Text.Json.Serialization;
 
 namespace Data.Shared.Models.Export
 {
@@ -13,7 +14,6 @@ namespace Data.Shared.Models.Export
 
     public class SchoolSettings
     {
-        // math settings
         public bool AllowAddition { get; set; }
         public bool AllowSubtraction { get; set; }
         public bool AllowMultiply { get; set; }

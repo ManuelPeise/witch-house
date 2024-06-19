@@ -2,12 +2,8 @@
 using Data.Shared.Entities;
 using Logic.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Logic.Shared
 {
@@ -73,6 +69,18 @@ namespace Logic.Shared
             }
         }
 
+
+        public void Delete(Guid id)
+        {
+            var table = _databaseContext.Set<TEntity>();
+
+            var entityToDelete = table.FirstOrDefault(x => x.Id == id);
+
+            if(entityToDelete != null)
+            {
+                table.Remove(entityToDelete);
+            }
+        }
         #region dispose
 
         protected virtual void Dispose(bool disposing)

@@ -2,6 +2,7 @@
 using Data.Shared.Enums;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
+using Data.Shared.Models.Response;
 using Data.Shared.Models.Sync;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
@@ -80,9 +81,9 @@ namespace Logic.Sync
 
         }
         
-        private async Task<List<UserModule>> GetSchoolModuleSettings(Guid userId)
+        private async Task<ResponseMessage<SchoolModule>> GetSchoolModuleSettings(Guid userId)
         {
-            return await _moduleConfigurationService.LoadSchoolModuleSettings(userId);
+            return await _moduleConfigurationService.LoadSchoolModule(userId);
         }
         
         protected virtual void Dispose(bool disposing)

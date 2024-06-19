@@ -1,20 +1,22 @@
-import { FormControl, FormControlLabel, FormLabel, ListItem, Radio, RadioGroup } from '@mui/material';
+import { FormControl, FormLabel, Grid, ListItem } from '@mui/material';
 import React from 'react';
 import { RadioGroupProps } from '../../lib/types';
+import CheckboxInput from './CheckboxInput';
 
 interface IProps extends RadioGroupProps {
   marginTop?: number;
   marginBottom?: number;
+  allowMultiple?: boolean;
 }
 
-const RadioGroupListItem: React.FC<IProps> = (props) => {
-  const { property, hasDivider, groupLabel, radioProps, value, marginBottom, marginTop, onChange } = props;
+const CheckBoxGroupListItem: React.FC<IProps> = (props) => {
+  const { hasDivider, groupLabel, radioProps, value, marginBottom, marginTop, onChange } = props;
 
   const handleChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, value: string) => {
-      onChange(property, value);
+    (key: string, value: boolean) => {
+      onChange(key, value);
     },
-    [property, onChange]
+    [onChange]
   );
 
   return (
@@ -38,21 +40,23 @@ const RadioGroupListItem: React.FC<IProps> = (props) => {
         }}
       >
         <FormLabel>{groupLabel}</FormLabel>
-        <RadioGroup value={value} onChange={handleChange} sx={{ display: 'flex', flexDirection: 'row' }}>
+        <Grid item sx={{ display: 'flex', flexDirection: 'row' }}>
           {radioProps.map((prop, index) => {
             return (
-              <FormControlLabel
+              <CheckboxInput
                 key={index}
-                value={prop.value}
+                property={prop.value.toString()}
+                checked={value.includes(prop.value)}
                 label={prop.label}
-                control={<Radio disabled={prop?.disabled} />}
+                disabled={prop.disabled}
+                onChange={handleChange}
               />
             );
           })}
-        </RadioGroup>
+        </Grid>
       </FormControl>
     </ListItem>
   );
 };
 
-export default RadioGroupListItem;
+export default CheckBoxGroupListItem;

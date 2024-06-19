@@ -11,18 +11,18 @@ import { UserDataModel } from './types';
 import { endpoints } from '../../../lib/api/apiConfiguration';
 import UserDetailsForm from './components/UserDetailsForm';
 import { FamilyAdministrationSectionEnum } from './enums/FamilyAdministrationSectionEnum';
-import { FamilyMemberModel, FamilyMemberUpdate } from '../../public/Auth/types';
+import { AccountImportModel } from '../../public/Auth/types';
 import AddUserForm from './components/AddUserForm';
 import ModuleAdministration from './components/ModuleAdministration';
 import ModuleSettingsAdministration from './components/SchoolModuleSettingsAdministration';
 import SectionLayout from './components/SectionLayout';
+import { UserRoleEnum } from '../../../lib/enums/UserRoleEnum';
 
 interface IProps {
   filterText: string;
   users: UserDataModel[];
   onFilterTextChanged: (key: string, filterText: string) => void;
   onSaveFamilyMember: (userData: UserDataModel) => Promise<void>;
-  onUpdateFamilyMember: (userData: UserDataModel) => Promise<void>;
 }
 
 const FamilyAdministrationContainer: React.FC = () => {
@@ -39,29 +39,20 @@ const FamilyAdministrationContainer: React.FC = () => {
 
   const onSaveFamilyMember = React.useCallback(
     async (userData: UserDataModel) => {
-      const model: FamilyMemberModel = {
-        familyGuid: userData.familyGuid,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        userName: userData.userName,
+      const model: AccountImportModel = {
+        family: {
+          familyGuid: userData.familyGuid,
+        },
+        userAccount: {
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          userName: userData.userName,
+          secret: '',
+          userRole: UserRoleEnum.User,
+        },
       };
 
       await post(endpoints.administration.addFamilyMember, JSON.stringify(model)).then(async () => {
-        await getUserData();
-      });
-    },
-    [post, getUserData]
-  );
-
-  const onUpdateFamilyMember = React.useCallback(
-    async (userData: UserDataModel) => {
-      const model: FamilyMemberUpdate = {
-        userId: userData.userId,
-        isActive: userData.isActive,
-        role: userData.role,
-      };
-
-      await post(endpoints.administration.updateFamilyMember, JSON.stringify(model)).then(async () => {
         await getUserData();
       });
     },
@@ -87,13 +78,12 @@ const FamilyAdministrationContainer: React.FC = () => {
       users={data}
       onFilterTextChanged={handleFilterChanged}
       onSaveFamilyMember={onSaveFamilyMember}
-      onUpdateFamilyMember={onUpdateFamilyMember}
     />
   );
 };
 
 const FamilyAdministrationPage: React.FC<IProps> = (props) => {
-  const { filterText, users, onFilterTextChanged, onSaveFamilyMember, onUpdateFamilyMember } = props;
+  const { filterText, users, onFilterTextChanged, onSaveFamilyMember } = props;
   const { getResource } = useI18n();
   const { loginResult } = useAuth();
   const [selectedUserId, setSelectedUserId] = React.useState<number>(-1);
@@ -181,9 +171,8 @@ const FamilyAdministrationPage: React.FC<IProps> = (props) => {
       {sectionType === FamilyAdministrationSectionEnum.Details && (
         <SectionLayout caption={getResource('administration:captionUserDetails')}>
           <UserDetailsForm
-            userData={selectedUser}
+            userId={selectedUser.userId}
             disabled={loginResult.userData.userId === selectedUser.userId}
-            onSave={onUpdateFamilyMember}
           />
         </SectionLayout>
       )}
@@ -193,7 +182,7 @@ const FamilyAdministrationPage: React.FC<IProps> = (props) => {
             requestModel={{
               userGuid: selectedUser.userId,
               familyGuid: selectedUser.familyGuid,
-              roleId: selectedUser.role,
+              roles: selectedUser.roles,
             }}
             disabled={false}
           />

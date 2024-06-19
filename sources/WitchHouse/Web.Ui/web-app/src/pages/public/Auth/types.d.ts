@@ -7,8 +7,8 @@ export type LoginImportModel = {
 
 export type FamilyAccountImportModel = {
   familyGuid?: string;
-  familyName: string;
-  familyFullName: string;
+  familyName?: string;
+  familyFullName?: string;
 };
 
 export type UserAccountImportModel = {
@@ -34,5 +34,5 @@ export type FamilyMemberModel = {
 export type FamilyMemberUpdate = {
   userId: string;
   isActive: boolean;
-  role: number;
+  roles: number[];
 };

@@ -120,6 +120,7 @@ namespace Data.Database.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     ModuleName = table.Column<string>(type: "longtext", nullable: false),
                     ModuleType = table.Column<int>(type: "int", nullable: false),
+                    ModuleSettingsType = table.Column<int>(type: "int", nullable: false),
                     SettingsJson = table.Column<string>(type: "longtext", nullable: true),
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     AccountGuid = table.Column<Guid>(type: "char(36)", nullable: true),
@@ -193,26 +194,26 @@ namespace Data.Database.Migrations
             migrationBuilder.InsertData(
                 table: "CredentialsTable",
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "EncodedPassword", "JwtToken", "MobilePin", "RefreshToken", "Salt", "UpdatedAt", "UpdatedBy" },
-                values: new object[] { new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"), "2024-06-18", "System", "UEBzc3dvcmQzOTliNmY1MS03YjlkLTQ3ZDgtODMwNy03YzU2MDkzNjllZWI=", null, 1234, null, new Guid("399b6f51-7b9d-47d8-8307-7c5609369eeb"), "2024-06-18", "System" });
+                values: new object[] { new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"), "2024-06-19", "System", "UEBzc3dvcmRhNmJkNjRkMS02MDU1LTRmNGQtOTc2MC1iOTI0MjU5YzExMWY=", null, 1234, null, new Guid("a6bd64d1-6055-4f4d-9760-b924259c111f"), "2024-06-19", "System" });
 
             migrationBuilder.InsertData(
                 table: "AccountTable",
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "CredentialGuid", "Culture", "DateOfBirth", "FamilyGuid", "FirstName", "IsActive", "LastName", "ProfileImage", "UpdatedAt", "UpdatedBy", "UserName" },
-                values: new object[] { new Guid("b5846acb-2911-4831-a9ac-d2342849241d"), "2024-06-18", "System", new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"), "en", null, null, "", true, "", null, "2024-06-18", "System", "System.Admin" });
+                values: new object[] { new Guid("b5846acb-2911-4831-a9ac-d2342849241d"), "2024-06-19", "System", new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"), "en", null, null, "", true, "", null, "2024-06-19", "System", "System.Admin" });
 
             migrationBuilder.InsertData(
                 table: "Modules",
-                columns: new[] { "Id", "AccountGuid", "CreatedAt", "CreatedBy", "IsActive", "ModuleName", "ModuleType", "SettingsJson", "UpdatedAt", "UpdatedBy" },
+                columns: new[] { "Id", "AccountGuid", "CreatedAt", "CreatedBy", "IsActive", "ModuleName", "ModuleSettingsType", "ModuleType", "SettingsJson", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { new Guid("eaba7815-abbb-4b56-886a-501e4c2ca835"), new Guid("b5846acb-2911-4831-a9ac-d2342849241d"), "2024-06-18", "System", true, "SchoolTraining", 1, null, "2024-06-18", "System" },
-                    { new Guid("ee7c264a-fd6f-4fd8-bdfa-f7a41fecec4d"), new Guid("b5846acb-2911-4831-a9ac-d2342849241d"), "2024-06-18", "System", true, "SchoolTrainingStatistics", 2, null, "2024-06-18", "System" }
+                    { new Guid("dfdc4fe8-3c5f-4cfb-84e4-96a96cf54a90"), new Guid("b5846acb-2911-4831-a9ac-d2342849241d"), "2024-06-19", "System", true, "SchoolTraining", 0, 1, null, "2024-06-19", "System" },
+                    { new Guid("e8e61aec-6348-4b79-bf2d-4440e2c6eab5"), new Guid("b5846acb-2911-4831-a9ac-d2342849241d"), "2024-06-19", "System", true, "SchoolTrainingStatistics", 0, 2, null, "2024-06-19", "System" }
                 });
 
             migrationBuilder.InsertData(
                 table: "RolesTable",
                 columns: new[] { "Id", "AccountGuid", "CreatedAt", "CreatedBy", "RoleName", "RoleType", "UpdatedAt", "UpdatedBy" },
-                values: new object[] { new Guid("86bfb9cc-e3ab-4e02-90ae-0bd0ed58f2be"), new Guid("b5846acb-2911-4831-a9ac-d2342849241d"), "2024-06-18", "System", "Admin", 1, "2024-06-18", "System" });
+                values: new object[] { new Guid("cb9c80ec-4be7-414f-9f4c-61b34eb9358f"), new Guid("b5846acb-2911-4831-a9ac-d2342849241d"), "2024-06-19", "System", "Admin", 1, "2024-06-19", "System" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AccountTable_CredentialGuid",

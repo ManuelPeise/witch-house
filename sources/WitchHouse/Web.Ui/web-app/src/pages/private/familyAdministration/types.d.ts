@@ -9,7 +9,7 @@ export type UserDataModel = {
   lastName: string;
   userName: string;
   isActive: boolean;
-  role: UserRoleEnum;
+  roles: UserRoleEnum[];
   moduleSettings: UserModule[];
 };
 
@@ -32,22 +32,33 @@ export type ModuleProps = {
   moduleType: ModuleTypeEnum;
 };
 
+export type ModuleBase = {
+  userId: string;
+  moduleId: string;
+  moduleSettingsType: ModuleSettingsTypeEnum;
+  moduleType: ModuleTypeEnum;
+  isActive: Boolean;
+};
+
+export type SchoolModule = ModuleBase & {
+  settings: SchoolSettings | null;
+};
+
 export type UserModuleRequestModel = {
   userGuid: string;
   familyGuid: string;
-  roleId: UserRoleEnum;
+  roles: UserRoleEnum[];
 };
 
 export type ModuleSettings = {
   userId: string;
+  moduleGuid: string;
   moduleType: ModuleTypeEnum;
-  moduleSettingsType: ModuleSettingsTypeEnum;
   settings: SchoolSettings | null;
 };
 
 export type SchoolSettings = {
   moduleType: ModuleTypeEnum;
-  settingsType: ModuleSettingsTypeEnum;
   allowAddition: boolean;
   allowSubtraction: boolean;
   allowMultiply: boolean;

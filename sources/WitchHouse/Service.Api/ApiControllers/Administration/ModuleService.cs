@@ -1,5 +1,6 @@
 ﻿using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
+using Data.Shared.Models.Response;
 using Logic.Shared.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,10 +25,11 @@ namespace Service.Api.ApiControllers.Administration
             return await _moduleConfiguration.LoadUserModuleConfiguration(requestModel);
         }
 
-        [HttpGet(Name = "LoadModuleSchoolSettings")]
-        public async Task<List<UserModule>> LoadModuleSchoolSettings([FromQuery] Guid userGuid)
+        [HttpGet(Name = "LoadSchoolModule")]
+        public async Task<ResponseMessage<SchoolModule>> LoadSchoolModule([FromQuery] Guid userGuid)
         {
-            return await _moduleConfiguration.LoadSchoolModuleSettings(userGuid);
+            var response = await _moduleConfiguration.LoadSchoolModule(userGuid);
+            return response;
         }
 
         [HttpPost(Name = "UpdateModuleConfiguration")]

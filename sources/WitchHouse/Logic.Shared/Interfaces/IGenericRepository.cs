@@ -10,5 +10,6 @@ namespace Logic.Shared.Interfaces
         Task<IEnumerable<TEntity>> GetByAsync(Expression<Func<TEntity, bool>> expression);
         Task<Guid?> AddAsync(TEntity entity);
         Task Update(TEntity entity);
+        void Delete(Guid id);
     }
 }
