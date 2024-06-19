@@ -1,8 +1,9 @@
 ﻿using Data.Shared.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Logic.Shared.Interfaces
 {
-    public interface IApplicationUnitOfWork: IDisposable
+    public interface IApplicationUnitOfWork<TContext>: IDisposable where TContext: DbContext
     {
         public IGenericRepository<FamilyEntity> FamilyRepository { get; }
         public IGenericRepository<AccountEntity> AccountRepository { get; }

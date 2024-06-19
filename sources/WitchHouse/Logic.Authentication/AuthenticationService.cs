@@ -1,4 +1,5 @@
-﻿using Data.Shared.Entities;
+﻿using Data.Database;
+using Data.Shared.Entities;
 using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
@@ -13,9 +14,9 @@ namespace Logic.Authentication
 {
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly IApplicationUnitOfWork _unitOfWork;
+        private readonly IApplicationUnitOfWork<DatabaseContext> _unitOfWork;
 
-        public AuthenticationService(IApplicationUnitOfWork unitOfWork) : base()
+        public AuthenticationService(IApplicationUnitOfWork<DatabaseContext> unitOfWork) : base()
         {
             _unitOfWork = unitOfWork;
         }

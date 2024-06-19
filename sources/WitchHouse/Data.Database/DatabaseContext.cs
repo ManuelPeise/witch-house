@@ -20,6 +20,7 @@ namespace Data.Database
         public DbSet<AccountEntity> AccountTable { get; set; }
         public DbSet<ModuleEntity> Modules { get; set; }
         public DbSet<UnitResultEntity> UnitResults { get; set; }
+        public DbSet<DataSyncEntity> DataSyncTable { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

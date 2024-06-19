@@ -1,5 +1,4 @@
-﻿using Data.Database;
-using Data.Shared.Entities;
+﻿using Data.Shared.Entities;
 using Logic.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -7,13 +6,13 @@ using System.Linq.Expressions;
 
 namespace Logic.Shared
 {
-    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : AEntityBase
+    public class GenericRepository<TContext, TEntity> : IGenericRepository<TEntity> where TContext: DbContext where TEntity : AEntityBase
     {
-        private readonly DatabaseContext _databaseContext;
+        private readonly TContext _databaseContext;
 
         private bool disposedValue;
 
-        public GenericRepository(DatabaseContext databaseContext)
+        public GenericRepository(TContext databaseContext)
         {
             _databaseContext = databaseContext;
         }

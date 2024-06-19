@@ -1,4 +1,5 @@
-﻿using Data.Shared.Entities;
+﻿using Data.Database;
+using Data.Shared.Entities;
 using Data.Shared.Enums;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
@@ -11,11 +12,11 @@ namespace Logic.Sync
 {
     public class DataSyncHandler: ISyncHandler
     {
-        private readonly IApplicationUnitOfWork _applicationUnitOfWork;
+        private readonly IApplicationUnitOfWork<DatabaseContext> _applicationUnitOfWork;
         private readonly IModuleConfigurationService _moduleConfigurationService;
         private bool disposedValue;
 
-        public DataSyncHandler(IApplicationUnitOfWork applicationUnitOfWork, IModuleConfigurationService moduleConfigurationService)
+        public DataSyncHandler(IApplicationUnitOfWork<DatabaseContext> applicationUnitOfWork, IModuleConfigurationService moduleConfigurationService)
         {
             _applicationUnitOfWork = applicationUnitOfWork;
             _moduleConfigurationService = moduleConfigurationService;
@@ -25,11 +26,7 @@ namespace Logic.Sync
         {
             try
             {
-                //var model = new DataSyncExportModel();
-
-                //model.UserData = await GetUserData(importModel.UserId);
-                //model.ModuleConfiguration = await GetModuleConfiguration(importModel.UserId, importModel.FamilyId, importModel.RoleId);
-                //model.SchoolModulesSettings = await GetSchoolModuleSettings(importModel.UserId);
+               
                 
                 return null;
 

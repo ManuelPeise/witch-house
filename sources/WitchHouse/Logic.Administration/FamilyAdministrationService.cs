@@ -1,4 +1,5 @@
-﻿using Data.Shared.Entities;
+﻿using Data.Database;
+using Data.Shared.Entities;
 using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Response;
@@ -11,9 +12,9 @@ namespace Logic.Administration
 {
     public class FamilyAdministrationService : IFamilyAdministrationService
     {
-        private readonly IApplicationUnitOfWork _unitOfWork;
+        private readonly IApplicationUnitOfWork<DatabaseContext> _unitOfWork;
 
-        public FamilyAdministrationService(IApplicationUnitOfWork unitOfWork)
+        public FamilyAdministrationService(IApplicationUnitOfWork<DatabaseContext> unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

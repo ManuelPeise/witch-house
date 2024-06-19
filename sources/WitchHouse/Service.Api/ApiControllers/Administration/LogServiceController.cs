@@ -1,4 +1,5 @@
-﻿using Data.Shared.Entities;
+﻿using Data.Database;
+using Data.Shared.Entities;
 using Logic.Administration;
 using Logic.Shared.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -10,9 +11,9 @@ namespace Service.Api.ApiControllers.Administration
     [Authorize]
     public class LogServiceController : ApiControllerBase
     {
-        private readonly IApplicationUnitOfWork _applucationUnitOfWork;
+        private readonly IApplicationUnitOfWork<DatabaseContext> _applucationUnitOfWork;
 
-        public LogServiceController(IApplicationUnitOfWork applucationUnitOfWork) : base()
+        public LogServiceController(IApplicationUnitOfWork<DatabaseContext> applucationUnitOfWork) : base()
         {
             _applucationUnitOfWork = applucationUnitOfWork;
         }

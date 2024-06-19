@@ -141,12 +141,45 @@ namespace Data.Database.Migrations
                             Id = new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"),
                             CreatedAt = "2024-06-19",
                             CreatedBy = "System",
-                            EncodedPassword = "UEBzc3dvcmRhNmJkNjRkMS02MDU1LTRmNGQtOTc2MC1iOTI0MjU5YzExMWY=",
+                            EncodedPassword = "UEBzc3dvcmRkNjVmYjNiMC1mZmQ1LTQzNjQtYTAzZC1mZmM4OTRiMzBkMGI=",
                             MobilePin = 1234,
-                            Salt = new Guid("a6bd64d1-6055-4f4d-9760-b924259c111f"),
+                            Salt = new Guid("d65fb3b0-ffd5-4364-a03d-ffc894b30d0b"),
                             UpdatedAt = "2024-06-19",
                             UpdatedBy = "System"
                         });
+                });
+
+            modelBuilder.Entity("Data.Shared.Entities.DataSyncEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("LastSync")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("UserGuid")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataSyncTable");
                 });
 
             modelBuilder.Entity("Data.Shared.Entities.FamilyEntity", b =>
@@ -279,7 +312,7 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("dfdc4fe8-3c5f-4cfb-84e4-96a96cf54a90"),
+                            Id = new Guid("f3797d10-8723-44de-bfdc-ec4b49501f03"),
                             AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
                             CreatedAt = "2024-06-19",
                             CreatedBy = "System",
@@ -292,7 +325,7 @@ namespace Data.Database.Migrations
                         },
                         new
                         {
-                            Id = new Guid("e8e61aec-6348-4b79-bf2d-4440e2c6eab5"),
+                            Id = new Guid("54f25e98-f1d1-45e7-80b0-4533f0ba0af0"),
                             AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
                             CreatedAt = "2024-06-19",
                             CreatedBy = "System",
@@ -345,7 +378,7 @@ namespace Data.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cb9c80ec-4be7-414f-9f4c-61b34eb9358f"),
+                            Id = new Guid("e66100cd-6f77-4ee4-b1c6-b9c8dbf205c8"),
                             AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
                             CreatedAt = "2024-06-19",
                             CreatedBy = "System",

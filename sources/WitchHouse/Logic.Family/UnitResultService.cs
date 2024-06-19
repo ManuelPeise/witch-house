@@ -1,4 +1,5 @@
-﻿using Data.Shared.Entities;
+﻿using Data.Database;
+using Data.Shared.Entities;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
 using Logic.Family.Interfaces;
@@ -10,11 +11,11 @@ namespace Logic.Family
 {
     public class UnitResultService : IUnitResultService
     {
-        private readonly IApplicationUnitOfWork _applicationUnitOfWork;
+        private readonly IApplicationUnitOfWork<DatabaseContext> _applicationUnitOfWork;
 
         private bool disposedValue;
 
-        public UnitResultService(IApplicationUnitOfWork applicationUnitOfWork)
+        public UnitResultService(IApplicationUnitOfWork<DatabaseContext> applicationUnitOfWork)
         {
             _applicationUnitOfWork = applicationUnitOfWork;
         }

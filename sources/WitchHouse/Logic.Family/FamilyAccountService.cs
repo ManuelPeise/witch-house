@@ -1,4 +1,5 @@
-﻿using Data.Shared.Entities;
+﻿using Data.Database;
+using Data.Shared.Entities;
 using Data.Shared.Enums;
 using Data.Shared.Models.Account;
 using Data.Shared.Models.Export;
@@ -12,9 +13,9 @@ namespace Logic.Family
 {
     public class FamilyAccountService : IFamilyAccountService
     {
-        private readonly IApplicationUnitOfWork _applicationUnitOfWork;
+        private readonly IApplicationUnitOfWork<DatabaseContext> _applicationUnitOfWork;
 
-        public FamilyAccountService(IApplicationUnitOfWork applicationUnitOfWork) : base()
+        public FamilyAccountService(IApplicationUnitOfWork<DatabaseContext> applicationUnitOfWork) : base()
         {
             _applicationUnitOfWork = applicationUnitOfWork;
 

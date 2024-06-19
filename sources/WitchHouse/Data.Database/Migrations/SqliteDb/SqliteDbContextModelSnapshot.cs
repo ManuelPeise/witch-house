@@ -118,6 +118,39 @@ namespace Data.Database.Migrations.SqliteDb
                     b.ToTable("CredentialsTable");
                 });
 
+            modelBuilder.Entity("Data.Shared.Entities.DataSyncEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LastSync")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserGuid")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataSyncTable");
+                });
+
             modelBuilder.Entity("Data.Shared.Entities.FamilyEntity", b =>
                 {
                     b.Property<Guid>("Id")

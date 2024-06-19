@@ -1,4 +1,5 @@
-﻿using Data.Shared.Entities;
+﻿using Data.Database;
+using Data.Shared.Entities;
 using Data.Shared.Enums;
 using Data.Shared.Models.Export;
 using Data.Shared.Models.Import;
@@ -11,11 +12,11 @@ namespace Logic.Administration
 {
     public class ModuleConfigurationService : IModuleConfigurationService
     {
-        private readonly IApplicationUnitOfWork _applicationUnitOfWork;
+        private readonly IApplicationUnitOfWork<DatabaseContext> _applicationUnitOfWork;
 
         private bool disposedValue;
 
-        public ModuleConfigurationService(IApplicationUnitOfWork applicationUnitOfWork)
+        public ModuleConfigurationService(IApplicationUnitOfWork<DatabaseContext> applicationUnitOfWork)
         {
             _applicationUnitOfWork = applicationUnitOfWork;
         }

@@ -1,5 +1,4 @@
 ﻿using Data.Shared.Entities;
-using Data.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.Configuration;

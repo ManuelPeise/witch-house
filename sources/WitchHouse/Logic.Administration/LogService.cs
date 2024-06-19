@@ -8,9 +8,9 @@ namespace Logic.Administration
 {
     public class LogService 
     {
-        private readonly IApplicationUnitOfWork _applicationUnitOfWork;
+        private readonly IApplicationUnitOfWork<DatabaseContext> _applicationUnitOfWork;
         
-        public LogService(IApplicationUnitOfWork applicationUnitOfWork) 
+        public LogService(IApplicationUnitOfWork<DatabaseContext> applicationUnitOfWork) 
         {
             _applicationUnitOfWork = applicationUnitOfWork;
         }

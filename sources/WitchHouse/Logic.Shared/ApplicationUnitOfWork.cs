@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Logic.Shared
 {
-    public class ApplicationUnitOfWork : IApplicationUnitOfWork
+    public class ApplicationUnitOfWork<TContext> : IApplicationUnitOfWork<TContext> where TContext: DbContext
     {
         private bool disposedValue;
 
-        private readonly DatabaseContext _databaseContext;
-
+        private readonly TContext _context;
+        
         private IGenericRepository<FamilyEntity>? _familyRepository;
         private IGenericRepository<AccountEntity>? _accountRepository;
         private IGenericRepository<CredentialEntity>? _credentialsRepository;
@@ -20,24 +20,25 @@ namespace Logic.Shared
         private readonly IUserDataClaimsAccessor _claimsAccessor;
         private ILogRepository _logRepository;
 
-        public ApplicationUnitOfWork(DatabaseContext databaseContext, ILogRepository logRepository, IUserDataClaimsAccessor claimsAccessor)
+        public ApplicationUnitOfWork(TContext context, ILogRepository logRepository, IUserDataClaimsAccessor claimsAccessor)
         {
-            _databaseContext = databaseContext;
+            _context = context;
             _logRepository = logRepository;
             _claimsAccessor = claimsAccessor;
 
         }
-        public IGenericRepository<FamilyEntity> FamilyRepository => _familyRepository?? new GenericRepository<FamilyEntity>(_databaseContext);
-        public IGenericRepository<AccountEntity> AccountRepository => _accountRepository ?? new GenericRepository<AccountEntity>(_databaseContext);
-        public IGenericRepository<CredentialEntity> CredentialsRepository => _credentialsRepository ?? new GenericRepository<CredentialEntity>(_databaseContext);
-        public IGenericRepository<RoleEntity> RoleRepository => _roleRepository ?? new GenericRepository<RoleEntity>(_databaseContext);
-        public IGenericRepository<ModuleEntity> ModuleRepository => _moduleRepository ?? new GenericRepository<ModuleEntity>(_databaseContext);
-        public IGenericRepository<UnitResultEntity> UnitResultRepository => _unitResultRepository ?? new GenericRepository<UnitResultEntity>(_databaseContext);
+        public IGenericRepository<FamilyEntity> FamilyRepository => _familyRepository ?? new GenericRepository<TContext, FamilyEntity>(_context);
+        public IGenericRepository<AccountEntity> AccountRepository => _accountRepository ?? new GenericRepository<TContext, AccountEntity>(_context);
+        public IGenericRepository<CredentialEntity> CredentialsRepository => _credentialsRepository ?? new GenericRepository<TContext, CredentialEntity>(_context);
+        public IGenericRepository<RoleEntity> RoleRepository => _roleRepository ?? new GenericRepository<TContext, RoleEntity>(_context);
+        public IGenericRepository<ModuleEntity> ModuleRepository => _moduleRepository ?? new GenericRepository<TContext, ModuleEntity>(_context);
+        public IGenericRepository<UnitResultEntity> UnitResultRepository => _unitResultRepository ?? new GenericRepository<TContext, UnitResultEntity>(_context);
         public ILogRepository LogRepository => _logRepository;
         public IUserDataClaimsAccessor ClaimsAccessor => _claimsAccessor;
+        
         public async Task SaveChanges()
         {
-            var modifiedEntries = _databaseContext.ChangeTracker.Entries()
+            var modifiedEntries = _context.ChangeTracker.Entries()
                .Where(x => x.State == EntityState.Modified ||
                x.State == EntityState.Added);
 
@@ -59,7 +60,7 @@ namespace Logic.Shared
                 }
             }
 
-            await _databaseContext.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -68,7 +69,7 @@ namespace Logic.Shared
             {
                 if (disposing)
                 {
-                    _databaseContext.Dispose();
+                    _context.Dispose();
                     _logRepository.Dispose();
                     _familyRepository?.Dispose();
                     _accountRepository?.Dispose();
@@ -76,7 +77,7 @@ namespace Logic.Shared
                     _roleRepository?.Dispose();
                     _moduleRepository?.Dispose();
                     _unitResultRepository?.Dispose();
-                    
+
                 }
 
                 disposedValue = true;

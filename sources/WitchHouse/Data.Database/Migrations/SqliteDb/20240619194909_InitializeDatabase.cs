@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Database.Migrations.SqliteDb
 {
     /// <inheritdoc />
-    public partial class InitDatabase : Migration
+    public partial class InitializeDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,6 +29,23 @@ namespace Data.Database.Migrations.SqliteDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CredentialsTable", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DataSyncTable",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    UserGuid = table.Column<Guid>(type: "TEXT", nullable: false),
+                    LastSync = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<string>(type: "TEXT", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DataSyncTable", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -207,6 +224,9 @@ namespace Data.Database.Migrations.SqliteDb
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "DataSyncTable");
+
             migrationBuilder.DropTable(
                 name: "MessageLogTable");
 

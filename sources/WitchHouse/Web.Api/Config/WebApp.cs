@@ -73,7 +73,7 @@ namespace Web.Api.Config
         {
             builder.Services.AddScoped<ILogRepository, LogRepository>();
             builder.Services.AddScoped<IUserDataClaimsAccessor, UserDataClaimsAccessor>();
-            builder.Services.AddScoped<IApplicationUnitOfWork, ApplicationUnitOfWork>();
+            builder.Services.AddScoped(typeof(IApplicationUnitOfWork<>), typeof(ApplicationUnitOfWork<>));
             builder.Services.AddScoped<IFamilyAccountService, FamilyAccountService>();
             builder.Services.AddScoped<IFamilyAdministrationService, FamilyAdministrationService>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
