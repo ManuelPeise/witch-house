@@ -1,5 +1,5 @@
 ﻿using Data.Database;
-using Data.Shared.SqLiteEntities;
+using Data.Shared.Entities;
 using Logic.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Logic.Shared
 {
-    public class SqLiteRepository<TEntity> : ISqLiteRepository<TEntity> where TEntity : ASqliteEntityBase
+    public class SqLiteRepository<TEntity> : ISqLiteRepository<TEntity> where TEntity : AEntityBase
     {
         private readonly SqliteDbContext _databaseContext;
         private bool disposedValue;

@@ -1,5 +1,4 @@
-﻿using Data.Database.SeedData;
-using Data.Shared.SqLiteEntities;
+﻿using Data.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -16,25 +15,16 @@ namespace Data.Database
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<UserDataTableEntity>()
-                .HasMany(x => x.Modules)
-                .WithOne(x => x.UserData)
-                .HasForeignKey(e => e.UserId);
-
-
-            builder.ApplyConfiguration(new RoleSeed());
-            builder.ApplyConfiguration(new ModuleDataSeed());
-            builder.ApplyConfiguration(new AdminCredentialsSeed(_configuration));
-            builder.ApplyConfiguration(new UserSeed(_configuration));
+           
         }
 
-        public DbSet<FamilyEntity> Family { get; set; }
-        public DbSet<UserDataTableEntity> UserData { get; set; }
-        public DbSet<UserCredentialTableEntity> UserCredentials { get; set; }
-        public DbSet<RoleTableEntity> Roles { get; set; }
-        public DbSet<LogMessageTableEntity> Log { get; set; }
+        public DbSet<LogMessageEntity> MessageLogTable { get; set; }
+        public DbSet<FamilyEntity> FamilyTable { get; set; }
+        public DbSet<CredentialEntity> CredentialsTable { get; set; }
+        public DbSet<RoleEntity> RolesTable { get; set; }
+        public DbSet<AccountEntity> AccountTable { get; set; }
+        public DbSet<ModuleEntity> Modules { get; set; }
         public DbSet<UnitResultEntity> UnitResults { get; set; }
-        public DbSet<ModuleTableEntity> Modules { get; set; }
 
     }
 }
