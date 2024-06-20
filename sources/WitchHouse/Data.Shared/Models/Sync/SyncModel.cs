@@ -3,6 +3,6 @@
     public class SyncModel
     {
         public Guid UserId { get; set; }
-        public DateTime LastSync { get; set; }
+        public DateTime? LastSync { get; set; }
     }
 }

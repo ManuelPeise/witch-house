@@ -31,6 +31,13 @@ namespace Logic.Shared
             return await table.FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<TEntity?> GetFirstOrDefault(Expression<Func<TEntity, bool>> expression)
+        {
+            var table = _databaseContext.Set<TEntity>();
+
+            return await table.FirstOrDefaultAsync(expression);
+        }
+
         public async Task<IEnumerable<TEntity>> GetByAsync(Expression<Func<TEntity, bool>> expression)
         {
             var table = _databaseContext.Set<TEntity>();

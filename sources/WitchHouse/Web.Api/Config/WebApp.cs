@@ -8,6 +8,7 @@ using Logic.Family.Interfaces;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Logic.Sync;
+using Logic.Sync.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -79,7 +80,7 @@ namespace Web.Api.Config
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<IModuleConfigurationService, ModuleConfigurationService>();
             builder.Services.AddScoped<IUnitResultService, UnitResultService>();
-            builder.Services.AddScoped<ISyncHandler, DataSyncHandler>();
+            builder.Services.AddScoped<IDataSyncService, DataSyncService>();
 
         }
 

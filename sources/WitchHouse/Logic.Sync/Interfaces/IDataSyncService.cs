@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Data.Shared.Models.Response;
+using Data.Shared.Models.Sync;
+using Data.Shared.Models.Sync.Database;
 
 namespace Logic.Sync.Interfaces
 {
     public interface IDataSyncService: IDisposable
     {
+        Task<ResponseMessage<SqLiteDatabaseExport>> ExexuteMobileSyncAsync(SyncModel syncModel);
     }
 }

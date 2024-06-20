@@ -11,12 +11,14 @@ namespace Logic.Shared
 
         private readonly TContext _context;
         
-        private IGenericRepository<FamilyEntity>? _familyRepository;
-        private IGenericRepository<AccountEntity>? _accountRepository;
-        private IGenericRepository<CredentialEntity>? _credentialsRepository;
-        private IGenericRepository<RoleEntity>? _roleRepository;
-        private IGenericRepository<ModuleEntity>? _moduleRepository;
-        private IGenericRepository<UnitResultEntity>? _unitResultRepository;
+        private readonly IGenericRepository<FamilyEntity>? _familyRepository;
+        private readonly IGenericRepository<AccountEntity>? _accountRepository;
+        private readonly IGenericRepository<CredentialEntity>? _credentialsRepository;
+        private readonly IGenericRepository<RoleEntity>? _roleRepository;
+        private readonly IGenericRepository<ModuleEntity>? _moduleRepository;
+        private readonly IGenericRepository<UnitResultEntity>? _unitResultRepository;
+        private readonly IGenericRepository<DataSyncEntity>? _syncRepository;
+
         private readonly IUserDataClaimsAccessor _claimsAccessor;
         private ILogRepository _logRepository;
 
@@ -33,6 +35,7 @@ namespace Logic.Shared
         public IGenericRepository<RoleEntity> RoleRepository => _roleRepository ?? new GenericRepository<TContext, RoleEntity>(_context);
         public IGenericRepository<ModuleEntity> ModuleRepository => _moduleRepository ?? new GenericRepository<TContext, ModuleEntity>(_context);
         public IGenericRepository<UnitResultEntity> UnitResultRepository => _unitResultRepository ?? new GenericRepository<TContext, UnitResultEntity>(_context);
+        public IGenericRepository<DataSyncEntity> SyncRepository => _syncRepository ?? new GenericRepository<TContext, DataSyncEntity>(_context);
         public ILogRepository LogRepository => _logRepository;
         public IUserDataClaimsAccessor ClaimsAccessor => _claimsAccessor;
         
@@ -77,6 +80,7 @@ namespace Logic.Shared
                     _roleRepository?.Dispose();
                     _moduleRepository?.Dispose();
                     _unitResultRepository?.Dispose();
+                    _syncRepository?.Dispose();
 
                 }
 

@@ -11,6 +11,7 @@ namespace Logic.Shared.Interfaces
         public IGenericRepository<RoleEntity> RoleRepository { get; }
         public IGenericRepository<ModuleEntity> ModuleRepository { get; }
         public IGenericRepository<UnitResultEntity> UnitResultRepository { get; }
+        public IGenericRepository<DataSyncEntity> SyncRepository { get; }
         public IUserDataClaimsAccessor ClaimsAccessor { get; }
         public ILogRepository LogRepository { get; }
         Task SaveChanges();

@@ -7,6 +7,7 @@ namespace Logic.Shared.Interfaces
     {
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<TEntity?> GetFirstByIdAsync(Guid id);
+        Task<TEntity?> GetFirstOrDefault(Expression<Func<TEntity, bool>> expression);
         Task<IEnumerable<TEntity>> GetByAsync(Expression<Func<TEntity, bool>> expression);
         Task<Guid?> AddAsync(TEntity entity);
         Task Update(TEntity entity);
