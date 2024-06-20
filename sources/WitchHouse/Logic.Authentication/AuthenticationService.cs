@@ -175,25 +175,13 @@ namespace Logic.Authentication
                             MessageKey = "common:labelLoginSuccess",
                             Data = new MobileLoginResult
                             {
-                                JwtData = new JwtData
-                                {
-                                    JwtToken = jwt,
-                                    RefreshToken = refreshToken,
-                                },
-                                UserData = new UserData
-                                {
-                                    UserId = accountEntity.Id,
-                                    FamilyGuid = accountEntity.FamilyGuid,
-                                    UserName = accountEntity.UserName,
-                                    Language = accountEntity.Culture,
-                                    UserRoles = (from role in accountEntity.UserRoles
-                                                 select role.RoleType).ToList(),
-                                    ProfileImage = accountEntity.ProfileImage,
-                                },
+                                UserGuid = accountEntity.Id,
+                                UserName = accountEntity.UserName,
+                                JwtToken = jwt,
+                                RefreshToken = refreshToken,
                             }
                         };
                     }
-
                 }
 
                 return new ResponseMessage<MobileLoginResult>

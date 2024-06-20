@@ -11,8 +11,10 @@ namespace Data.Shared.Models.Export
 
     public class MobileLoginResult
     {
-        public UserData? UserData { get; set; }
-        public JwtData? JwtData { get; set; }
+        public Guid UserGuid { get; set; }
+        public string? UserName { get; set; }
+        public string? JwtToken { get; set; } = string.Empty;
+        public string? RefreshToken { get; set; } = string.Empty;
     }
 
     public class UserData
