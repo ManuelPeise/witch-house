@@ -6,7 +6,9 @@ using Data.Shared.Models.Sync.Database;
 using Logic.Shared;
 using Logic.Shared.Interfaces;
 using Logic.Sync.Interfaces;
+using System.Globalization;
 using System.Net;
+using ZstdSharp;
 
 namespace Logic.Sync
 {
@@ -29,37 +31,16 @@ namespace Logic.Sync
 
                 if (syncEntity == null)
                 {
-                    await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
-                    {
-                        Message = $"Could not find sync entity for {syncModel.UserId}",
-                        Stacktrace = "",
-                        Trigger = nameof(DataSyncService),
-                        TimeStamp = DateTime.Now.ToString(Constants.LogMessageDateFormat)
-                    });
-
-                    return new ResponseMessage<SqLiteDatabaseExport>
-                    {
-                        Success = false,
-                        StatusCode = 200,
-                        MessageKey = "labelSyncEntityNotFound",
-                        Data = null
-                    };
-
+                    return await LogMessageOnFail($"Could not find sync entity for {syncModel.UserId}", "labelSyncEntityNotFound");
                 }
                 else
                 {
                     if (syncEntity.LastSync <= syncModel.LastSync)
                     {
-                        return new ResponseMessage<SqLiteDatabaseExport>
-                        {
-                            Success = false,
-                            StatusCode = 200,
-                            MessageKey = "labelNothinToSyncFound",
-                            Data = null
-                        };
+                        return await LogMessageOnFail($"Nothing to sync for {syncModel.UserId}", "labelNothinToSyncFound");
                     }
 
-                    var model = await LoadDataToSyncFromMysql(syncModel, syncEntity);
+                    var model = await LoadDataUpdateData(syncModel, syncEntity);
 
                     return new ResponseMessage<SqLiteDatabaseExport>
                     {
@@ -90,50 +71,150 @@ namespace Logic.Sync
             }
         }
 
-        private async Task<SqLiteDatabaseExport?> LoadDataToSyncFromMysql(SyncModel syncModel, DataSyncEntity syncEntity)
+        private async Task<SqLiteDatabaseExport?> LoadDataUpdateData(SyncModel syncModel, DataSyncEntity syncEntity)
         {
+            var databaseModified = false;
             var currentSyncTimeStamp = DateTime.Now;
+            var exportModel = new SqLiteDatabaseExport();
 
             var accountEntity = await _applicationUnitOfWork.AccountRepository.GetFirstOrDefault(x => x.Id == syncModel.UserId);
+            await LoadCredentials(accountEntity?.CredentialGuid);
+
+            if (syncModel.Data == null)
+            {
+                return new SqLiteDatabaseExport
+                {
+                    SyncTableModel = null,
+                    UserTableModel = LoadUserTableModel(accountEntity),
+                    CredentialTableModel = LoadCredentialsTableModel(accountEntity?.Credentials),
+                    ModuleTableModels = await LoadModulesFromDatabase(syncModel.UserId),
+                };
+            }
 
             if (accountEntity == null || accountEntity.CredentialGuid == null)
+            {
+                throw new Exception("Could not sync data!");
+            }
+
+            if (syncModel.Data != null && syncModel.Data?.UserTableModel != null)
+            {
+                accountEntity = TryGetUpdatedAccountEntity(syncModel.Data.UserTableModel, accountEntity);
+
+                exportModel.UserTableModel = LoadUserTableModel(accountEntity);
+                CredentialEntity? credentials = null;
+
+                if (syncModel.Data?.CredentialTableModel != null)
+                {
+                    credentials = await TryUpdateCredentials(accountEntity.Credentials, syncModel.Data.CredentialTableModel);
+                }
+
+                if (credentials != null)
+                {
+                    exportModel.CredentialTableModel = LoadCredentialsTableModel(credentials);
+                }
+
+                await _applicationUnitOfWork.AccountRepository.Update(accountEntity);
+
+                databaseModified = true;
+            }
+
+            if (syncModel.Data != null && syncModel.Data?.ModuleTableModels != null)
+            {
+                var moduleEntities = await _applicationUnitOfWork.ModuleRepository.GetByAsync(x => x.AccountGuid == syncModel.UserId);
+
+                moduleEntities = await TryGetUpdateModules(moduleEntities.ToList(), syncModel.Data.ModuleTableModels);
+
+                exportModel.ModuleTableModels = LoadModuleTableData(moduleEntities);
+
+                databaseModified = true;
+            }
+
+
+            if(databaseModified)
+            {
+                await _applicationUnitOfWork.SaveChanges();
+            }
+
+            return exportModel;
+        }
+
+        private async Task<IEnumerable<ModuleEntity>> TryGetUpdateModules(List<ModuleEntity> moduleEntities, List<ModuleTabelModel> moduleTableModels)
+        {
+            var modules = new List<ModuleEntity>();
+
+            foreach (var module in moduleTableModels)
+            {
+                if (string.IsNullOrWhiteSpace(module.ModuleId))
+                {
+                    continue;
+                }
+
+                var entity = moduleEntities.FirstOrDefault(x => x.Id == new Guid(module.ModuleId));
+
+                if (entity != null)
+                {
+                    entity.SettingsJson = module.SettingsJson;
+                    entity.IsActive = module.IsActive;
+
+                    await _applicationUnitOfWork.ModuleRepository.Update(entity);
+
+                    modules.Add(entity);
+                }
+            }
+
+            return modules;
+        }
+
+        private async Task<CredentialEntity?> TryUpdateCredentials(CredentialEntity? credentials, CredentialTableModel credentialTableModel)
+        {
+            if (credentials == null)
             {
                 return null;
             }
 
-            await LoadCredentials(accountEntity.CredentialGuid);
+            var shouldUpdate = false;
 
-            var updatedModules = await _applicationUnitOfWork.ModuleRepository.GetByAsync(x => x.AccountGuid == syncModel.UserId);
-
-            var modules = updatedModules.Where(x => !string.IsNullOrWhiteSpace(x.UpdatedAt) && DateTime.Parse(x.UpdatedAt) < syncModel.LastSync);
-
-            return new SqLiteDatabaseExport
+            if (shouldUpdate && credentials != null)
             {
-                SyncTableModel = new SyncTableModel
+                if (DateTime.TryParseExact(credentials?.UpdatedAt, new[] { Constants.LogMessageDateFormat }, CultureInfo.InvariantCulture, DateTimeStyles.None, out var updatedAt))
                 {
-                    SyncId = syncEntity.Id.ToString(),
-                    UserGuid = syncModel.UserId,
-                    LastSync = currentSyncTimeStamp,
-                    CreatedAt = syncEntity.CreatedAt,
-                    CreatedBy = syncEntity.CreatedBy,
-                    UpdatedAt = syncEntity.UpdatedAt,
-                    UpdatedBy = syncEntity.UpdatedBy,
-                },
-                UserTableModel = LoadUserTableModel(accountEntity),
-                CredentialTableModel = LoadCredentialsTableModel(accountEntity),
-                ModuleTableModels = await LoadModuleTableData(accountEntity.Id, syncModel.LastSync),
-            };
-        }
+                    shouldUpdate = updatedAt >= DateTime.Parse(credentialTableModel.UpdatedAt);
 
-        private async Task<List<ModuleTabelModel>> LoadModuleTableData(Guid? accountGuid, DateTime? lastSync)
-        {
-            var modules = await _applicationUnitOfWork.ModuleRepository.GetByAsync(x => x.AccountGuid == accountGuid);
+                    if (shouldUpdate)
+                    {
+                        credentials.MobilePin = credentialTableModel.MobilePin != null ? (int)credentialTableModel.MobilePin : credentials.MobilePin;
+                        credentials.JwtToken = credentialTableModel.JwtToken;
+                        credentials.RefreshToken = credentialTableModel.RefreshToken;
 
-            if (lastSync != null)
-            {
-                modules = modules.ToList().Where(x => DateTime.Parse(x.UpdatedAt) < lastSync);
+                        await _applicationUnitOfWork.CredentialsRepository.Update(credentials);
+
+                        return credentials;
+                    }
+                }
             }
 
+            return null;
+        }
+
+        private AccountEntity TryGetUpdatedAccountEntity(UserTabelModel userTableModel, AccountEntity accountEntity)
+        {
+            if (DateTime.Parse(accountEntity.UpdatedAt) >= DateTime.Parse(userTableModel.UpdatedAt))
+            {
+                return accountEntity;
+            }
+
+            accountEntity.FirstName = userTableModel.FirstName;
+            accountEntity.LastName = userTableModel.LastName;
+            accountEntity.UserName = userTableModel.UserName;
+            accountEntity.DateOfBirth = userTableModel.DateOfBirth;
+            accountEntity.Culture = userTableModel.Culture;
+            accountEntity.IsActive = userTableModel.IsActive;
+
+            return accountEntity;
+        }
+
+        private List<ModuleTabelModel> LoadModuleTableData(IEnumerable<ModuleEntity> modules)
+        {
             return (from module in modules
                     select new ModuleTabelModel
                     {
@@ -151,6 +232,13 @@ namespace Logic.Sync
                     }).ToList();
         }
 
+        private async Task<List<ModuleTabelModel>> LoadModulesFromDatabase(Guid userId)
+        {
+            var moduleEntities = await _applicationUnitOfWork.ModuleRepository.GetByAsync(x => x.AccountGuid == userId);
+
+            return LoadModuleTableData(moduleEntities.ToList());
+        }
+        
         private async Task LoadCredentials(Guid? credentialGuid)
         {
             if (credentialGuid == null)
@@ -161,8 +249,13 @@ namespace Logic.Sync
             await _applicationUnitOfWork.CredentialsRepository.GetFirstByIdAsync((Guid)credentialGuid);
         }
 
-        private UserTabelModel LoadUserTableModel(AccountEntity accountEntity)
+        private UserTabelModel LoadUserTableModel(AccountEntity? accountEntity)
         {
+            if (accountEntity == null)
+            {
+                throw new Exception("Data sync failed, accountentity could not be null!");
+            }
+
             return new UserTabelModel
             {
                 UserId = accountEntity.Id.ToString(),
@@ -181,21 +274,44 @@ namespace Logic.Sync
             };
         }
 
-        private CredentialTableModel LoadCredentialsTableModel(AccountEntity? accountEntity)
+        private CredentialTableModel LoadCredentialsTableModel(CredentialEntity? credentials)
         {
+            if (credentials == null)
+            {
+                throw new Exception("Data sync failed, credentials could not be null!");
+            }
+
             return new CredentialTableModel
             {
-                CredentialsId = accountEntity?.CredentialGuid.ToString(),
-                MobilePin = accountEntity?.Credentials?.MobilePin ?? null,
-                JwtToken = accountEntity?.Credentials?.JwtToken,
-                RefreshToken = accountEntity?.Credentials?.RefreshToken,
-                CreatedAt = accountEntity?.Credentials?.CreatedAt ?? "",
-                CreatedBy = accountEntity?.Credentials?.CreatedBy ?? "",
-                UpdatedAt = accountEntity?.Credentials?.UpdatedAt ?? "",
-                UpdatedBy = accountEntity?.Credentials?.UpdatedBy ?? ""
+                CredentialsId = credentials.Id.ToString(),
+                MobilePin = credentials.MobilePin,
+                JwtToken = credentials.JwtToken,
+                RefreshToken = credentials.RefreshToken,
+                CreatedAt = credentials.CreatedAt ?? "",
+                CreatedBy = credentials.CreatedBy ?? "",
+                UpdatedAt = credentials.UpdatedAt ?? "",
+                UpdatedBy = credentials.UpdatedBy ?? ""
             };
         }
 
+        private async Task<ResponseMessage<SqLiteDatabaseExport>> LogMessageOnFail(string msg, string messageKey)
+        {
+            await _applicationUnitOfWork.LogRepository.AddLogMessage(new LogMessageEntity
+            {
+                Message = msg,
+                Stacktrace = "",
+                Trigger = nameof(DataSyncService),
+                TimeStamp = DateTime.Now.ToString(Constants.LogMessageDateFormat)
+            });
+
+            return new ResponseMessage<SqLiteDatabaseExport>
+            {
+                Success = false,
+                StatusCode = 200,
+                MessageKey = messageKey,
+                Data = null
+            };
+        }
 
         protected virtual void Dispose(bool disposing)
         {
