@@ -153,11 +153,14 @@ namespace Logic.Sync
 
                 if (entity != null)
                 {
-                    entity.SettingsJson = module.SettingsJson;
-                    entity.IsActive = module.IsActive;
+                    if(DateTime.Parse(entity.UpdatedAt) < DateTime.Parse(module.UpdatedAt))
+                    {
+                        entity.SettingsJson = module.SettingsJson;
+                        entity.IsActive = module.IsActive;
 
-                    await _applicationUnitOfWork.ModuleRepository.Update(entity);
-
+                        await _applicationUnitOfWork.ModuleRepository.Update(entity);
+                    }
+                   
                     modules.Add(entity);
                 }
             }
