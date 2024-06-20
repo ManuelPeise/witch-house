@@ -18,7 +18,6 @@ namespace Data.Database.Configs.MySql
         public void Configure(EntityTypeBuilder<AccountEntity> builder)
         {
             var userGuid = new Guid(DefaultEntityGuids.DefaultAdminGuid);
-            var salt = Guid.NewGuid();
             var createdAt = DateTime.Now.ToString("yyyy-MM-dd");
 
             builder.HasData(new AccountEntity

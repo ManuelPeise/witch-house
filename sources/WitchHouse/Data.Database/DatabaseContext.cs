@@ -24,6 +24,7 @@ namespace Data.Database
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.ApplyConfiguration(new SyncTableSeed());
             builder.ApplyConfiguration(new UserRoleSeed());
             builder.ApplyConfiguration(new ModuleSeed());
             builder.ApplyConfiguration(new CredentialConfiguration(_configuration));

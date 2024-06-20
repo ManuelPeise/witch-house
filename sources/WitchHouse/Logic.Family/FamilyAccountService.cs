@@ -56,7 +56,10 @@ namespace Logic.Family
                     throw new Exception("Account entity could not be null!");
                 }
 
+
                 result = await _applicationUnitOfWork.AccountRepository.AddAsync(accountEntity);
+
+                result = await AddSyncTableEntry(accountGuid);
 
                 if (result != null)
                 {
@@ -108,6 +111,8 @@ namespace Logic.Family
                     UserRoleEnum.User);
 
                 var result = await _applicationUnitOfWork.AccountRepository.AddAsync(accountEntity);
+
+                result = await AddSyncTableEntry(accountGuid);
 
                 if (result != null)
                 {
@@ -413,6 +418,16 @@ namespace Logic.Family
                 case ModuleTypeEnum.SchoolTrainingStatistics:
                 default: return string.Empty;
             }
+        }
+
+        private async Task<Guid?> AddSyncTableEntry(Guid userGuid)
+        {
+            return await _applicationUnitOfWork.SyncRepository.AddAsync(new DataSyncEntity
+            {
+                Id = Guid.NewGuid(),
+                UserGuid = userGuid,
+                LastSync = DateTime.UtcNow,
+            });
         }
     }
 }

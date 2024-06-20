@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240619211509_AddSyncData")]
-    partial class AddSyncData
+    [Migration("20240620182503_InitializeDatabase")]
+    partial class InitializeDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,22 +79,6 @@ namespace Data.Database.Migrations
                     b.HasIndex("FamilyGuid");
 
                     b.ToTable("AccountTable");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
-                            CreatedAt = "2024-06-19",
-                            CreatedBy = "System",
-                            CredentialGuid = new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"),
-                            Culture = "en",
-                            FirstName = "",
-                            IsActive = true,
-                            LastName = "",
-                            UpdatedAt = "2024-06-19",
-                            UpdatedBy = "System",
-                            UserName = "System.Admin"
-                        });
                 });
 
             modelBuilder.Entity("Data.Shared.Entities.CredentialEntity", b =>
@@ -137,19 +121,6 @@ namespace Data.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CredentialsTable");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("c8eac614-9788-48b6-aa99-c755bb0d43fa"),
-                            CreatedAt = "2024-06-19",
-                            CreatedBy = "System",
-                            EncodedPassword = "UEBzc3dvcmQxMDFlOWFiNS0xZDk2LTQ3ZjctODc5ZS1hNmRkZWM3MWIyMTQ=",
-                            MobilePin = 1234,
-                            Salt = new Guid("101e9ab5-1d96-47f7-879e-a6ddec71b214"),
-                            UpdatedAt = "2024-06-19",
-                            UpdatedBy = "System"
-                        });
                 });
 
             modelBuilder.Entity("Data.Shared.Entities.DataSyncEntity", b =>
@@ -311,34 +282,6 @@ namespace Data.Database.Migrations
                     b.HasIndex("AccountGuid");
 
                     b.ToTable("Modules");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("4660a0c8-552a-43ae-bf61-597fef1b79b1"),
-                            AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
-                            CreatedAt = "2024-06-19",
-                            CreatedBy = "System",
-                            IsActive = true,
-                            ModuleName = "SchoolTraining",
-                            ModuleSettingsType = 0,
-                            ModuleType = 1,
-                            UpdatedAt = "2024-06-19",
-                            UpdatedBy = "System"
-                        },
-                        new
-                        {
-                            Id = new Guid("6318fc80-7a9d-458e-a279-2e8e317c3420"),
-                            AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
-                            CreatedAt = "2024-06-19",
-                            CreatedBy = "System",
-                            IsActive = true,
-                            ModuleName = "SchoolTrainingStatistics",
-                            ModuleSettingsType = 0,
-                            ModuleType = 2,
-                            UpdatedAt = "2024-06-19",
-                            UpdatedBy = "System"
-                        });
                 });
 
             modelBuilder.Entity("Data.Shared.Entities.RoleEntity", b =>
@@ -377,19 +320,6 @@ namespace Data.Database.Migrations
                     b.HasIndex("AccountGuid");
 
                     b.ToTable("RolesTable");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("088eca49-858e-466f-8e32-75b4ed89e98c"),
-                            AccountGuid = new Guid("b5846acb-2911-4831-a9ac-d2342849241d"),
-                            CreatedAt = "2024-06-19",
-                            CreatedBy = "System",
-                            RoleName = "Admin",
-                            RoleType = 1,
-                            UpdatedAt = "2024-06-19",
-                            UpdatedBy = "System"
-                        });
                 });
 
             modelBuilder.Entity("Data.Shared.Entities.UnitResultEntity", b =>
