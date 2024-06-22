@@ -19,40 +19,41 @@ import { Training, TrainingResultExportModel, TrainingResultModel } from './type
 import { UnitCreator } from './unitCreator';
 import TrainingResult from './TrainingResult';
 import { NavigationTypeEnum } from '../../../_lib/enums/NavigationTypeEnum';
-import { useAuth } from '../../../_hooks/useAuth';
 import { useApi } from '../../../_hooks/useApi';
 import { endPoints } from '../../../_lib/api/apiConfiguration';
-import * as SecureStore from 'expo-secure-store';
-import { SecureStoreKeyEnum } from '../../../_lib/enums/SecureStoreKeyEnum';
 import { ModuleSettings } from '../../../_lib/types';
+import { useAuth } from '../../../_hooks/useAuth';
+import { ModuleTypeEnum } from '../../../_lib/enums/ModuleTypeEnum';
 
 const TrainingPage: React.FC = () => {
   const { getResource } = useI18n();
   const { navigate } = useNavigation();
   const { params } = useRoute<RouteProp<RootParamList>>();
-  const { userData } = useAuth();
+  const { getUserDataReducerState, getUserModule } = useAuth();
   const trainingResultStorage = useStorage<TrainingResultModel[]>(AsyncStorageKeyEnum.TrainingResults);
   const { sendPostRequest } = useApi<TrainingResultExportModel>();
 
   const [training, setTraining] = React.useState<Training | null>(null);
-
-  const loadTrainingSettings = React.useCallback((): ModuleSettings[] => {
-    let config: ModuleSettings[] = null;
-    const json = SecureStore.getItem(SecureStoreKeyEnum.TrainingModuleSettings);
-    if (json != null && json.length) {
-      config = JSON.parse(json);
-    }
-
-    return config;
-  }, []);
-
-  const existingTrainingResults = React.useMemo(() => {
-    return trainingResultStorage.model != null ? trainingResultStorage.model.slice() : [];
-  }, [trainingResultStorage]);
+  const userData = getUserDataReducerState();
 
   const routeParam: TrainingRouteParam = React.useMemo(() => {
     return params as TrainingRouteParam;
   }, [params]);
+
+  const userModule = getUserModule(ModuleTypeEnum.SchoolTraining);
+
+  const moduleSettings = React.useMemo((): ModuleSettings => {
+    return {
+      userId: userModule?.accountGuid,
+      moduleType: userModule?.moduleType,
+      moduleSettingsType: userModule?.moduleSettingsType,
+      settings: userModule?.settingsJson != null ? JSON.parse(userModule.settingsJson) : {},
+    };
+  }, [userModule]);
+
+  const existingTrainingResults = React.useMemo(() => {
+    return trainingResultStorage.model != null ? trainingResultStorage.model.slice() : [];
+  }, [trainingResultStorage]);
 
   const trainingTitle = React.useMemo(() => {
     switch (routeParam.rule) {
@@ -91,37 +92,23 @@ const TrainingPage: React.FC = () => {
   }, [handleSaveTrainingResults]);
 
   React.useEffect(() => {
-    const settings = loadTrainingSettings();
-    if (routeParam != null && settings) {
-      const moduleSettingsType =
-        routeParam.rule === UnitTypeEnum.Letters
-          ? ModuleSettingsTypeEnum.GermanUnits
-          : ModuleSettingsTypeEnum.MathUnits;
-
-      const moduleSettings = settings.find((x) => x.moduleSettingsType === moduleSettingsType)?.settings ?? null;
-
+    if (routeParam != null && moduleSettings) {
       setTraining({
         title: trainingTitle,
         isRunning: false,
         isFinished: false,
         unitType: routeParam.rule,
-        settings: moduleSettings,
+        settings: moduleSettings.settings,
         trainingData: [],
       });
     }
-  }, [routeParam, trainingTitle, loadTrainingSettings]);
+  }, [routeParam, trainingTitle, moduleSettings]);
 
   const handleStart = React.useCallback(async () => {
-    const settings = loadTrainingSettings();
-    const moduleSettingsType =
-      routeParam.rule === UnitTypeEnum.Letters ? ModuleSettingsTypeEnum.GermanUnits : ModuleSettingsTypeEnum.MathUnits;
-
-    const moduleSettings = settings.find((x) => x.moduleSettingsType === moduleSettingsType)?.settings ?? null;
-
-    const unitCreator = new UnitCreator(routeParam.rule, moduleSettings);
+    const unitCreator = new UnitCreator(routeParam.rule, moduleSettings.settings);
 
     setTraining({ ...training, trainingData: unitCreator.getTrainingData(), isRunning: true });
-  }, [routeParam, training, loadTrainingSettings]);
+  }, [routeParam, training, moduleSettings]);
 
   const getResultValues = React.useCallback(() => {
     let success = 0;
@@ -181,15 +168,10 @@ const TrainingPage: React.FC = () => {
 
   const handleRestart = React.useCallback(async () => {
     await saveTrainingResult();
-    const settings = loadTrainingSettings();
-    const moduleSettingsType =
-      routeParam.rule === UnitTypeEnum.Letters ? ModuleSettingsTypeEnum.GermanUnits : ModuleSettingsTypeEnum.MathUnits;
 
-    const moduleSettings = settings.find((x) => x.moduleSettingsType === moduleSettingsType)?.settings ?? null;
-
-    const unitCreator = new UnitCreator(routeParam.rule, moduleSettings);
+    const unitCreator = new UnitCreator(routeParam.rule, moduleSettings.settings);
     setTraining({ ...training, trainingData: unitCreator.getTrainingData(), isRunning: true, isFinished: false });
-  }, [routeParam, training, loadTrainingSettings, saveTrainingResult]);
+  }, [routeParam, training, moduleSettings, saveTrainingResult]);
 
   return (
     <PrivatePageWrapper image={books}>

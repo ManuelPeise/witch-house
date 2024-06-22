@@ -398,28 +398,6 @@ namespace Logic.Family
             }
         }
 
-        private string GetDefaultSettings(ModuleTypeEnum moduleType)
-        {
-            switch (moduleType)
-            {
-                case ModuleTypeEnum.SchoolTraining:
-                    var settings = new SchoolSettings
-                    {
-                        AllowAddition = false,
-                        AllowSubtraction = false,
-                        AllowMultiply = false,
-                        AllowDivide = false,
-                        AllowDoubling = false,
-                        MinValue = 0,
-                        MaxValue = 0,
-                        MaxWordLength = 0,
-                    };
-                    return JsonConvert.SerializeObject(settings);
-                case ModuleTypeEnum.SchoolTrainingStatistics:
-                default: return string.Empty;
-            }
-        }
-
         private async Task<Guid?> AddSyncTableEntry(Guid userGuid)
         {
             return await _applicationUnitOfWork.SyncRepository.AddAsync(new DataSyncEntity

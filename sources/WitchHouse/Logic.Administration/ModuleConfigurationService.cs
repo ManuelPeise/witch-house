@@ -186,7 +186,7 @@ namespace Logic.Administration
                     throw new Exception("Module to update not found!");
                 }
 
-                moduleToUpdate.SettingsJson = JsonConvert.SerializeObject(settings.Settings);
+                moduleToUpdate.SettingsJson = settings.Settings;
 
                 await _applicationUnitOfWork.ModuleRepository.Update(moduleToUpdate);
 

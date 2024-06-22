@@ -1,4 +1,4 @@
-import { SqLiteDatabase } from './_types/sqLite';
+import { ModuleTableModel, SqLiteDatabase } from './_types/sqLite';
 import { LoginResult } from './_types/user';
 import { JwtData } from './api/types';
 import { ModuleSettingsTypeEnum } from './enums/ModuleSettingsTypeEnum';
@@ -67,6 +67,7 @@ export type AuthState = {
   onLogin: (data: LoginRequest) => Promise<void>;
   onLogout: () => Promise<void>;
   getUserDataReducerState: () => UserTableModel;
+  getUserModule: (moduleType: ModuleTypeEnum) => ModuleTableModel | null;
 };
 
 export type LoginRequest = {

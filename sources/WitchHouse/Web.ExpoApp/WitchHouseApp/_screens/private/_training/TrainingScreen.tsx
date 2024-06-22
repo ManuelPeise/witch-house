@@ -4,29 +4,40 @@ import TrainingOverview from './TrainingOverview';
 import PrivatePageWrapper from '../../../_components/_wrappers/PrivatePageWrapper';
 import school from '../../../img/schoolBg.jpg';
 import { ModuleSettings } from '../../../_lib/types';
-import * as SecureStore from 'expo-secure-store';
-import { SecureStoreKeyEnum } from '../../../_lib/enums/SecureStoreKeyEnum';
+import { useAuth } from '../../../_hooks/useAuth';
+import { ModuleTypeEnum } from '../../../_lib/enums/ModuleTypeEnum';
+import { ModuleSettingsTypeEnum } from '../../../_lib/enums/ModuleSettingsTypeEnum';
 
 const TrainingScreen: React.FC = () => {
-  const trainingSettings = React.useMemo((): ModuleSettings[] => {
-    let config: ModuleSettings[] = null;
-    const json = SecureStore.getItem(SecureStoreKeyEnum.TrainingModuleSettings);
+  const { getUserModule } = useAuth();
 
-    if (json != null && json.length) {
-      config = JSON.parse(json);
-    }
+  const userModule = getUserModule(ModuleTypeEnum.SchoolTraining);
 
-    return config;
-  }, []);
+  const moduleSettings = React.useMemo((): ModuleSettings[] => {
+    return [
+      {
+        userId: userModule?.accountGuid,
+        moduleType: userModule?.moduleType,
+        moduleSettingsType: ModuleSettingsTypeEnum.MathUnits,
+        settings: userModule?.settingsJson != null ? JSON.parse(userModule.settingsJson) : {},
+      },
+      {
+        userId: userModule?.accountGuid,
+        moduleType: userModule?.moduleType,
+        moduleSettingsType: ModuleSettingsTypeEnum.GermanUnits,
+        settings: userModule?.settingsJson != null ? JSON.parse(userModule.settingsJson) : {},
+      },
+    ];
+  }, [userModule]);
 
-  if (trainingSettings == null) {
+  if (moduleSettings == null) {
     return null;
   }
 
   return (
     <PrivatePageWrapper image={school}>
       <View style={styles.container}>
-        {trainingSettings?.map((module, index) => {
+        {moduleSettings.map((module, index) => {
           return <TrainingOverview key={index} settingsType={module.moduleSettingsType} />;
         })}
       </View>

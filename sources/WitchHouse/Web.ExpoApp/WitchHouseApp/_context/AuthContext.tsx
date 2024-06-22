@@ -6,10 +6,11 @@ import { endPoints } from '../_lib/api/apiConfiguration';
 import * as SecureStore from 'expo-secure-store';
 import { SecureStoreKeyEnum } from '../_lib/enums/SecureStoreKeyEnum';
 import { LoginResult } from '../_lib/_types/user';
-import { SqLiteDatabase, UserTableModel } from '../_lib/_types/sqLite';
+import { ModuleTableModel, SqLiteDatabase, UserTableModel } from '../_lib/_types/sqLite';
 import { ReducerActions } from '../_reducer/reducerActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { ensureDatabaseUpToDate } from '../_lib/_database/databaseHelper';
+import { ModuleTypeEnum } from '../_lib/enums/ModuleTypeEnum';
 
 export const AuthContext = React.createContext<AuthState>({} as AuthState);
 
@@ -32,9 +33,9 @@ const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
           const responseMessage: ResponseMessage<SqLiteDatabase> = await JSON.parse(JSON.stringify(res.data));
           setIsAuthenticated(true);
 
-          const model = await ensureDatabaseUpToDate(responseMessage.data);
+          // const model = await ensureDatabaseUpToDate(responseMessage.data);
 
-          dispatch({ type: ReducerActions.InitializeData, payload: model });
+          dispatch({ type: ReducerActions.InitializeData, payload: responseMessage.data });
         }
       });
     },
@@ -78,6 +79,11 @@ const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
     return useSelector<SqLiteDatabase, UserTableModel>((x) => x.userTableModel);
   };
 
+  const getUserModule = (moduleType: ModuleTypeEnum): ModuleTableModel | null => {
+    const userModules = useSelector<SqLiteDatabase, ModuleTableModel[]>((x) => x.moduleTableModels);
+
+    return userModules.filter((x) => x.moduleType === moduleType)[0] ?? null;
+  };
   const model: AuthState = {
     isLoading,
     isAuthenticated,
@@ -85,6 +91,7 @@ const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
     onLogin,
     onLogout,
     getUserDataReducerState,
+    getUserModule,
   };
 
   return <AuthContext.Provider value={model}>{children}</AuthContext.Provider>;

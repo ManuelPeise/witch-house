@@ -54,7 +54,7 @@ export type ModuleSettings = {
   userId: string;
   moduleGuid: string;
   moduleType: ModuleTypeEnum;
-  settings: SchoolSettings | null;
+  settings: string | null;
 };
 
 export type SchoolSettings = {

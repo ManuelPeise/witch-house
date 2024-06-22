@@ -76,7 +76,7 @@ const SchoolModuleSettings: React.FC<IProps> = (props) => {
       userId: module.userId,
       moduleGuid: module.moduleId,
       moduleType: module.moduleType,
-      settings: settings,
+      settings: JSON.stringify(settings),
     };
 
     await onSave(update);
