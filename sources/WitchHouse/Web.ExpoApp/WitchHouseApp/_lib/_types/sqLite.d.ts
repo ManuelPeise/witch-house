@@ -54,3 +54,8 @@ export type DatabaseQueryResult<TModel> = {
   data: TModel | TModel[] | null;
   error?: string | null;
 };
+
+export type SqLiteArrayQuery = {
+  query: string;
+  insertOrUpdateQuery: string;
+};

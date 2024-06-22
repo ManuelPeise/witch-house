@@ -53,6 +53,8 @@ namespace Logic.Shared
                     {
                         ((AEntityBase)entry.Entity).CreatedBy = _claimsAccessor.GetClaimsValue<string>(UserIdentityClaims.UserName) ?? "System";
                         ((AEntityBase)entry.Entity).CreatedAt = DateTime.Now.ToString(Constants.LogMessageDateFormat);
+                        ((AEntityBase)entry.Entity).UpdatedBy = _claimsAccessor.GetClaimsValue<string>(UserIdentityClaims.UserName) ?? "System";
+                        ((AEntityBase)entry.Entity).UpdatedAt = DateTime.Now.ToString(Constants.LogMessageDateFormat);
 
                     }
                     else if (entry.State == EntityState.Modified)

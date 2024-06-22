@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
-import { DatabaseQueryResult, SqLiteDatasetBase } from '../_types/sqLite';
-import { createTableQueries, sqLiteTables } from './databaseQueries';
+import { DatabaseQueryResult, SqLiteArrayQuery, SqLiteDatasetBase } from '../_types/sqLite';
+import { createTableQueries } from './databaseQueries';
 
 const databaseName = 'witchHouse.db';
 
@@ -12,11 +12,13 @@ export class Database {
       data: null,
       error: null,
     };
+
     const connection: SQLite.SQLiteDatabase = await SQLite.openDatabaseAsync(databaseName);
     try {
       console.log('Db query ~sqLiteDatabase.ts~33:', query);
       result.data = await connection.getFirstAsync(query);
     } catch (err) {
+      console.log('single Select Error:', err);
       result.error = err;
     } finally {
       await connection.closeAsync();
@@ -88,7 +90,7 @@ export class Database {
 
       result = 'success';
     } catch (err) {
-      console.log('~sqLiteDatabase.ts~75 Error:', err);
+      console.log('~sqLiteDatabase.ts~93 Error:', err);
       result = 'error';
     } finally {
       await connection.closeAsync();
@@ -113,31 +115,45 @@ export class Database {
   };
 
   public getInsertedOrUpdatedModel = async <TModel extends SqLiteDatasetBase>(
-    timeStamp: string,
-    query: string,
-    insertQuery: string,
-    updateQuery: string
+    query: SqLiteArrayQuery
   ): Promise<TModel> => {
-    const connection: SQLite.SQLiteDatabase = await SQLite.openDatabaseAsync(databaseName);
     let dataSet: TModel = {} as TModel;
 
     try {
-      dataSet = (await this.executeSingleGetQuery<TModel>(query)).data as TModel;
+      dataSet = (await this.executeSingleGetQuery<TModel>(query.query)).data as TModel;
 
-      if (dataSet == null) {
-        await connection.execAsync(insertQuery);
-      } else if (dataSet != null && new Date(dataSet.updatedAt) < new Date(timeStamp)) {
-        await connection.execAsync(updateQuery);
+      console.log('DataSet - ', JSON.stringify(dataSet));
+
+      if (dataSet == null || dataSet?.updatedAt == null) {
+        console.log('Execute query...');
+        await this.executeInsertQuery(query.insertOrUpdateQuery);
       }
-
-      dataSet = (await this.executeSingleGetQuery<TModel>(query)).data as TModel;
     } catch (err) {
-      console.log('sqliteDatabase ~ 135');
+      console.log('sqliteDatabase ~ 135', err);
     } finally {
-      await connection.closeAsync();
+      // await connection.closeAsync();
       return dataSet;
     }
   };
+
+  public getInsertedOrUpdatedArray = async <TModel extends SqLiteDatasetBase>(queries: SqLiteArrayQuery[]) => {
+    let dataSets: TModel[] = [];
+
+    try {
+      queries.forEach(async (query) => {
+        const model = await this.getInsertedOrUpdatedModel<TModel>(query);
+
+        if (model != null) {
+          dataSets.push(model);
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
+
+    return dataSets;
+  };
+
   private createTables = async (queries: string[]): Promise<'success' | 'error'> => {
     let query: string;
     const connection: SQLite.SQLiteDatabase = await SQLite.openDatabaseAsync(databaseName);

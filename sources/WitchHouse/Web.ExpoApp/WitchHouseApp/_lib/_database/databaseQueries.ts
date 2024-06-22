@@ -78,11 +78,10 @@ export const getSetEntireModuleDataQueryPart = (model: ModuleTableModel) =>
 //#region insert queries
 
 export const getInsertSyncDataQuery = (data: SyncTableModel) => {
-  console.log('from sync', data);
   if (data == null) {
     return '';
   }
-  return `insert into ${sqLiteTables.syncTable} (${syncTableColumns}) values(
+  return `insert or Replace into ${sqLiteTables.syncTable} (${syncTableColumns}) values(
   '${data.syncId}',
   '${data.userGuid}',
   '${data.lastSync}',
@@ -90,12 +89,13 @@ export const getInsertSyncDataQuery = (data: SyncTableModel) => {
   '${data.createdAt}',
   '${data.updatedBy}',
   '${data.updatedAt}');`
+    .replace(' ', '')
     .replaceAll('\n', '')
     .replaceAll('\t', '');
 };
 
 export const getInsertUserDataDataQuery = (data: UserTableModel) =>
-  `insert into ${sqLiteTables.userTable} (${userTableColumns}) values(
+  `insert or Replace into ${sqLiteTables.userTable} (${userTableColumns}) values(
 '${data.userId}',
 '${data.familyId}',
 '${data.firstName}',
@@ -109,11 +109,12 @@ ${data.isActive},
 '${data.createdAt}',
 '${data.updatedBy}',
 '${data.updatedAt}');`
+    .replace(' ', '')
     .replaceAll('\n', '')
     .replaceAll('\t', '');
 
 export const getInsertCredentialDataQuery = (data: CredentialTableModel) =>
-  `insert into ${sqLiteTables.credentialTable} (${credentialColumns}) values(
+  `insert or Replace into ${sqLiteTables.credentialTable} (${credentialColumns}) values(
 '${data.credentialsId}',
 ${data.mobilePin},
 '${data.jwtToken}',
@@ -122,6 +123,7 @@ ${data.mobilePin},
 '${data.createdAt}',
 '${data.updatedBy}',
 '${data.updatedAt}');`
+    .replace(' ', '')
     .replaceAll('\n', '')
     .replaceAll('\t', '');
 
@@ -154,6 +156,8 @@ export const getGenericUpdateQuery = (tableName: string, setQueryPart: string, k
     .replaceAll('\t', '');
 };
 
+export const getGenericSelectQuery = (tableName: string, whereStatement?: string, columns?: string) =>
+  `SELECT ${columns ?? '*'} FROM ${tableName} ${whereStatement ?? ''};`;
 //#endregion
 
 export const getFirstFromTableByKeyQueryCallback = (table: string, columns: string, keyColumn: string, value: any) =>

@@ -52,7 +52,6 @@ const AppReducer = (state = initialState, action: ReducerAction): SqLiteDatabase
 };
 
 export const getInitialStateFromDatabase = async (userId?: string): Promise<SqLiteDatabase> => {
-  console.log('Guid', userId);
   if (userId == null) {
     return initialState;
   }

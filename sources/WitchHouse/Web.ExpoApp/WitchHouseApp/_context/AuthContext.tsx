@@ -7,8 +7,9 @@ import * as SecureStore from 'expo-secure-store';
 import { SecureStoreKeyEnum } from '../_lib/enums/SecureStoreKeyEnum';
 import { LoginResult } from '../_lib/_types/user';
 import { SqLiteDatabase, UserTableModel } from '../_lib/_types/sqLite';
-import { ReducerActions, UserDataReducerState } from '../_reducer/reducerActions';
+import { ReducerActions } from '../_reducer/reducerActions';
 import { useDispatch, useSelector } from 'react-redux';
+import { ensureDatabaseUpToDate } from '../_lib/_database/databaseHelper';
 
 export const AuthContext = React.createContext<AuthState>({} as AuthState);
 
@@ -30,7 +31,10 @@ const AuthContextProvider: React.FC<PropsWithChildren> = (props) => {
         if (res.status === 200) {
           const responseMessage: ResponseMessage<SqLiteDatabase> = await JSON.parse(JSON.stringify(res.data));
           setIsAuthenticated(true);
-          dispatch({ type: ReducerActions.InitializeData, payload: responseMessage.data });
+
+          const model = await ensureDatabaseUpToDate(responseMessage.data);
+
+          dispatch({ type: ReducerActions.InitializeData, payload: model });
         }
       });
     },

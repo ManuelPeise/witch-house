@@ -84,7 +84,7 @@ namespace Logic.Sync
             {
                 return new SqLiteDatabaseExport
                 {
-                    SyncTableModel = null,
+                    SyncTableModel = await LoadSyncData(syncModel.UserId),
                     UserTableModel = LoadUserTableModel(accountEntity),
                     CredentialTableModel = LoadCredentialsTableModel(accountEntity?.Credentials),
                     ModuleTableModels = await LoadModulesFromDatabase(syncModel.UserId),
@@ -130,12 +130,35 @@ namespace Logic.Sync
             }
 
 
-            if(databaseModified)
+            if (databaseModified)
             {
                 await _applicationUnitOfWork.SaveChanges();
             }
 
             return exportModel;
+        }
+
+        private async Task<SyncTableModel?> LoadSyncData(Guid userId)
+        {
+            var syncEntries = await _applicationUnitOfWork.SyncRepository.GetByAsync(x => x.UserGuid == userId);
+
+            if (syncEntries.ToList().Any() && syncEntries.Count() > 1)
+            {
+                return null;
+            }
+
+            var selectedEntry = syncEntries.First();
+
+            return new SyncTableModel
+            {
+                SyncId = selectedEntry.Id.ToString(),
+                UserGuid = selectedEntry.UserGuid,
+                LastSync = selectedEntry.LastSync,
+                CreatedAt = selectedEntry.CreatedAt,
+                CreatedBy = selectedEntry.UpdatedAt,
+                UpdatedAt = selectedEntry.UpdatedAt,
+                UpdatedBy = selectedEntry.UpdatedBy,
+            };
         }
 
         private async Task<IEnumerable<ModuleEntity>> TryGetUpdateModules(List<ModuleEntity> moduleEntities, List<ModuleTabelModel> moduleTableModels)
@@ -153,14 +176,14 @@ namespace Logic.Sync
 
                 if (entity != null)
                 {
-                    if(DateTime.Parse(entity.UpdatedAt) < DateTime.Parse(module.UpdatedAt))
+                    if (DateTime.Parse(entity.UpdatedAt) < DateTime.Parse(module.UpdatedAt))
                     {
                         entity.SettingsJson = module.SettingsJson;
                         entity.IsActive = module.IsActive;
 
                         await _applicationUnitOfWork.ModuleRepository.Update(entity);
                     }
-                   
+
                     modules.Add(entity);
                 }
             }
@@ -241,7 +264,7 @@ namespace Logic.Sync
 
             return LoadModuleTableData(moduleEntities.ToList());
         }
-        
+
         private async Task LoadCredentials(Guid? credentialGuid)
         {
             if (credentialGuid == null)
