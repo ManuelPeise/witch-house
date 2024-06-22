@@ -13,43 +13,32 @@ import LoadingOverLay from '../../../_components/_loading/LoadingOverlay';
 import * as SecureStore from 'expo-secure-store';
 import { SecureStoreKeyEnum } from '../../../_lib/enums/SecureStoreKeyEnum';
 import { ModuleTypeEnum } from '../../../_lib/enums/ModuleTypeEnum';
+import UnitStatisticPlaceholder from './UnitStatisticPlaceholder';
 
 const UnitStatisticScreen: React.FC = () => {
   const { data, get } = useApi<UnitResultStatisticModel[]>();
-  const { userData } = useAuth();
+  const { getUserModule } = useAuth();
   const { getResource } = useI18n();
-
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
+  const module = getUserModule(ModuleTypeEnum.SchoolTrainingStatistics);
   const hasAccess = React.useMemo((): boolean => {
-    const json = SecureStore.getItem(SecureStoreKeyEnum.ModuleConfiguration);
-
-    if (json?.length) {
-      const config: ModuleConfiguration = JSON.parse(json);
-
-      if (config) {
-        const statisticConfig = config.modules.find((x) => x.moduleType === ModuleTypeEnum.SchoolTrainingStatistics);
-
-        return statisticConfig?.isActive ?? false;
-      }
-
-      return false;
-    }
-  }, []);
+    return module.isActive;
+  }, [module]);
 
   const onLoadStatisticData = React.useCallback(async () => {
     setIsLoading(true);
-    await get(endPoints.training.getTrainingResultStatistics.replace('{userId}', userData.userId));
+    await get(endPoints.training.getTrainingResultStatistics.replace('{userId}', module.accountGuid));
     setIsLoading(false);
-  }, [userData, get]);
+  }, [module, get]);
 
   React.useEffect(() => {
     if (hasAccess) {
       setIsLoading(true);
-      get(endPoints.training.getTrainingResultStatistics.replace('{userId}', userData.userId));
+      get(endPoints.training.getTrainingResultStatistics.replace('{userId}', module.accountGuid));
       setIsLoading(false);
     }
-  }, [hasAccess, userData]);
+  }, [hasAccess, module]);
 
   const getLabel = React.useCallback((type: UnitTypeEnum): string => {
     switch (type) {
@@ -86,16 +75,13 @@ const UnitStatisticScreen: React.FC = () => {
   );
 
   const sortedData = React.useMemo(() => {
-    return data?.sort((x, y) => x.unitType - y.unitType);
+    return data?.sort((x, y) => x.unitType - y.unitType) ?? [];
   }, [data]);
 
-  if (!hasAccess) {
-    return (
-      <View>
-        <Text>SORRY</Text>
-      </View>
-    );
+  if (!hasAccess || (hasAccess && sortedData?.length === 0)) {
+    return <UnitStatisticPlaceholder hasAccess={hasAccess} statisticDataAvailable={sortedData?.length > 0} />;
   }
+
   return (
     <View>
       <View style={styles.container}>
@@ -103,39 +89,40 @@ const UnitStatisticScreen: React.FC = () => {
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={isLoading} onRefresh={onLoadStatisticData} />}
         >
-          {sortedData?.map((set, index) => {
-            return (
-              <LineChartDiagram
-                key={index}
-                label={getLabel(set.unitType)}
-                width={Dimensions.get('window').width - 50}
-                height={200}
-                yLabel="Points"
-                chartData={{
-                  labels: set.entries.map((entity) => entity.timeStamp),
-                  dataSets: getChartData(set, 100, 100, 30),
-                }}
-                config={{
-                  backgroundColor: ColorEnum.White,
-                  backgroundGradientFrom: ColorEnum.BlackBlue,
-                  backgroundGradientTo: ColorEnum.Black,
-                  decimalPlaces: 0, // optional, defaults to 2dp
-                  color: (opacity = 0.3) => ColorEnum.White,
-                  labelColor: (opacity = 1) => ColorEnum.White,
-                  propsForDots: {
-                    r: '4',
-                    strokeWidth: '2',
-                    stroke: ColorEnum.BlackBlue,
-                  },
-                }}
-                style={{
-                  marginVertical: 8,
-                  borderRadius: 4,
-                }}
-                bezier={true}
-              />
-            );
-          })}
+          {sortedData?.length &&
+            sortedData?.map((set, index) => {
+              return (
+                <LineChartDiagram
+                  key={index}
+                  label={getLabel(set.unitType)}
+                  width={Dimensions.get('window').width - 50}
+                  height={200}
+                  yLabel="Points"
+                  chartData={{
+                    labels: set.entries.map((entity) => entity.timeStamp),
+                    dataSets: getChartData(set, 100, 100, 30),
+                  }}
+                  config={{
+                    backgroundColor: ColorEnum.White,
+                    backgroundGradientFrom: ColorEnum.BlackBlue,
+                    backgroundGradientTo: ColorEnum.Black,
+                    decimalPlaces: 0, // optional, defaults to 2dp
+                    color: (opacity = 0.3) => ColorEnum.White,
+                    labelColor: (opacity = 1) => ColorEnum.White,
+                    propsForDots: {
+                      r: '4',
+                      strokeWidth: '2',
+                      stroke: ColorEnum.BlackBlue,
+                    },
+                  }}
+                  style={{
+                    marginVertical: 8,
+                    borderRadius: 4,
+                  }}
+                  bezier={true}
+                />
+              );
+            })}
         </ScrollView>
       </View>
       {isLoading && <LoadingOverLay color={ColorEnum.Blue} size="large" scale={4} />}
