@@ -1,3 +1,5 @@
+import { SqLiteDatabase } from './_types/sqLite';
+import { LoginResult } from './_types/user';
 import { JwtData } from './api/types';
 import { ModuleSettingsTypeEnum } from './enums/ModuleSettingsTypeEnum';
 import { ModuleTypeEnum } from './enums/ModuleTypeEnum';
@@ -58,23 +60,13 @@ export type ModuleSettings = {
   settings: SchoolSettings;
 };
 
-export type LoginResult = {
-  userId: string;
-  familyGuid: string;
-  userRole: UserRoleEnum;
-  language: 'de' | 'en';
-  userName: string;
-  jwt: string;
-  refreshToken: string;
-  userModules: ModuleConfiguration;
-};
-
 export type AuthState = {
   isLoading: boolean;
   isAuthenticated: boolean;
-  userData: UserData;
+  loginResult: LoginResult;
   onLogin: (data: LoginRequest) => Promise<void>;
   onLogout: () => Promise<void>;
+  getUserDataReducerState: () => UserTableModel;
 };
 
 export type LoginRequest = {

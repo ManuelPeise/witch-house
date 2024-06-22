@@ -11,23 +11,15 @@ interface IProps {
   variant: 'round' | 'default';
   disabled?: boolean;
   quality?: 0 | 1;
+  imageSrc: string;
   onSaveImage: (img: string) => Promise<void>;
 }
 
 const base64Prefix = 'data:image/png;base64,';
 
 const ProfileImageInput: React.FC<IProps> = (props) => {
-  const { size, variant, disabled, quality, onSaveImage } = props;
-  const [image, setImage] = React.useState<string | null>(null);
-
-  const load = React.useCallback(async () => {
-    var result = await AsyncStorage.getItem(AsyncStorageKeyEnum.ProfileImage);
-    setImage(result);
-  }, []);
-
-  React.useEffect(() => {
-    load();
-  }, []);
+  const { size, variant, disabled, quality, imageSrc, onSaveImage } = props;
+  const [image, setImage] = React.useState<string | null>(base64Prefix + imageSrc ?? null);
 
   const handleImageSelect = React.useCallback(async () => {
     const result = await ImagePicker.launchCameraAsync({
@@ -56,7 +48,7 @@ const ProfileImageInput: React.FC<IProps> = (props) => {
       onPress={handleImageSelect}
     >
       {image && <Image style={[styles.image, styles[variant], { width: size, height: size }]} src={image} />}
-      {!image && <Ionicons style={[styles.image, styles[variant]]} name="image-sharp" size={size} />}
+      {!image && <Ionicons style={[styles.image, styles[variant]]} name="image-sharp" size={size / 2} />}
     </Pressable>
   );
 };
@@ -66,6 +58,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: ColorEnum.LightGray,
+    padding: 10,
   },
   image: {
     padding: 10,

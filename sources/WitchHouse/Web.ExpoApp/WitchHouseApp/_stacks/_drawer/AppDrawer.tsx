@@ -1,7 +1,6 @@
 import { DrawerContentComponentProps, DrawerContentScrollView } from '@react-navigation/drawer';
 import React from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
-import witchHouse from '../../img/witchHouse.jpg';
+import { StyleSheet, Text, View } from 'react-native';
 import { useAuth } from '../../_hooks/useAuth';
 import { ColorEnum } from '../../_lib/enums/ColorEnum';
 import { useI18n } from '../../_hooks/useI18n';
@@ -19,13 +18,15 @@ interface IProps {
 const base64Prefix = 'data:image/png;base64,';
 
 const AppDrawer: React.FC<IProps> = (props) => {
-  const { userData } = useAuth();
+  const { getUserDataReducerState } = useAuth();
   const { getResource } = useI18n();
   const { sendPostRequest } = useApi<UserData>();
 
   const routeNames = React.useMemo(() => {
     return props.containerProps.state.routeNames;
   }, []);
+
+  const data = getUserDataReducerState();
 
   const getDisplayName = React.useCallback(
     (route: string) => {
@@ -55,13 +56,13 @@ const AppDrawer: React.FC<IProps> = (props) => {
   const onSaveImage = React.useCallback(
     async (img: string) => {
       const model: ProfileImageUploadModel = {
-        userId: userData.userId,
+        userId: data?.userId,
         profileImage: `${base64Prefix}${img}`,
       };
 
       await sendPostRequest(endPoints.account.imageUpload, model);
     },
-    [userData, sendPostRequest]
+    [data, sendPostRequest]
   );
 
   return (
@@ -72,10 +73,17 @@ const AppDrawer: React.FC<IProps> = (props) => {
       >
         <View style={styles.background}>
           <View style={styles.userImgContainer}>
-            <ProfileImageInput variant="round" size={100} disabled={false} quality={1} onSaveImage={onSaveImage} />
+            <ProfileImageInput
+              variant="round"
+              size={100}
+              imageSrc={data?.profileImage}
+              disabled={false}
+              quality={1}
+              onSaveImage={onSaveImage}
+            />
           </View>
           <Text style={styles.userName}>
-            {getResource('common:labelLoggedInAs').replace('{UserName}', userData?.userName)}
+            {getResource('common:labelLoggedInAs').replace('{UserName}', data?.userName)}
           </Text>
         </View>
         <View style={styles.drawerMenu}>

@@ -7,6 +7,7 @@ export const endPoints = {
     initializeMobileLogin: 'AccountService/InitializeMobileLogin',
   },
   sync: {
+    loadAppData: 'DataSync/LoadAppData?userId={id}',
     syncAppData: 'DataSync/SyncAppData',
   },
   training: {
