@@ -15,6 +15,7 @@
   "labelDoubling": "Doubling",
   "labelDoublingStatistics": "Doubling Statistics",
   "labelExecuteDataSync": "Execute Sync",
+  "labelGreeting": "Hello\n\n {user}\n\n nice to see you here!",
   "labelInitializeApp": "Initialize",
   "labelLetterStatistics": "Letter Statistics",
   "labelLetters": "Letters",
